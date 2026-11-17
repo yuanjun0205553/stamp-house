@@ -53,9 +53,8 @@ input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px so
 <div class="bar"><i id="fill" style="width:0%"></i></div>
 <div class="sub" id="hint" style="margin:0"></div>
 </div>
-<div id="admin" hidden>
 <div class="card">
-<h2>快速任務加點</h2>
+<h2 id="taskTitle">任務清單</h2>
 <button class="task" data-d="1" data-n="誇獎漂亮女友"><span>誇獎漂亮女友</span><em>+1 點</em></button>
 <button class="task" data-d="1" data-n="分享今日小確幸"><span>分享今日小確幸</span><em>+1 點</em></button>
 <button class="task" data-d="1" data-n="自己想要吃什麼"><span>自己想要吃什麼</span><em>+1 點</em></button>
@@ -63,6 +62,7 @@ input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px so
 <button class="task" data-d="3" data-n="乖乖運動"><span>乖乖運動</span><em>+3 點</em></button>
 <button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
 </div>
+<div id="admin" hidden>
 <div class="card">
 <h2>手動調整點數</h2>
 <input id="note" placeholder="備註（選填，他也看得到）" maxlength="30">
@@ -97,7 +97,8 @@ function render(){
   $('cards').textContent=Math.floor(p/PER)+' 份';
   $('fill').style.width=(r*100/PER)+'%';
   $('hint').textContent='每累積 '+PER+' 點可兌換 1 份禮物，目前 '+r+'/'+PER+' 點';
-  document.querySelectorAll('button.task').forEach(b=>{const dn=(S.done||{})[b.dataset.n]===today();b.disabled=dn;b.style.opacity=dn?'.5':'1';b.querySelector('em').textContent=dn?'今天完成了 ✓':'+'+b.dataset.d+' 點'});
+  $('taskTitle').textContent=admin?'快速任務加點':'任務清單（完成後會幫你加點）';
+  document.querySelectorAll('button.task').forEach(b=>{const dn=(S.done||{})[b.dataset.n]===today();b.disabled=dn||!admin;b.style.cursor=admin?'pointer':'default';b.style.opacity=dn?'.5':'1';b.querySelector('em').textContent=dn?'今天完成了 ✓':'+'+b.dataset.d+' 點'});
   $('admin').hidden=!admin;$('loginBox').hidden=admin||!showLogin;$('outBtn').hidden=!admin;
   $('log').innerHTML=S.log.length?S.log.map(l=>{
     const d=new Date(l.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
