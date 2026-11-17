@@ -89,6 +89,7 @@ const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),r
 const PER=1000; // 幾點換 1 份禮物
 let S={points:0,log:[],done:{}},admin=false,q=Promise.resolve();
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const showLogin=new URLSearchParams(location.search).has('admin');
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
 function render(){
   const p=S.points,r=p%PER;
@@ -97,7 +98,7 @@ function render(){
   $('fill').style.width=(r*100/PER)+'%';
   $('hint').textContent='每累積 '+PER+' 點可兌換 1 份禮物，目前 '+r+'/'+PER+' 點';
   document.querySelectorAll('button.task').forEach(b=>{const dn=(S.done||{})[b.dataset.n]===today();b.disabled=dn;b.style.opacity=dn?'.5':'1';b.querySelector('em').textContent=dn?'今天完成了 ✓':'+'+b.dataset.d+' 點'});
-  $('admin').hidden=!admin;$('loginBox').hidden=admin;$('outBtn').hidden=!admin;
+  $('admin').hidden=!admin;$('loginBox').hidden=admin||!showLogin;$('outBtn').hidden=!admin;
   $('log').innerHTML=S.log.length?S.log.map(l=>{
     const d=new Date(l.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     return '<div class="log"><div>'+esc(l.n||(l.d>0?'加點':'扣點'))+'<br><span>'+ds+'</span></div><div class="'+(l.d>0?'pos':'neg')+'">'+(l.d>0?'+':'')+l.d+'</div></div>';
