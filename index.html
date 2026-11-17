@@ -39,6 +39,32 @@ input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px so
 #msg{color:var(--sub);font-size:13px;min-height:18px}
 .link{background:none;color:var(--sub);font-weight:400;text-decoration:underline;padding:6px}
 [hidden]{display:none!important}
+.gacha{text-align:center;overflow:hidden}
+.gacha .sub{margin:0 0 4px}
+.machine{width:min(260px,70vw);height:auto;display:block;margin:0 auto}
+.machine.jig{animation:jig .5s ease-in-out 2}
+@keyframes jig{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-4px) rotate(-1.5deg)}75%{transform:translateX(4px) rotate(1.5deg)}}
+.knob{transform-box:fill-box;transform-origin:center}
+.machine.jig .knob{animation:spin 1s ease-in-out}
+@keyframes spin{to{transform:rotate(360deg)}}
+.balls circle,.balls path{transform-box:fill-box;transform-origin:center}
+.machine.jig .balls .b{animation:bounce .45s ease-in-out 3}
+.machine.jig .balls .b:nth-child(even){animation-delay:.12s}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+#dropcap{opacity:0}
+#dropcap.fall{animation:fall .8s cubic-bezier(.5,0,.8,.6) forwards}
+@keyframes fall{0%{opacity:1;transform:translateY(0)}70%{opacity:1;transform:translateY(132px)}85%{opacity:1;transform:translateY(122px)}100%{opacity:1;transform:translateY(132px)}}
+.prizebox{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin:6px 0 10px;padding:10px;border-radius:20px;background:var(--soft)}
+.prizebox .pe{font-size:44px;line-height:1.1}
+.prizebox .pt{font-size:20px;font-weight:700;color:var(--acc)}
+.prizebox .ph{font-size:13px;color:var(--sub)}
+.prizebox.pop .pe,.prizebox.pop svg{animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{0%{transform:scale(.2) rotate(-20deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.hearts{position:relative;height:0}
+.hearts i{position:absolute;left:50%;top:-30px;font-style:normal;font-size:18px;opacity:0}
+.hearts.go i{animation:float 1.1s ease-out forwards}
+@keyframes float{0%{opacity:1;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(var(--dx),-70px) scale(1.2)}}
+@media (prefers-reduced-motion:reduce){.machine.jig,.machine.jig .knob,.machine.jig .balls .b,#dropcap.fall,.prizebox.pop .pe,.prizebox.pop svg,.hearts.go i{animation:none}#dropcap.fall{opacity:1;transform:translateY(132px)}}
 </style>
 </head>
 <body>
@@ -70,6 +96,28 @@ input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px so
 <div class="grid"><button data-d="-1">−1</button><button data-d="-5">−5</button><button data-d="-10">−10</button></div>
 </div>
 </div>
+<div class="card gacha">
+<h2>扭蛋機 🌸</h2>
+<p class="sub">每天凌晨 12 點更新，一天扭一次</p>
+<svg class="machine" id="machine" viewBox="0 0 240 300" role="img" aria-label="可愛的扭蛋機">
+  <defs><clipPath id="globeClip"><circle cx="120" cy="100" r="66"/></clipPath></defs>
+  <ellipse cx="120" cy="288" rx="84" ry="9" fill="#000" opacity=".12"/>
+  <rect x="40" y="150" width="160" height="130" rx="30" fill="#ef9fc2"/>
+  <rect x="40" y="236" width="160" height="44" rx="22" fill="#d97fa9"/>
+  <circle cx="120" cy="100" r="72" fill="#fff" opacity=".55" stroke="#d98fb1" stroke-width="5"/>
+  <g clip-path="url(#globeClip)" class="balls" id="balls"></g>
+  <path d="M60 78 A66 66 0 0 1 100 44" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".8"/>
+  <rect x="84" y="20" width="72" height="18" rx="9" fill="#d98fb1"/>
+  <circle cx="120" cy="190" r="29" fill="#fff" stroke="#d98fb1" stroke-width="5"/>
+  <g class="knob"><rect x="98" y="184" width="44" height="12" rx="6" fill="#ef9fc2"/><circle cx="120" cy="190" r="6" fill="#d97fa9"/></g>
+  <rect x="82" y="224" width="76" height="46" rx="14" fill="#8f4a6e"/>
+  <g id="dropcap"><circle cx="120" cy="120" r="17" fill="#ffd166"/><path d="M103 120 a17 17 0 0 0 34 0 z" fill="#fff6e0"/><circle cx="114" cy="113" r="4" fill="#fff" opacity=".8"/></g>
+  <path d="M82 238 h76 v32 a14 14 0 0 1 -14 0 h-48 a14 14 0 0 1 -14 0 z" fill="#8f4a6e" opacity="0"/>
+</svg>
+<div class="hearts" id="hearts"></div>
+<div class="prizebox" id="prizebox" aria-live="polite"><div class="pe">🎀</div><div class="pt">按下去看看會抽到什麼</div></div>
+<button class="p" id="gachaBtn" style="width:100%">扭一下！</button>
+</div>
 <div class="card"><h2>紀錄</h2><div id="log"><span class="sub">還沒有紀錄</span></div></div>
 <div class="card" id="loginBox">
 <h2>管理員登入</h2>
@@ -79,6 +127,84 @@ input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px so
 </div>
 <div style="text-align:center"><button class="link" id="outBtn" hidden>登出</button></div>
 </div>
+<script>
+(function(){
+  var INK='#5b3a4a',PINK='#ff7a9c',SKIN,LINE,STRIPE,EAR,WHITE=false;
+  var CATS={
+    o:{skin:'#ffe6cc',line:'#e3a06c',stripe:'#e3a06c',ear:'#ffb3cb',white:false},
+    t:{skin:'#bba58f',line:'#7b6450',stripe:'#5a4636',ear:'#eab9bd',white:true}
+  };
+  function useCat(c){var k=CATS[c]||CATS.o;SKIN=k.skin;LINE=k.line;STRIPE=k.stripe;EAR=k.ear;WHITE=k.white}
+  function B(){
+    var s='<path d="M21 52 L22 17 L52 36 Z" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3" stroke-linejoin="round"/><path d="M99 52 L98 17 L68 36 Z" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3" stroke-linejoin="round"/><path d="M28 44 L28 27 L43 37 Z" fill="'+EAR+'" stroke="'+EAR+'" stroke-width="2" stroke-linejoin="round"/><path d="M92 44 L92 27 L77 37 Z" fill="'+EAR+'" stroke="'+EAR+'" stroke-width="2" stroke-linejoin="round"/><ellipse cx="60" cy="64" rx="40" ry="34" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3"/>';
+    if(WHITE)s+='<path d="M60 33 q-7 0 -7 8 l3 20 q4 5 8 0 l3 -20 q0 -8 -7 -8 z" fill="#fffdf8"/><ellipse cx="60" cy="82" rx="21" ry="15" fill="#fffdf8"/><path d="M50 95 q10 7 20 0" fill="none" stroke="'+LINE+'" stroke-width="3" stroke-linecap="round"/>';
+    s+='<path d="M'+(WHITE?'46':'60')+' 31 v9 M'+(WHITE?'38':'51')+' 33 l1.5 7 M'+(WHITE?'74':'69')+' 33 l-1.5 7'+(WHITE?' M30 46 l7 3 M90 46 l-7 3':'')+'" fill="none" stroke="'+STRIPE+'" stroke-width="3" stroke-linecap="round"/><ellipse cx="36" cy="74" rx="7" ry="4" fill="#ff9fba" opacity=".6"/><ellipse cx="84" cy="74" rx="7" ry="4" fill="#ff9fba" opacity=".6"/><path d="M22 68 l-13 -4 M22 74 l-14 3 M98 68 l13 -4 M98 74 l14 3" stroke="'+LINE+'" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M56.5 69 h7 l-3.5 4.5 z" fill="#ff8fa8" stroke="#ff8fa8" stroke-width="1.5" stroke-linejoin="round"/>';
+    return s;
+  }
+  function dot(x,y){return '<circle cx="'+x+'" cy="'+y+'" r="4.5" fill="'+INK+'"/><circle cx="'+(x-1.5)+'" cy="'+(y-1.7)+'" r="1.6" fill="#fff"/>'}
+  function arc(x,y,up){return '<path d="M'+x+' '+y+' q5 '+(up?-7:7)+' 10 0" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round"/>'}
+  function smile(){return '<path d="M52 77 q4 5 8 0 q4 5 8 0" fill="none" stroke="'+INK+'" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>'}
+  function bubble(x,y,w,txt,fs){return '<g><rect x="'+x+'" y="'+y+'" width="'+w+'" height="20" rx="10" fill="#fff" stroke="'+LINE+'" stroke-width="2"/><text x="'+(x+w/2)+'" y="'+(y+14)+'" text-anchor="middle" font-size="'+(fs||11)+'" font-weight="700" fill="'+INK+'">'+txt+'</text></g>'}
+  var ART={
+    hug:function(){return '<ellipse cx="12" cy="78" rx="11" ry="7" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3" transform="rotate(-25 12 78)"/><ellipse cx="108" cy="78" rx="11" ry="7" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3" transform="rotate(25 108 78)"/>'+B()+arc(41,64,1)+arc(69,64,1)+'<path d="M52 76 q8 10 16 0 z" fill="'+PINK+'" stroke="'+INK+'" stroke-width="2.5" stroke-linejoin="round"/><text x="60" y="16" text-anchor="middle" font-size="17">💗</text>'},
+    kiss:function(){return B()+arc(41,64,1)+arc(69,64,1)+'<ellipse cx="60" cy="79" rx="3.5" ry="4.5" fill="'+PINK+'"/><text x="94" y="70" font-size="18">💋</text><text x="20" y="40" font-size="14">💗</text>'},
+    massage:function(){return B()+arc(41,64,0)+arc(69,64,0)+smile()+'<ellipse cx="22" cy="98" rx="10" ry="8" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3"/><ellipse cx="98" cy="98" rx="10" ry="8" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3"/>'+bubble(66,4,48,'30 秒',11)},
+    praise:function(){return B()+'<circle cx="46" cy="63" r="6" fill="'+INK+'"/><circle cx="74" cy="63" r="6" fill="'+INK+'"/><circle cx="44" cy="60.5" r="2.2" fill="#fff"/><circle cx="72" cy="60.5" r="2.2" fill="#fff"/><circle cx="48" cy="66" r="1.2" fill="#fff"/><circle cx="76" cy="66" r="1.2" fill="#fff"/><path d="M52 76 q8 10 16 0 z" fill="'+PINK+'" stroke="'+INK+'" stroke-width="2.5" stroke-linejoin="round"/>'+bubble(60,2,56,'讚 讚 讚',11)+'<text x="14" y="30" font-size="14">✨</text>'},
+    daze:function(){return B()+'<path d="M41 66 h10 M69 66 h10" stroke="'+INK+'" stroke-width="3" stroke-linecap="round"/><path d="M56 80 h8" stroke="'+INK+'" stroke-width="3" stroke-linecap="round"/><circle cx="96" cy="26" r="3" fill="#fff" stroke="'+LINE+'" stroke-width="2"/><circle cx="104" cy="14" r="5" fill="#fff" stroke="'+LINE+'" stroke-width="2"/><text x="104" y="17" text-anchor="middle" font-size="9" font-weight="700" fill="'+INK+'">…</text>'},
+    air:function(){return B()+dot(46,62)+dot(74,62)+'<ellipse cx="60" cy="78" rx="5" ry="6" fill="'+PINK+'" stroke="'+INK+'" stroke-width="2"/><ellipse cx="60" cy="108" rx="30" ry="7" fill="#fff" stroke="'+LINE+'" stroke-width="2.5"/><text x="96" y="104" font-size="16">💨</text>'},
+    eyeroll:function(){return B()+'<circle cx="46" cy="63" r="7" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/><circle cx="74" cy="63" r="7" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/><circle cx="47" cy="58.5" r="3" fill="'+INK+'"/><circle cx="75" cy="58.5" r="3" fill="'+INK+'"/><path d="M54 81 h12" stroke="'+INK+'" stroke-width="3" stroke-linecap="round"/><text x="96" y="40" font-size="14">💢</text>'},
+    pat:function(){return B()+arc(41,64,1)+arc(69,64,1)+smile()+'<ellipse cx="60" cy="14" rx="15" ry="8" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3"/><path d="M82 8 q5 -4 8 0 M86 18 q6 -3 9 1" fill="none" stroke="'+LINE+'" stroke-width="2.5" stroke-linecap="round"/><path d="M38 8 q-5 -4 -8 0" fill="none" stroke="'+LINE+'" stroke-width="2.5" stroke-linecap="round"/>'},
+    bite:function(){return B()+'<path d="M40 59 l11 5 l-11 5" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M80 59 l-11 5 l11 5" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M48 76 h24 v3 q-12 10 -24 0 z" fill="#fff" stroke="'+INK+'" stroke-width="2.5" stroke-linejoin="round"/><path d="M54 75 v6 M60 75 v7 M66 75 v6" stroke="'+LINE+'" stroke-width="1.5"/>'+bubble(66,2,50,'啊嗚 啊嗚',10)},
+    thanks:function(){return B()+arc(41,64,1)+dot(74,62)+smile()+'<rect x="26" y="94" width="68" height="24" rx="8" fill="#fff" stroke="'+LINE+'" stroke-width="2.5"/><text x="60" y="111" text-anchor="middle" font-size="12" font-weight="700" fill="'+INK+'">銘謝惠顧</text>'}
+  };
+  function art(k,c){useCat(c);return '<svg viewBox="0 0 120 124" width="128" height="132" aria-hidden="true" style="overflow:visible">'+ART[k]()+'</svg>'}
+  var PRIZES=[
+    {k:'hug',c:'o',t:'苑均抱抱'},{k:'kiss',c:'t',t:'苑均親親'},{k:'massage',c:'o',t:'苑均幫你按肩膀 30 秒'},
+    {k:'praise',c:'t',t:'苑均誇你三句'},{k:'daze',c:'o',t:'苑均陪你發呆 5 分鐘'},{k:'air',c:'o',t:'苑均請你吃空氣'},
+    {k:'eyeroll',c:'t',t:'苑均給你一個白眼',h:'（可退貨）'},{k:'pat',c:'o',t:'苑均摸摸頭'},{k:'bite',c:'t',t:'苑均咬兩下'},
+    {k:'thanks',c:'t',t:'銘謝惠顧，明天再來！'}
+  ];
+  var COLORS=[['#ff8fab','#ffe5ec'],['#ffd166','#fff6e0'],['#8ecae6','#e3f4fb'],['#b8e0a0','#eef8e6'],['#cdb4db','#f1e9f6'],['#ffadad','#ffeaea']];
+  var NS='http://www.w3.org/2000/svg',g=document.getElementById('balls');
+  var pos=[[78,120],[104,128],[132,126],[160,118],[66,96],[92,104],[120,108],[148,100],[174,96],[84,78],[112,84],[140,80],[162,74],[100,60],[128,58]];
+  pos.forEach(function(p,i){
+    var c=COLORS[i%COLORS.length],r=15,gg=document.createElementNS(NS,'g');gg.setAttribute('class','b');
+    var a=document.createElementNS(NS,'circle');a.setAttribute('cx',p[0]);a.setAttribute('cy',p[1]);a.setAttribute('r',r);a.setAttribute('fill',c[0]);
+    var b=document.createElementNS(NS,'path');b.setAttribute('d','M'+(p[0]-r)+' '+p[1]+' a'+r+' '+r+' 0 0 0 '+(2*r)+' 0 z');b.setAttribute('fill',c[1]);
+    var h=document.createElementNS(NS,'circle');h.setAttribute('cx',p[0]-5);h.setAttribute('cy',p[1]-5);h.setAttribute('r',3.5);h.setAttribute('fill','#fff');h.setAttribute('opacity','.8');
+    gg.appendChild(a);gg.appendChild(b);gg.appendChild(h);g.appendChild(gg);
+  });
+  var hearts=document.getElementById('hearts');
+  ['💗','✨','💖','🌸','💗','✨'].forEach(function(s,i){var el=document.createElement('i');el.textContent=s;el.style.setProperty('--dx',((i-2.5)*22)+'px');el.style.animationDelay=(i*0.05)+'s';hearts.appendChild(el)});
+  var machine=document.getElementById('machine'),drop=document.getElementById('dropcap'),box=document.getElementById('prizebox'),btn=document.getElementById('gachaBtn');
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function todayKey(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+  function load(){try{return JSON.parse(localStorage.getItem('gacha')||'null')}catch(e){return null}}
+  function save(i){try{localStorage.setItem('gacha',JSON.stringify({d:todayKey(),i:i}))}catch(e){}}
+  function show(i){var p=PRIZES[i];box.innerHTML=art(p.k,p.c)+'<div class="pt">'+esc(p.t)+'</div>'+(p.h?'<div class="ph">'+esc(p.h)+'</div>':'')}
+  function lock(){btn.disabled=true;btn.textContent='明天再來扭 🌙'}
+  var rolling=false,saved=load();
+  if(saved&&saved.d===todayKey()&&PRIZES[saved.i]){show(saved.i);lock()}
+  btn.addEventListener('click',function(){
+    if(rolling)return;var s=load();if(s&&s.d===todayKey()){lock();return}
+    rolling=true;btn.disabled=true;
+    box.classList.remove('pop');hearts.classList.remove('go');
+    box.innerHTML='<div class="pe">🌀</div><div class="pt">扭扭扭…</div>';
+    var c=COLORS[Math.floor(Math.random()*COLORS.length)];
+    drop.children[0].setAttribute('fill',c[0]);drop.children[1].setAttribute('fill',c[1]);
+    drop.classList.remove('fall');machine.classList.remove('jig');void machine.getBoundingClientRect();
+    machine.classList.add('jig');
+    setTimeout(function(){drop.classList.add('fall')},1000);
+    setTimeout(function(){
+      var i=Math.floor(Math.random()*PRIZES.length);
+      save(i);show(i);
+      box.classList.add('pop');void hearts.offsetWidth;hearts.classList.add('go');
+      drop.classList.remove('fall');machine.classList.remove('jig');
+      lock();rolling=false;
+    },1850);
+  });
+})();
+</script>
 <script type="module">
 import {firebaseConfig} from './config.js';
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
