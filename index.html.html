@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fbf1f4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="小朋友的集點卡">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>小朋友的集點卡</title>
+<style>
+:root{--bg:#fbf1f4;--card:#fff;--ink:#4a3340;--sub:#8a7480;--acc:#95597a;--soft:#f6e4ec;--ok:#e6f1ea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#241a20;--card:#32242c;--ink:#f5e6ed;--sub:#b99aa9;--acc:#d792b6;--soft:#43303a;--ok:#2d3d34}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;padding:16px}
+.wrap{max-width:480px;margin:0 auto}
+h1{font-size:22px;margin:0 0 2px}
+.head{display:flex;gap:14px;align-items:center;margin:8px 0 14px}
+.ava{width:64px;height:64px;border-radius:20px;object-fit:cover;border:3px solid var(--soft)}
+.sub{color:var(--sub);font-size:14px;margin:0 0 14px}
+.card{background:var(--card);border-radius:22px;padding:18px;margin-bottom:14px;box-shadow:0 2px 10px rgba(149,89,122,.12)}
+.row{display:flex;gap:10px}
+.stat{flex:1;background:var(--soft);border-radius:18px;padding:14px}
+.stat small{color:var(--sub);font-size:13px}
+.stat b{display:block;font-size:34px;color:var(--acc);margin-top:4px}
+.bar{height:12px;background:var(--soft);border-radius:8px;margin:14px 0 6px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#d08aae,var(--acc));border-radius:8px;transition:width .3s}
+h2{font-size:17px;margin:0 0 10px}
+button{font:inherit;border:0;border-radius:16px;padding:12px 8px;cursor:pointer;background:var(--soft);color:var(--acc);font-weight:700}
+button.p{background:var(--acc);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.task{gap:12px;display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:8px;background:var(--ok);color:var(--ink);text-align:left;padding:12px 14px}
+.task em{font-style:normal;color:var(--acc)}
+input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px solid var(--soft);background:var(--bg);color:var(--ink);margin-bottom:10px}
+.log{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--soft);font-size:14px}
+.log span{color:var(--sub)}
+.pos{color:var(--acc);font-weight:700}.neg{color:var(--sub);font-weight:700}
+#msg{color:var(--sub);font-size:13px;min-height:18px}
+.link{background:none;color:var(--sub);font-weight:400;text-decoration:underline;padding:6px}
+[hidden]{display:none!important}
+.gacha{text-align:center;overflow:hidden}
+.gacha .sub{margin:0 0 4px}
+.machine{width:min(260px,70vw);height:auto;display:block;margin:0 auto}
+.machine.jig{animation:jig .5s ease-in-out 2}
+@keyframes jig{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-4px) rotate(-1.5deg)}75%{transform:translateX(4px) rotate(1.5deg)}}
+.knob{transform-box:fill-box;transform-origin:center}
+.machine.jig .knob{animation:spin 1s ease-in-out}
+@keyframes spin{to{transform:rotate(360deg)}}
+.balls circle,.balls path{transform-box:fill-box;transform-origin:center}
+.machine.jig .balls .b{animation:bounce .45s ease-in-out 3}
+.machine.jig .balls .b:nth-child(even){animation-delay:.12s}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+#dropcap{opacity:0}
+#dropcap.fall{animation:fall .8s cubic-bezier(.5,0,.8,.6) forwards}
+@keyframes fall{0%{opacity:1;transform:translateY(0)}70%{opacity:1;transform:translateY(132px)}85%{opacity:1;transform:translateY(122px)}100%{opacity:1;transform:translateY(132px)}}
+.prizebox{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin:6px 0 10px;padding:10px;border-radius:20px;background:var(--soft)}
+.prizebox .pe{font-size:44px;line-height:1.1}
+.prizebox .pt{font-size:20px;font-weight:700;color:var(--acc)}
+.prizebox .ph{font-size:13px;color:var(--sub)}
+.prizebox.pop .pe,.prizebox.pop svg{animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{0%{transform:scale(.2) rotate(-20deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.hearts{position:relative;height:0}
+.hearts i{position:absolute;left:50%;top:-30px;font-style:normal;font-size:18px;opacity:0}
+.hearts.go i{animation:float 1.1s ease-out forwards}
+@keyframes float{0%{opacity:1;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(var(--dx),-70px) scale(1.2)}}
+@media (prefers-reduced-motion:reduce){.machine.jig,.machine.jig .knob,.machine.jig .balls .b,#dropcap.fall,.prizebox.pop .pe,.prizebox.pop svg,.hearts.go i{animation:none}#dropcap.fall{opacity:1;transform:translateY(132px)}}
+
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;margin-bottom:6px;-webkit-overflow-scrolling:touch}
+.tab{flex:none;padding:8px 14px;border-radius:999px;font-size:14px;white-space:nowrap}
+.tab.on{background:var(--acc);color:#fff}
+.panel[hidden]{display:none}
+h3{font-size:16px;margin:4px 0 2px}
+.stars{color:#f0a53a;letter-spacing:2px;font-size:16px}
+.ptxt{font-size:15px;margin-top:4px}
+.vs{font-size:20px;margin:4px 0}
+.wheelwrap{position:relative;width:min(300px,100%);margin:6px auto 10px}
+.wheelwrap svg{width:100%;height:auto;display:block}
+.ptr{position:absolute;left:50%;top:-8px;transform:translateX(-50%);font-size:26px;color:var(--acc);z-index:2;line-height:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.chip{background:var(--soft);color:var(--ink);border-radius:999px;padding:4px 6px 4px 12px;font-size:13px}
+.chipx{background:none;padding:0 6px;font-size:16px;color:var(--sub);border-radius:50%}
+.addrow{display:flex;gap:8px;margin-bottom:8px}.addrow input{margin:0;flex:1}.addrow button{padding:0 16px}
+textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px solid var(--soft);background:var(--bg);color:var(--ink);margin-bottom:10px;resize:none}
+.rpsb{font-size:24px;line-height:1.3}.rpsb{padding:12px 4px}
+.memgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.mc{perspective:600px;background:none;padding:0;aspect-ratio:1/1.05;border-radius:14px}
+.mi{display:block;position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
+.mc.flip .mi{transform:rotateY(180deg)}
+.mf{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.mf.back{background:var(--soft);font-size:28px}
+.mf.front{background:var(--ok);transform:rotateY(180deg)}
+.mf.front svg{width:100%;height:auto;overflow:hidden}
+.mc.done .mf.front{background:#ffe9f1;box-shadow:inset 0 0 0 2px #ef9fc2}
+.mc.win{animation:hop .6s ease both}
+@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-10px) scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.mi{transition:none}.mc.win{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="head"><img src="photo.jpg" alt="" class="ava"><div><h1>小朋友的集點卡</h1><p class="sub" style="margin:0">把每一次努力，蓋成你們的小回憶</p></div></div>
+<div id="msg">載入中…</div>
+<div class="card">
+<div class="row">
+<div class="stat"><small>待兌換點數</small><b id="pts">0</b></div>
+<div class="stat"><small>可兌換禮物</small><b id="cards">0 張</b></div>
+</div>
+<div class="bar"><i id="fill" style="width:0%"></i></div>
+<div class="sub" id="hint" style="margin:0"></div>
+</div>
+<div class="card">
+<h2 id="taskTitle">任務清單</h2>
+<button class="task" data-d="1" data-n="誇獎漂亮女友"><span>誇獎漂亮女友</span><em>+1 點</em></button>
+<button class="task" data-d="1" data-n="分享今日小確幸"><span>分享今日小確幸</span><em>+1 點</em></button>
+<button class="task" data-d="1" data-n="自己想要吃什麼"><span>自己想要吃什麼</span><em>+1 點</em></button>
+<button class="task" data-d="2" data-n="出去玩自己想行程"><span>出去玩自己想行程</span><em>+2 點</em></button>
+<button class="task" data-d="3" data-n="乖乖運動"><span>乖乖運動</span><em>+3 點</em></button>
+<button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
+</div>
+<div id="admin" hidden>
+<div class="card">
+<h2>手動調整點數</h2>
+<input id="note" placeholder="備註（選填，他也看得到）" maxlength="30">
+<div class="grid"><button class="p" data-d="1">+1</button><button class="p" data-d="5">+5</button><button class="p" data-d="10">+10</button></div>
+<div class="grid"><button data-d="-1">−1</button><button data-d="-5">−5</button><button data-d="-10">−10</button></div>
+</div>
+</div>
+<div class="card games gacha">
+<h2>小遊戲 🐾</h2>
+<p class="sub">玩玩看，都不會影響點數</p>
+<div class="tabs" role="tablist">
+<button class="tab on" data-t="gacha" role="tab" aria-selected="true">扭蛋</button>
+<button class="tab" data-t="fortune" role="tab" aria-selected="false">占卜</button>
+<button class="tab" data-t="wheel" role="tab" aria-selected="false">吃什麼</button>
+<button class="tab" data-t="rps" role="tab" aria-selected="false">猜拳</button>
+<button class="tab" data-t="memory" role="tab" aria-selected="false">配對</button>
+<button class="tab" data-t="ask" role="tab" aria-selected="false">每日一問</button>
+</div>
+<section class="panel" id="p-gacha">
+<p class="sub">每天凌晨 12 點更新，一天扭一次</p>
+<svg class="machine" id="machine" viewBox="0 0 240 300" role="img" aria-label="可愛的扭蛋機">
+  <defs><clipPath id="globeClip"><circle cx="120" cy="100" r="66"/></clipPath></defs>
+  <ellipse cx="120" cy="288" rx="84" ry="9" fill="#000" opacity=".12"/>
+  <rect x="40" y="150" width="160" height="130" rx="30" fill="#ef9fc2"/>
+  <rect x="40" y="236" width="160" height="44" rx="22" fill="#d97fa9"/>
+  <circle cx="120" cy="100" r="72" fill="#fff" opacity=".55" stroke="#d98fb1" stroke-width="5"/>
+  <g clip-path="url(#globeClip)" class="balls" id="balls"></g>
+  <path d="M60 78 A66 66 0 0 1 100 44" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".8"/>
+  <rect x="84" y="20" width="72" height="18" rx="9" fill="#d98fb1"/>
+  <circle cx="120" cy="190" r="29" fill="#fff" stroke="#d98fb1" stroke-width="5"/>
+  <g class="knob"><rect x="98" y="184" width="44" height="12" rx="6" fill="#ef9fc2"/><circle cx="120" cy="190" r="6" fill="#d97fa9"/></g>
+  <rect x="82" y="224" width="76" height="46" rx="14" fill="#8f4a6e"/>
+  <g id="dropcap"><circle cx="120" cy="120" r="17" fill="#ffd166"/><path d="M103 120 a17 17 0 0 0 34 0 z" fill="#fff6e0"/><circle cx="114" cy="113" r="4" fill="#fff" opacity=".8"/></g>
+  <path d="M82 238 h76 v32 a14 14 0 0 1 -14 0 h-48 a14 14 0 0 1 -14 0 z" fill="#8f4a6e" opacity="0"/>
+</svg>
+<div class="hearts" id="hearts"></div>
+<div class="prizebox" id="prizebox" aria-live="polite"><div class="pe">🎀</div><div class="pt">按下去看看會抽到什麼</div></div>
+<button class="p" id="gachaBtn" style="width:100%">扭一下！</button>
+</section>
+<section class="panel" id="p-fortune" hidden>
+<h3>貓咪占卜 🔮</h3><p class="sub">每天一次，看看今天的運勢</p>
+<div class="prizebox" id="fortuneOut" aria-live="polite"><div class="pe">🔮</div><div class="pt">按下去看今天的運勢</div></div>
+<button class="p" id="fortuneBtn" style="width:100%">請貓咪占卜</button>
+</section>
+<section class="panel" id="p-wheel" hidden>
+<h3>今天吃什麼 🍜</h3><p class="sub">不知道吃什麼就轉一下，也可以自己加選項</p>
+<div class="wheelwrap"><div class="ptr">▼</div><svg id="wheel" viewBox="0 0 300 300" aria-label="美食輪盤"></svg></div>
+<div class="prizebox" id="wheelOut" aria-live="polite" style="min-height:48px">轉一下，決定今天吃什麼</div>
+<button class="p" id="wheelSpin" style="width:100%">開始轉！</button>
+<div id="wheelChips" class="chips"></div>
+<div class="addrow"><input id="wheelNew" placeholder="加一個想吃的" maxlength="8"><button id="wheelAdd" type="button">加入</button></div>
+<button id="wheelReset" type="button" style="width:100%">還原預設選項</button>
+</section>
+<section class="panel" id="p-rps" hidden>
+<h3>貓咪猜拳 ✊</h3><p class="sub">贏過貓咪看看！</p>
+<div class="prizebox" id="rpsOut" aria-live="polite"><div class="pe">🐾</div><div class="pt">出拳吧</div></div>
+<div class="grid"><button class="rpsb" data-h="0">✊<br>石頭</button><button class="rpsb" data-h="1">✌️<br>剪刀</button><button class="rpsb" data-h="2">✋<br>布</button></div>
+<div class="sub" id="rpsScore" style="text-align:center">你贏 0　平手 0　貓咪贏 0</div>
+</section>
+<section class="panel" id="p-memory" hidden>
+<h3>貓咪翻牌配對 🃏</h3>
+<div class="sub" id="memMsg"></div>
+<div class="memgrid" id="memGrid"></div>
+<button class="p" id="memAgain" style="width:100%" hidden>再玩一次</button>
+</section>
+<section class="panel" id="p-ask" hidden>
+<h3>每日一問 💌</h3><p class="sub">每天可以問苑均一個問題（不一定要問）。按送出會跳出分享，選她就好。</p>
+<textarea id="askText" rows="3" maxlength="100" placeholder="想問什麼都可以…"></textarea>
+<button class="p" id="askBtn" style="width:100%">送出給苑均</button>
+<div class="sub" id="askMsg" style="min-height:18px;margin-top:8px"></div>
+</section>
+</div>
+<div class="card"><h2>紀錄</h2><div id="log"><span class="sub">還沒有紀錄</span></div></div>
+<div class="card" id="loginBox">
+<h2>管理員登入</h2>
+<input id="em" type="email" placeholder="Email" autocomplete="username">
+<input id="pw" type="password" placeholder="密碼" autocomplete="current-password">
+<button class="p" id="loginBtn" style="width:100%">登入</button>
+</div>
+<div style="text-align:center"><button class="link" id="outBtn" hidden>登出</button></div>
+</div>
+<script>
+(function(){
+  var INK='#5b3a4a',PINK='#ff7a9c',SKIN,LINE,STRIPE,EAR,WHITE=false;
+  var CATS={
+    o:{skin:'#ffe6cc',line:'#e3a06c',stripe:'#e3a06c',ear:'#ffb3cb',white:false},
+    t:{skin:'#bba58f',line:'#7b6450',stripe:'#5a4636',ear:'#eab9bd',white:true}
+  };
+  function useCat(c){var k=CATS[c]||CATS.o;SKIN=k.skin;LINE=k.line;STRIPE=k.stripe;EAR=k.ear;WHITE=k.white}
+  function B(){
+    var s='<path d="M21 52 L22 17 L52 36 Z" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3" stroke-linejoin="round"/><path d="M99 52 L98 17 L68 36 Z" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3" stroke-linejoin="round"/><path d="M28 44 L28 27 L43 37 Z" fill="'+EAR+'" stroke="'+EAR+'" stroke-width="2" stroke-linejoin="round"/><path d="M92 44 L92 27 L77 37 Z" fill="'+EAR+'" stroke="'+EAR+'" stroke-width="2" stroke-linejoin="round"/><ellipse cx="60" cy="64" rx="40" ry="34" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3"/>';
+    if(WHITE)s+='<path d="M60 33 q-7 0 -7 8 l3 20 q4 5 8 0 l3 -20 q0 -8 -7 -8 z" fill="#fffdf8"/><ellipse cx="60" cy="82" rx="21" ry="15" fill="#fffdf8"/><path d="M50 95 q10 7 20 0" fill="none" stroke="'+LINE+'" stroke-width="3" stroke-linecap="round"/>';
+    s+='<path d="M'+(WHITE?'46':'60')+' 31 v9 M'+(WHITE?'38':'51')+' 33 l1.5 7 M'+(WHITE?'74':'69')+' 33 l-1.5 7'+(WHITE?' M30 46 l7 3 M90 46 l-7 3':'')+'" fill="none" stroke="'+STRIPE+'" stroke-width="3" stroke-linecap="round"/><ellipse cx="36" cy="74" rx="7" ry="4" fill="#ff9fba" opacity=".6"/><ellipse cx="84" cy="74" rx="7" ry="4" fill="#ff9fba" opacity=".6"/><path d="M22 68 l-13 -4 M22 74 l-14 3 M98 68 l13 -4 M98 74 l14 3" stroke="'+LINE+'" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M56.5 69 h7 l-3.5 4.5 z" fill="#ff8fa8" stroke="#ff8fa8" stroke-width="1.5" stroke-linejoin="round"/>';
+    return s;
+  }
+  function dot(x,y){return '<circle cx="'+x+'" cy="'+y+'" r="4.5" fill="'+INK+'"/><circle cx="'+(x-1.5)+'" cy="'+(y-1.7)+'" r="1.6" fill="#fff"/>'}
+  function arc(x,y,up){return '<path d="M'+x+' '+y+' q5 '+(up?-7:7)+' 10 0" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round"/>'}
+  function smile(){return '<path d="M52 77 q4 5 8 0 q4 5 8 0" fill="none" stroke="'+INK+'" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>'}
+  function bubble(x,y,w,txt,fs){return '<g><rect x="'+x+'" y="'+y+'" width="'+w+'" height="20" rx="10" fill="#fff" stroke="'+LINE+'" stroke-width="2"/><text x="'+(x+w/2)+'" y="'+(y+14)+'" text-anchor="middle" font-size="'+(fs||11)+'" font-weight="700" fill="'+INK+'">'+txt+'</text></g>'}
+  var ART={
+    hug:function(){return '<ellipse cx="12" cy="78" rx="11" ry="7" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3" transform="rotate(-25 12 78)"/><ellipse cx="108" cy="78" rx="11" ry="7" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3" transform="rotate(25 108 78)"/>'+B()+arc(41,64,1)+arc(69,64,1)+'<path d="M52 76 q8 10 16 0 z" fill="'+PINK+'" stroke="'+INK+'" stroke-width="2.5" stroke-linejoin="round"/><text x="60" y="16" text-anchor="middle" font-size="17">💗</text>'},
+    kiss:function(){return B()+arc(41,64,1)+arc(69,64,1)+'<ellipse cx="60" cy="79" rx="3.5" ry="4.5" fill="'+PINK+'"/><text x="94" y="70" font-size="18">💋</text><text x="20" y="40" font-size="14">💗</text>'},
+    massage:function(){return B()+arc(41,64,0)+arc(69,64,0)+smile()+'<ellipse cx="22" cy="98" rx="10" ry="8" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3"/><ellipse cx="98" cy="98" rx="10" ry="8" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3"/>'+bubble(66,4,48,'30 秒',11)},
+    praise:function(){return B()+'<circle cx="46" cy="63" r="6" fill="'+INK+'"/><circle cx="74" cy="63" r="6" fill="'+INK+'"/><circle cx="44" cy="60.5" r="2.2" fill="#fff"/><circle cx="72" cy="60.5" r="2.2" fill="#fff"/><circle cx="48" cy="66" r="1.2" fill="#fff"/><circle cx="76" cy="66" r="1.2" fill="#fff"/><path d="M52 76 q8 10 16 0 z" fill="'+PINK+'" stroke="'+INK+'" stroke-width="2.5" stroke-linejoin="round"/>'+bubble(60,2,56,'讚 讚 讚',11)+'<text x="14" y="30" font-size="14">✨</text>'},
+    daze:function(){return B()+'<path d="M41 66 h10 M69 66 h10" stroke="'+INK+'" stroke-width="3" stroke-linecap="round"/><path d="M56 80 h8" stroke="'+INK+'" stroke-width="3" stroke-linecap="round"/><circle cx="96" cy="26" r="3" fill="#fff" stroke="'+LINE+'" stroke-width="2"/><circle cx="104" cy="14" r="5" fill="#fff" stroke="'+LINE+'" stroke-width="2"/><text x="104" y="17" text-anchor="middle" font-size="9" font-weight="700" fill="'+INK+'">…</text>'},
+    air:function(){return B()+dot(46,62)+dot(74,62)+'<ellipse cx="60" cy="78" rx="5" ry="6" fill="'+PINK+'" stroke="'+INK+'" stroke-width="2"/><ellipse cx="60" cy="108" rx="30" ry="7" fill="#fff" stroke="'+LINE+'" stroke-width="2.5"/><text x="96" y="104" font-size="16">💨</text>'},
+    eyeroll:function(){return B()+'<circle cx="46" cy="63" r="7" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/><circle cx="74" cy="63" r="7" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/><circle cx="47" cy="58.5" r="3" fill="'+INK+'"/><circle cx="75" cy="58.5" r="3" fill="'+INK+'"/><path d="M54 81 h12" stroke="'+INK+'" stroke-width="3" stroke-linecap="round"/><text x="96" y="40" font-size="14">💢</text>'},
+    pat:function(){return B()+arc(41,64,1)+arc(69,64,1)+smile()+'<ellipse cx="60" cy="14" rx="15" ry="8" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3"/><path d="M82 8 q5 -4 8 0 M86 18 q6 -3 9 1" fill="none" stroke="'+LINE+'" stroke-width="2.5" stroke-linecap="round"/><path d="M38 8 q-5 -4 -8 0" fill="none" stroke="'+LINE+'" stroke-width="2.5" stroke-linecap="round"/>'},
+    bite:function(){return B()+'<path d="M40 59 l11 5 l-11 5" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M80 59 l-11 5 l11 5" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M48 76 h24 v3 q-12 10 -24 0 z" fill="#fff" stroke="'+INK+'" stroke-width="2.5" stroke-linejoin="round"/><path d="M54 75 v6 M60 75 v7 M66 75 v6" stroke="'+LINE+'" stroke-width="1.5"/>'+bubble(66,2,50,'啊嗚 啊嗚',10)},
+    thanks:function(){return B()+arc(41,64,1)+dot(74,62)+smile()+'<rect x="26" y="94" width="68" height="24" rx="8" fill="#fff" stroke="'+LINE+'" stroke-width="2.5"/><text x="60" y="111" text-anchor="middle" font-size="12" font-weight="700" fill="'+INK+'">銘謝惠顧</text>'}
+  };
+  function art(k,c){useCat(c);return '<svg viewBox="0 0 120 124" width="128" height="132" aria-hidden="true" style="overflow:visible">'+ART[k]()+'</svg>'}
+  var PRIZES=[
+    {k:'hug',c:'o',t:'苑均抱抱'},{k:'kiss',c:'t',t:'苑均親親'},{k:'massage',c:'o',t:'苑均幫你按肩膀 30 秒'},
+    {k:'praise',c:'t',t:'苑均誇你三句'},{k:'daze',c:'o',t:'苑均陪你發呆 5 分鐘'},{k:'air',c:'o',t:'苑均請你吃空氣'},
+    {k:'eyeroll',c:'t',t:'苑均給你一個白眼',h:'（可退貨）'},{k:'pat',c:'o',t:'苑均摸摸頭'},{k:'bite',c:'t',t:'苑均咬兩下'},
+    {k:'thanks',c:'t',t:'銘謝惠顧，明天再來！'}
+  ];
+  var COLORS=[['#ff8fab','#ffe5ec'],['#ffd166','#fff6e0'],['#8ecae6','#e3f4fb'],['#b8e0a0','#eef8e6'],['#cdb4db','#f1e9f6'],['#ffadad','#ffeaea']];
+  var NS='http://www.w3.org/2000/svg',g=document.getElementById('balls');
+  var pos=[[78,120],[104,128],[132,126],[160,118],[66,96],[92,104],[120,108],[148,100],[174,96],[84,78],[112,84],[140,80],[162,74],[100,60],[128,58]];
+  pos.forEach(function(p,i){
+    var c=COLORS[i%COLORS.length],r=15,gg=document.createElementNS(NS,'g');gg.setAttribute('class','b');
+    var a=document.createElementNS(NS,'circle');a.setAttribute('cx',p[0]);a.setAttribute('cy',p[1]);a.setAttribute('r',r);a.setAttribute('fill',c[0]);
+    var b=document.createElementNS(NS,'path');b.setAttribute('d','M'+(p[0]-r)+' '+p[1]+' a'+r+' '+r+' 0 0 0 '+(2*r)+' 0 z');b.setAttribute('fill',c[1]);
+    var h=document.createElementNS(NS,'circle');h.setAttribute('cx',p[0]-5);h.setAttribute('cy',p[1]-5);h.setAttribute('r',3.5);h.setAttribute('fill','#fff');h.setAttribute('opacity','.8');
+    gg.appendChild(a);gg.appendChild(b);gg.appendChild(h);g.appendChild(gg);
+  });
+  var hearts=document.getElementById('hearts');
+  ['💗','✨','💖','🌸','💗','✨'].forEach(function(s,i){var el=document.createElement('i');el.textContent=s;el.style.setProperty('--dx',((i-2.5)*22)+'px');el.style.animationDelay=(i*0.05)+'s';hearts.appendChild(el)});
+  var machine=document.getElementById('machine'),drop=document.getElementById('dropcap'),box=document.getElementById('prizebox'),btn=document.getElementById('gachaBtn');
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function todayKey(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+  function load(){try{return JSON.parse(localStorage.getItem('gacha')||'null')}catch(e){return null}}
+  function save(i){try{localStorage.setItem('gacha',JSON.stringify({d:todayKey(),i:i}))}catch(e){}}
+  function show(i){var p=PRIZES[i];box.innerHTML=art(p.k,p.c)+'<div class="pt">'+esc(p.t)+'</div>'+(p.h?'<div class="ph">'+esc(p.h)+'</div>':'')}
+  function lock(){btn.disabled=true;btn.textContent='明天再來扭 🌙'}
+  var rolling=false,saved=load();
+  if(saved&&saved.d===todayKey()&&PRIZES[saved.i]){show(saved.i);lock()}
+  btn.addEventListener('click',function(){
+    if(rolling)return;var s=load();if(s&&s.d===todayKey()){lock();return}
+    rolling=true;btn.disabled=true;
+    box.classList.remove('pop');hearts.classList.remove('go');
+    box.innerHTML='<div class="pe">🌀</div><div class="pt">扭扭扭…</div>';
+    var c=COLORS[Math.floor(Math.random()*COLORS.length)];
+    drop.children[0].setAttribute('fill',c[0]);drop.children[1].setAttribute('fill',c[1]);
+    drop.classList.remove('fall');machine.classList.remove('jig');void machine.getBoundingClientRect();
+    machine.classList.add('jig');
+    setTimeout(function(){drop.classList.add('fall')},1000);
+    setTimeout(function(){
+      var i=Math.floor(Math.random()*PRIZES.length);
+      save(i);show(i);
+      box.classList.add('pop');void hearts.offsetWidth;hearts.classList.add('go');
+      drop.classList.remove('fall');machine.classList.remove('jig');
+      lock();rolling=false;
+    },1850);
+  });
+  window.catArt=art;
+})();
+</script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var art=window.catArt||function(){return ''};
+  function todayKey(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+  function get(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function pick(a){return a[Math.floor(Math.random()*a.length)]}
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+  function restart(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls)}
+
+  /* ---------- tabs ---------- */
+  var tabs=document.querySelectorAll('.tab'),panels=document.querySelectorAll('.panel');
+  tabs.forEach(function(b){b.addEventListener('click',function(){
+    tabs.forEach(function(x){var on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});
+    panels.forEach(function(p){p.hidden=(p.id!=='p-'+b.dataset.t)});
+  })});
+
+  /* ---------- 貓咪占卜 ---------- */
+  var F=[
+    {s:5,n:'大吉',t:'今天什麼都順，想做的事放心去做。',l:'幸運物：好吃的甜點',k:'praise',c:'t'},
+    {s:5,n:'大吉',t:'貓咪守護你！今天打噴嚏也是好兆頭。',l:'幸運色：橘色',k:'hug',c:'o'},
+    {s:4,n:'吉',t:'適合出門走走，會遇到小確幸。',l:'幸運色：天空藍',k:'pat',c:'o'},
+    {s:4,n:'吉',t:'有人偷偷在想你，快傳訊息給苑均。',l:'幸運色：粉紅色',k:'kiss',c:'t'},
+    {s:4,n:'吉',t:'今天適合說一句暖心的話，會有好事發生。',l:'幸運物：手機',k:'hug',c:'o'},
+    {s:3,n:'中吉',t:'一切平平順順，記得多喝水。',l:'幸運物：水壺',k:'massage',c:'o'},
+    {s:3,n:'中吉',t:'適合賴床十分鐘，不要超過二十分鐘喔。',l:'幸運色：奶油色',k:'daze',c:'o'},
+    {s:3,n:'中吉',t:'適合和苑均聊聊天，聊什麼都開心。',l:'幸運物：耳機',k:'kiss',c:'t'},
+    {s:3,n:'小吉',t:'今天吃飯運很好，會吃到好吃的。',l:'幸運物：筷子',k:'air',c:'o'},
+    {s:3,n:'小吉',t:'去動一動吧，流點汗心情會變好。',l:'幸運色：綠色',k:'pat',c:'o'},
+    {s:2,n:'末吉',t:'小心今天會有點嘴饞，別一個人偷吃宵夜。',l:'幸運物：零食（少吃一點）',k:'bite',c:'t'},
+    {s:2,n:'末吉',t:'出門前確認一下手機和鑰匙都帶了。',l:'幸運色：灰色',k:'eyeroll',c:'t'}
+  ];
+  function stars(n){var s='';for(var i=0;i<5;i++)s+=i<n?'★':'☆';return s}
+  function showF(f){
+    var o=$('fortuneOut');
+    o.innerHTML=art(f.k,f.c)+'<div class="pt">'+f.n+' <span class="stars">'+stars(f.s)+'</span></div><div class="ptxt">'+esc(f.t)+'</div><div class="ph">'+esc(f.l)+'</div>';
+    restart(o,'pop');
+  }
+  function lockF(){var b=$('fortuneBtn');b.disabled=true;b.textContent='明天再來占卜 🌙'}
+  var fs=get('fortune');
+  if(fs&&fs.d===todayKey()&&F[fs.i]){showF(F[fs.i]);lockF()}
+  $('fortuneBtn').addEventListener('click',function(){
+    var s=get('fortune');if(s&&s.d===todayKey()){lockF();return}
+    var b=$('fortuneBtn');b.disabled=true;
+    $('fortuneOut').innerHTML='<div class="pe">🔮</div><div class="pt">占卜中…</div>';
+    setTimeout(function(){var i=Math.floor(Math.random()*F.length);set('fortune',{d:todayKey(),i:i});showF(F[i]);lockF()},900);
+  });
+
+  /* ---------- 今天吃什麼輪盤 ---------- */
+  var DEF=['滷肉飯','牛肉麵','便當','火鍋','燒肉','壽司','炸雞','拉麵','鹹酥雞','早午餐','麵線','水餃'];
+  var WC=['#ffc2d4','#ffe0a3','#bfe3f5','#cdeac0','#e3d4f0','#ffd0c2'];
+  var opts=get('wheelOpts');if(!Array.isArray(opts)||opts.length<2)opts=DEF.slice();
+  var rot=0,spinning=false,NS='http://www.w3.org/2000/svg';
+  function drawWheel(){
+    var n=opts.length,a=360/n,cx=150,cy=150,r=140,svg=$('wheel');svg.innerHTML='';
+    function pt(deg,rad){var t=deg*Math.PI/180;return [cx+rad*Math.cos(t),cy+rad*Math.sin(t)]}
+    var fs=n>14?10:n>10?12:14;
+    opts.forEach(function(name,i){
+      var a0=-90+i*a,a1=a0+a,p0=pt(a0,r),p1=pt(a1,r);
+      var path=document.createElementNS(NS,'path');
+      path.setAttribute('d','M'+cx+' '+cy+' L'+p0[0]+' '+p0[1]+' A'+r+' '+r+' 0 '+(a>180?1:0)+' 1 '+p1[0]+' '+p1[1]+' Z');
+      path.setAttribute('fill',WC[i%WC.length]);path.setAttribute('stroke','#fff');path.setAttribute('stroke-width','2');
+      svg.appendChild(path);
+      var tx=document.createElementNS(NS,'text'),mid=a0+a/2;
+      tx.setAttribute('x',cx+r*0.62);tx.setAttribute('y',cy);tx.setAttribute('text-anchor','middle');tx.setAttribute('dominant-baseline','central');
+      tx.setAttribute('transform','rotate('+mid+' '+cx+' '+cy+')');tx.setAttribute('font-size',fs);tx.setAttribute('font-weight','700');tx.setAttribute('fill','#5b3a4a');
+      tx.textContent=name.length>5?name.slice(0,5):name;svg.appendChild(tx);
+    });
+    var hub=document.createElementNS(NS,'circle');hub.setAttribute('cx',cx);hub.setAttribute('cy',cy);hub.setAttribute('r',16);hub.setAttribute('fill','#fff');hub.setAttribute('stroke','#e79ab9');hub.setAttribute('stroke-width','3');svg.appendChild(hub);
+    var paw=document.createElementNS(NS,'text');paw.setAttribute('x',cx);paw.setAttribute('y',cy);paw.setAttribute('text-anchor','middle');paw.setAttribute('dominant-baseline','central');paw.setAttribute('font-size','16');paw.textContent='🐾';svg.appendChild(paw);
+  }
+  function drawChips(){
+    var box=$('wheelChips');box.innerHTML='';
+    opts.forEach(function(name,i){
+      var c=document.createElement('span');c.className='chip';c.textContent=name+' ';
+      var x=document.createElement('button');x.type='button';x.className='chipx';x.setAttribute('aria-label','刪除'+name);x.textContent='×';
+      x.addEventListener('click',function(){if(spinning||opts.length<=2)return;opts.splice(i,1);saveOpts()});
+      c.appendChild(x);box.appendChild(c);
+    });
+  }
+  function saveOpts(){set('wheelOpts',opts);rot=0;var w=$('wheel');w.style.transition='none';w.style.transform='rotate(0deg)';drawWheel();drawChips();$('wheelOut').textContent='轉一下，決定今天吃什麼'}
+  drawWheel();drawChips();
+  $('wheelSpin').addEventListener('click',function(){
+    if(spinning)return;spinning=true;$('wheelSpin').disabled=true;$('wheelOut').textContent='轉轉轉…';
+    var n=opts.length,a=360/n,i=Math.floor(Math.random()*n),off=(Math.random()-.5)*a*0.6;
+    var base=Math.ceil(rot/360)*360;rot=base+360*5+(360-(i+0.5)*a)+off;
+    var w=$('wheel');w.style.transition='transform 3.6s cubic-bezier(.12,.7,.15,1)';w.style.transform='rotate('+rot+'deg)';
+    setTimeout(function(){
+      $('wheelOut').innerHTML='今天就吃 <b>'+esc(opts[i])+'</b> 🎉';restart($('wheelOut'),'pop');
+      spinning=false;$('wheelSpin').disabled=false;$('wheelSpin').textContent='不要啦，再轉一次';
+    },3700);
+  });
+  function addOpt(){
+    var inp=$('wheelNew'),v=inp.value.trim();if(!v||spinning)return;
+    if(opts.length>=20){$('wheelOut').textContent='最多 20 個選項喔';return}
+    if(opts.indexOf(v)<0)opts.push(v);inp.value='';saveOpts();
+  }
+  $('wheelAdd').addEventListener('click',addOpt);
+  $('wheelNew').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addOpt()}});
+  $('wheelReset').addEventListener('click',function(){if(spinning)return;opts=DEF.slice();saveOpts()});
+
+  /* ---------- 貓咪猜拳 ---------- */
+  var H=[{n:'石頭',e:'✊'},{n:'剪刀',e:'✌️'},{n:'布',e:'✋'}],tally={w:0,t:0,l:0},busyR=false;
+  document.querySelectorAll('.rpsb').forEach(function(b){b.addEventListener('click',function(){
+    if(busyR)return;busyR=true;var me=+b.dataset.h,cat=Math.floor(Math.random()*3);
+    var out=$('rpsOut');out.innerHTML='<div class="pe">🐾</div><div class="pt">貓咪思考中…</div>';
+    setTimeout(function(){
+      var r=(me-cat+3)%3,res,k,c;
+      if(r===0){res='平手！';k='daze';c='o';tally.t++}
+      else if(r===1){res='你贏了！貓咪不甘心 💢';k='eyeroll';c='t';tally.w++}
+      else{res='貓咪贏了！啊嗚～';k='bite';c='t';tally.l++}
+      out.innerHTML=art(k,c)+'<div class="vs">你 '+H[me].e+'　vs　'+H[cat].e+' 貓咪</div><div class="pt">'+res+'</div>';
+      restart(out,'pop');
+      $('rpsScore').textContent='你贏 '+tally.w+'　平手 '+tally.t+'　貓咪贏 '+tally.l;busyR=false;
+    },650);
+  })});
+
+  /* ---------- 翻牌配對 ---------- */
+  var PAIRS=[['hug','o'],['kiss','t'],['daze','o'],['praise','t'],['pat','o'],['bite','t']];
+  var cards=[],openIdx=[],moves=0,matched=0,lockM=false;
+  function bestText(){var b=get('memBest');return b?'最佳紀錄：'+b+' 步':''}
+  function newGame(){
+    cards=shuffle(PAIRS.concat(PAIRS));openIdx=[];moves=0;matched=0;lockM=false;
+    var g=$('memGrid');g.innerHTML='';
+    cards.forEach(function(p,i){
+      var b=document.createElement('button');b.type='button';b.className='mc';b.setAttribute('aria-label','第'+(i+1)+'張牌');
+      b.innerHTML='<span class="mi"><span class="mf back">🐾</span><span class="mf front">'+art(p[0],p[1])+'</span></span>';
+      b.addEventListener('click',function(){flip(i,b)});g.appendChild(b);
+    });
+    $('memMsg').textContent='翻開兩張一樣的貓咪 · '+bestText();$('memAgain').hidden=true;
+  }
+  function flip(i,el){
+    if(lockM||el.classList.contains('flip')||el.classList.contains('done'))return;
+    el.classList.add('flip');openIdx.push(i);
+    if(openIdx.length<2)return;
+    moves++;lockM=true;var a=openIdx[0],b=openIdx[1],els=$('memGrid').children;
+    $('memMsg').textContent='已翻 '+moves+' 步 · '+bestText();
+    if(cards[a][0]===cards[b][0]&&cards[a][1]===cards[b][1]){
+      setTimeout(function(){
+        els[a].classList.add('done');els[b].classList.add('done');matched++;openIdx=[];lockM=false;
+        if(matched===PAIRS.length)win();
+      },450);
+    }else{
+      setTimeout(function(){els[a].classList.remove('flip');els[b].classList.remove('flip');openIdx=[];lockM=false},850);
+    }
+  }
+  function win(){
+    var best=get('memBest'),nb=!best||moves<best;if(nb)set('memBest',moves);
+    $('memMsg').innerHTML='🎉 全部配對成功！用了 <b>'+moves+'</b> 步'+(nb?'（新紀錄！）':'');
+    restart($('memMsg'),'pop');$('memAgain').hidden=false;
+    Array.prototype.forEach.call($('memGrid').children,function(c,i){c.style.animationDelay=(i*0.06)+'s';c.classList.add('win')});
+  }
+  $('memAgain').addEventListener('click',newGame);
+  newGame();
+
+  /* ---------- 每日一問 ---------- */
+  function lockAsk(){var b=$('askBtn');b.disabled=true;b.textContent='明天再問 🌙';$('askText').disabled=true}
+  if(get('ask')===todayKey())lockAsk();
+  $('askBtn').addEventListener('click',function(){
+    var q=$('askText').value.trim(),msg=$('askMsg');
+    if(!q){msg.textContent='先寫下你想問的問題喔';return}
+    if(get('ask')===todayKey()){lockAsk();return}
+    var text='【小朋友的集點卡・每日一問】\n'+q;
+    function done(m){set('ask',todayKey());msg.textContent=m;lockAsk()}
+    function copy(){
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){done('已複製！貼給苑均就好 💌')},function(){msg.textContent='複製失敗，請自己複製上面的字，傳給苑均'});
+      }else{msg.textContent='這個瀏覽器不能自動傳送，請自己複製上面的字，傳給苑均'}
+    }
+    if(navigator.share){navigator.share({text:text}).then(function(){done('已送出！等苑均回答 💌')}).catch(function(e){if(!e||e.name!=='AbortError')copy()})}
+    else copy();
+  });
+})();
+</script>
+<script type="module">
+import {firebaseConfig} from './config.js';
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import {getFirestore,doc,onSnapshot,setDoc} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+const $=id=>document.getElementById(id);
+const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),ref=doc(db,'stamp','main');
+const PER=1000; // 幾點換 1 份禮物
+let S={points:0,log:[],done:{}},admin=false,q=Promise.resolve();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const showLogin=new URLSearchParams(location.search).has('admin');
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+function render(){
+  const p=S.points,r=p%PER;
+  $('pts').textContent=p;
+  $('cards').textContent=Math.floor(p/PER)+' 份';
+  $('fill').style.width=(r*100/PER)+'%';
+  $('hint').textContent='每累積 '+PER+' 點可兌換 1 份禮物，目前 '+r+'/'+PER+' 點';
+  $('taskTitle').textContent=admin?'快速任務加點':'任務清單（完成後會幫你加點）';
+  document.querySelectorAll('button.task').forEach(b=>{const dn=(S.done||{})[b.dataset.n]===today();b.disabled=dn||!admin;b.style.cursor=admin?'pointer':'default';b.style.opacity=dn?'.5':'1';b.querySelector('em').textContent=dn?'今天完成了 ✓':'+'+b.dataset.d+' 點'});
+  $('admin').hidden=!admin;$('loginBox').hidden=admin||!showLogin;$('outBtn').hidden=!admin;
+  $('log').innerHTML=S.log.length?S.log.map(l=>{
+    const d=new Date(l.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    return '<div class="log"><div>'+esc(l.n||(l.d>0?'加點':'扣點'))+'<br><span>'+ds+'</span></div><div class="'+(l.d>0?'pos':'neg')+'">'+(l.d>0?'+':'')+l.d+'</div></div>';
+  }).join(''):'<span class="sub">還沒有紀錄</span>';
+}
+function adjust(d,n,key){
+  if(!admin)return;
+  const np=Math.max(0,S.points+d),real=np-S.points;
+  if(!real)return;
+  const done={...(S.done||{})};if(key)done[key]=today();
+  const next={points:np,log:[{t:Date.now(),d:real,n:n||''},...S.log].slice(0,50),done};
+  const prev=S;S=next;render();
+  q=q.then(()=>setDoc(ref,next)).catch(()=>{S=prev;render();$('msg').textContent='儲存失敗：請確認已登入管理員帳號'});
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-d]');
+  if(!b)return;
+  const isTask=b.classList.contains('task');
+  if(isTask&&(S.done||{})[b.dataset.n]===today())return;
+  adjust(Number(b.dataset.d),isTask?b.dataset.n:$('note').value.trim(),isTask?b.dataset.n:null);
+  if(!isTask)$('note').value='';
+});
+$('loginBtn').onclick=()=>signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value)
+  .then(()=>{$('pw').value='';$('msg').textContent=''}).catch(()=>{$('msg').textContent='登入失敗，請檢查 Email 和密碼'});
+$('outBtn').onclick=()=>signOut(auth);
+onAuthStateChanged(auth,u=>{admin=!!u;render()});
+const t=setTimeout(()=>{$('msg').textContent='暫時連不上，資料可能不是最新'},10000);
+onSnapshot(ref,s=>{
+  clearTimeout(t);$('msg').textContent='';
+  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{}}}
+  render();
+},()=>{clearTimeout(t);$('msg').textContent='讀取失敗，請檢查網路或 Firebase 設定'});
+render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
