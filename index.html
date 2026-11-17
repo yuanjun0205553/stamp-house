@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#fbf1f4">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="集點小屋">
+<meta name="apple-mobile-web-app-title" content="小朋友的集點卡">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>我們的集點小屋</title>
+<title>小朋友的集點卡</title>
 <style>
 :root{--bg:#fbf1f4;--card:#fff;--ink:#4a3340;--sub:#8a7480;--acc:#95597a;--soft:#f6e4ec;--ok:#e6f1ea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root{--bg:#241a20;--card:#32242c;--ink:#f5e6ed;--sub:#b99aa9;--acc:#d792b6;--soft:#43303a;--ok:#2d3d34}}
@@ -30,7 +30,7 @@ h2{font-size:17px;margin:0 0 10px}
 button{font:inherit;border:0;border-radius:16px;padding:12px 8px;cursor:pointer;background:var(--soft);color:var(--acc);font-weight:700}
 button.p{background:var(--acc);color:#fff}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
-.task{display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:8px;background:var(--ok);color:var(--ink);text-align:left;padding:12px 14px}
+.task{gap:12px;display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:8px;background:var(--ok);color:var(--ink);text-align:left;padding:12px 14px}
 .task em{font-style:normal;color:var(--acc)}
 input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px solid var(--soft);background:var(--bg);color:var(--ink);margin-bottom:10px}
 .log{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--soft);font-size:14px}
@@ -43,12 +43,12 @@ input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px so
 </head>
 <body>
 <div class="wrap">
-<div class="head"><img src="photo.jpg" alt="" class="ava"><div><h1>我們的集點小屋</h1><p class="sub" style="margin:0">把每一次努力，蓋成你們的小回憶</p></div></div>
+<div class="head"><img src="photo.jpg" alt="" class="ava"><div><h1>小朋友的集點卡</h1><p class="sub" style="margin:0">把每一次努力，蓋成你們的小回憶</p></div></div>
 <div id="msg">載入中…</div>
 <div class="card">
 <div class="row">
 <div class="stat"><small>待兌換點數</small><b id="pts">0</b></div>
-<div class="stat"><small>集點卡</small><b id="cards">0 張</b></div>
+<div class="stat"><small>可兌換禮物</small><b id="cards">0 張</b></div>
 </div>
 <div class="bar"><i id="fill" style="width:0%"></i></div>
 <div class="sub" id="hint" style="margin:0"></div>
@@ -56,11 +56,12 @@ input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px so
 <div id="admin" hidden>
 <div class="card">
 <h2>快速任務加點</h2>
-<button class="task" data-d="3" data-n="留下甜甜回憶"><span>留下甜甜回憶</span><em>+3 點</em></button>
-<button class="task" data-d="2" data-n="說一句暖心的話"><span>說一句暖心的話</span><em>+2 點</em></button>
+<button class="task" data-d="1" data-n="誇獎漂亮女友"><span>誇獎漂亮女友</span><em>+1 點</em></button>
 <button class="task" data-d="1" data-n="分享今日小確幸"><span>分享今日小確幸</span><em>+1 點</em></button>
-<button class="task" data-d="1" data-n="關心對方一下"><span>關心對方一下</span><em>+1 點</em></button>
-<button class="task" data-d="2" data-n="好好聊聊天"><span>好好聊聊天</span><em>+2 點</em></button>
+<button class="task" data-d="1" data-n="自己想要吃什麼"><span>自己想要吃什麼</span><em>+1 點</em></button>
+<button class="task" data-d="2" data-n="出去玩自己想行程"><span>出去玩自己想行程</span><em>+2 點</em></button>
+<button class="task" data-d="3" data-n="乖乖運動"><span>乖乖運動</span><em>+3 點</em></button>
+<button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
 </div>
 <div class="card">
 <h2>手動調整點數</h2>
@@ -85,25 +86,29 @@ import {getFirestore,doc,onSnapshot,setDoc} from 'https://www.gstatic.com/fireba
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 const $=id=>document.getElementById(id);
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),ref=doc(db,'stamp','main');
-let S={points:0,log:[]},admin=false,q=Promise.resolve();
+const PER=1000; // 幾點換 1 份禮物
+let S={points:0,log:[],done:{}},admin=false,q=Promise.resolve();
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
 function render(){
-  const p=S.points,r=p%10;
+  const p=S.points,r=p%PER;
   $('pts').textContent=p;
-  $('cards').textContent=Math.floor(p/10)+' 張';
-  $('fill').style.width=(r*10)+'%';
-  $('hint').textContent='每累積 10 點可兌換 1 張集點卡，目前 '+r+'/10 點';
+  $('cards').textContent=Math.floor(p/PER)+' 份';
+  $('fill').style.width=(r*100/PER)+'%';
+  $('hint').textContent='每累積 '+PER+' 點可兌換 1 份禮物，目前 '+r+'/'+PER+' 點';
+  document.querySelectorAll('button.task').forEach(b=>{const dn=(S.done||{})[b.dataset.n]===today();b.disabled=dn;b.style.opacity=dn?'.5':'1';b.querySelector('em').textContent=dn?'今天完成了 ✓':'+'+b.dataset.d+' 點'});
   $('admin').hidden=!admin;$('loginBox').hidden=admin;$('outBtn').hidden=!admin;
   $('log').innerHTML=S.log.length?S.log.map(l=>{
     const d=new Date(l.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     return '<div class="log"><div>'+esc(l.n||(l.d>0?'加點':'扣點'))+'<br><span>'+ds+'</span></div><div class="'+(l.d>0?'pos':'neg')+'">'+(l.d>0?'+':'')+l.d+'</div></div>';
   }).join(''):'<span class="sub">還沒有紀錄</span>';
 }
-function adjust(d,n){
+function adjust(d,n,key){
   if(!admin)return;
   const np=Math.max(0,S.points+d),real=np-S.points;
   if(!real)return;
-  const next={points:np,log:[{t:Date.now(),d:real,n:n||''},...S.log].slice(0,50)};
+  const done={...(S.done||{})};if(key)done[key]=today();
+  const next={points:np,log:[{t:Date.now(),d:real,n:n||''},...S.log].slice(0,50),done};
   const prev=S;S=next;render();
   q=q.then(()=>setDoc(ref,next)).catch(()=>{S=prev;render();$('msg').textContent='儲存失敗：請確認已登入管理員帳號'});
 }
@@ -111,7 +116,8 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('button[data-d]');
   if(!b)return;
   const isTask=b.classList.contains('task');
-  adjust(Number(b.dataset.d),isTask?b.dataset.n:$('note').value.trim());
+  if(isTask&&(S.done||{})[b.dataset.n]===today())return;
+  adjust(Number(b.dataset.d),isTask?b.dataset.n:$('note').value.trim(),isTask?b.dataset.n:null);
   if(!isTask)$('note').value='';
 });
 $('loginBtn').onclick=()=>signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value)
@@ -121,7 +127,7 @@ onAuthStateChanged(auth,u=>{admin=!!u;render()});
 const t=setTimeout(()=>{$('msg').textContent='暫時連不上，資料可能不是最新'},10000);
 onSnapshot(ref,s=>{
   clearTimeout(t);$('msg').textContent='';
-  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[]}}
+  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{}}}
   render();
 },()=>{clearTimeout(t);$('msg').textContent='讀取失敗，請檢查網路或 Firebase 設定'});
 render();
