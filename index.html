@@ -123,7 +123,17 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 #pg-home[hidden],#pg-gifts[hidden],#pg-mine[hidden]{display:none}
 .g5{grid-template-columns:repeat(5,1fr)}.g5 button{padding:12px 0;font-size:14px}
 .lr{display:flex;align-items:center;gap:10px}.undo{padding:5px 10px;font-size:12px;border-radius:12px;background:var(--soft);color:var(--sub);font-weight:600}.undo.p{background:#e5586f;color:#fff}
-.iq input{width:100%;margin:8px 0 6px}.iq .bt{display:flex;gap:8px;flex-wrap:wrap}.iq .bt button{padding:6px 12px;font-size:13px}.qa{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft);font-size:14px;line-height:1.5}.qa b{color:var(--acc)}.qa small{display:block;color:var(--sub);font-size:12px}.big{font-size:20px;font-weight:700;color:var(--acc);margin:0 0 4px}.sim-out{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;min-height:34px}.sim-out span{padding:4px 10px;border-radius:999px;background:var(--soft);font-size:13px}.sim-out span.s5{background:linear-gradient(135deg,#ffe08a,#ffb36b);font-weight:700}.sim-out span.s4{background:#e4d6ff}.iq{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft)}.iq small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.iq .row2{display:flex;justify-content:space-between;align-items:center;gap:10px}.iq .qt{flex:1;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.iq input{width:100%;margin:8px 0 6px}.iq .bt{display:flex;gap:8px;flex-wrap:wrap}.iq .bt button{padding:6px 12px;font-size:13px}.qa{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft);font-size:14px;line-height:1.5}.qa b{color:var(--acc)}.qa small{display:block;color:var(--sub);font-size:12px}.big{font-size:20px;font-weight:700;color:var(--acc);margin:0 0 4px}.sim-out{display:grid;gap:8px;margin:12px 0;min-height:40px}.sim-out.one{grid-template-columns:minmax(0,170px);justify-content:center}.sim-out.ten{grid-template-columns:repeat(5,1fr);gap:5px}
+.sc{border-radius:14px;padding:4px 3px 5px;background:#fff;border:2px solid #ecdde5;text-align:center;position:relative;overflow:hidden;animation:scIn .55s cubic-bezier(.2,1.4,.4,1) both}
+.sc .st{font-size:9px;letter-spacing:1px;color:#c9a0b4;line-height:1.2}.sc svg{width:100%;height:auto;display:block}.sc .nm{font-size:11px;font-weight:700;color:var(--ink,#5b3a4d);line-height:1.2;min-height:13px}
+.sim-out.one .sc{padding:8px 6px 10px}.sim-out.one .sc .st{font-size:14px}.sim-out.one .sc .nm{font-size:15px;margin-top:4px}
+.sc.s4{border-color:#b9a0f0;background:linear-gradient(160deg,#f3ecff,#fff);box-shadow:0 0 10px rgba(150,110,240,.45)}.sc.s4 .st{color:#8a63e0}
+.sc.s5{border-color:#f2b84b;background:linear-gradient(160deg,#fff3c4,#ffd48a 55%,#fff0c9);box-shadow:0 0 16px rgba(255,170,40,.75)}.sc.s5 .st{color:#e08a00}
+.sc.s5::after{content:"";position:absolute;top:-30%;left:-60%;width:40%;height:160%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);transform:rotate(20deg);animation:shine 2s infinite}
+.sc.lose{filter:saturate(.8)}.sc .tag{position:absolute;top:3px;right:3px;font-size:9px;background:#ff6f91;color:#fff;border-radius:6px;padding:0 4px}
+@keyframes scIn{from{transform:rotateY(90deg) scale(.6);opacity:0}to{transform:none;opacity:1}}@keyframes shine{0%{left:-60%}60%,100%{left:130%}}
+.dex{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px}.dex .sc{animation:none}.dex .sc.no{filter:grayscale(1);opacity:.35}.dex .sc.no svg{opacity:.2}.dex .cnt{position:absolute;top:3px;left:3px;font-size:10px;background:#5b3a4d;color:#fff;border-radius:8px;padding:0 5px}
+.iq{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft)}.iq small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.iq .row2{display:flex;justify-content:space-between;align-items:center;gap:10px}.iq .qt{flex:1;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
 .gthumb.sm{width:46px;height:46px;font-size:22px;border-radius:13px;flex:none}
 </style>
 </head>
@@ -229,9 +239,10 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <h3>模擬抽卡 🎰</h3><p class="sub">不花點數，純粹過癮！每次 5★ 有 50% 機率歪，歪了下一次一定是限定；90 抽內必出 5★。</p>
 <div class="sub" id="simInfo" style="margin:0 0 8px"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr"><button id="sim1">抽 1 次</button><button class="p" id="sim10">抽 10 次</button></div>
-<div class="sim-out" id="simOut"></div>
+<div class="sim-out one" id="simOut"></div>
 <div class="sub" id="simMsg" style="min-height:18px"></div>
 <button id="simReset" style="width:100%;margin-top:8px">重新開始</button>
+<h3 style="margin-top:16px">我的卡冊 <span class="sub" id="dexCnt"></span></h3><div class="dex" id="dex"></div>
 </section>
 <section class="panel" id="p-ask" hidden>
 <h3>每日一問 💌</h3><p class="sub">每天可以問苑均一個問題（不一定要問）。按送出會跳出分享，選她就好。</p>
@@ -757,31 +768,48 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
 </script>
 <script>
 (function(){
-  var pity=0,guar=false,total=0,ups=0,$=function(i){return document.getElementById(i)};
-  function info(){$('simInfo').textContent='已抽 '+total+' 次　距離保底還有 '+(90-pity)+' 抽　'+(guar?'（下一隻 5★ 必是限定！）':'')}
+  var $=function(i){return document.getElementById(i)};
+  var CARDS=[
+    {k:'hug',c:'o',n:'抱抱公主',r:5,up:1},{k:'kiss',c:'t',n:'親親公主',r:5,up:1},{k:'praise',c:'t',n:'誇誇小貓',r:5},
+    {k:'massage',c:'o',n:'按摩師傅',r:4},{k:'pat',c:'o',n:'摸摸頭貓',r:4},{k:'bite',c:'t',n:'咬咬貓',r:4},
+    {k:'daze',c:'o',n:'發呆貓',r:3},{k:'air',c:'o',n:'空氣貓',r:3},{k:'eyeroll',c:'t',n:'白眼貓',r:3},{k:'thanks',c:'t',n:'銘謝惠顧',r:3}
+  ];
+  var pity=0,guar=false,total=0,own={};
+  try{var sv=JSON.parse(localStorage.getItem('simdex')||'{}');own=sv.own||{};total=sv.total||0;pity=sv.pity||0;guar=!!sv.guar}catch(e){}
+  function save(){try{localStorage.setItem('simdex',JSON.stringify({own:own,total:total,pity:pity,guar:guar}))}catch(e){}}
+  function pick(f){var l=CARDS.filter(f);return l[Math.floor(Math.random()*l.length)]}
+  function stars(n){return new Array(n+1).join('★')}
+  function card(c,extra,delay){
+    var a=window.catArt?window.catArt(c.k,c.c):'';
+    return '<div class="sc s'+c.r+(extra&&extra.lose?' lose':'')+'" style="animation-delay:'+(delay||0)+'ms"><div class="st">'+stars(c.r)+'</div>'+a+'<div class="nm">'+c.n+'</div>'+(c.up?'<span class="tag">限定</span>':'')+'</div>';
+  }
+  function info(){$('simInfo').textContent='已抽 '+total+' 次　距離保底還有 '+(90-pity)+' 抽　'+(guar?'（下一隻 5★ 必是限定！）':'');
+    var n=0;
+    $('dex').innerHTML=CARDS.map(function(c){var k=own[c.k]||0;if(k)n++;return k?card(c).replace('<div class="nm">','<span class="cnt">×'+k+'</span><div class="nm">'):'<div class="sc no"><div class="st">'+stars(c.r)+'</div><svg viewBox="0 0 120 124"><text x="60" y="80" font-size="60" text-anchor="middle">?</text></svg><div class="nm">？？？</div></div>'}).join('');
+    $('dexCnt').textContent='（'+n+'/'+CARDS.length+'）'}
   function one(){
     pity++;total++;
-    var r=Math.random(),rate=pity<74?0.006:Math.min(1,0.006+(pity-73)*0.06);
-    if(pity>=90)rate=1;
-    if(r<rate){
+    var rate=pity<74?0.006:Math.min(1,0.006+(pity-73)*0.06);if(pity>=90)rate=1;
+    var c,lose=0;
+    if(Math.random()<rate){
       pity=0;
-      if(guar||Math.random()<0.5){guar=false;ups++;return {c:'s5',t:'💖 限定貓咪公主'}}
-      guar=true;return {c:'s5',t:'🐱 常駐小貓（歪了）',lose:1}
-    }
-    if(Math.random()<0.051)return {c:'s4',t:'⭐4 小魚乾'};
-    return {c:'',t:['🧶 毛線球','🐟 小魚','🥫 罐罐'][Math.floor(Math.random()*3)]};
+      if(guar||Math.random()<0.5){guar=false;c=pick(function(x){return x.up})}
+      else{guar=true;lose=1;c=pick(function(x){return x.r===5&&!x.up})}
+    }else if(Math.random()<0.051)c=pick(function(x){return x.r===4});
+    else c=pick(function(x){return x.r===3});
+    own[c.k]=(own[c.k]||0)+1;
+    return {c:c,lose:lose};
   }
   function pull(n){
     var res=[],i;for(i=0;i<n;i++)res.push(one());
-    $('simOut').innerHTML=res.map(function(x){return '<span class="'+x.c+'">'+x.t+'</span>'}).join('');
-    var m='',w=res.filter(function(x){return x.lose}).length,u=res.filter(function(x){return x.c==='s5'&&!x.lose}).length;
-    if(u)m='出貨啦！🎉 限定貓咪公主來報到～';
-    else if(w)m='歪了也沒關係，下一隻 5★ 保證是限定的 🐾';
-    else m=n===10?'這次沒有 5★，再接再厲～':'';
-    $('simMsg').textContent=m;info();
+    var o=$('simOut');o.className='sim-out '+(n===1?'one':'ten');
+    o.innerHTML=res.map(function(x,i){return card(x.c,x,i*120)}).join('');
+    var w=res.some(function(x){return x.lose}),u=res.some(function(x){return x.c.up});
+    $('simMsg').textContent=u?'出貨啦！🎉 限定貓咪公主來報到～':(w?'歪了也沒關係，下一隻 5★ 保證是限定的 🐾':(n===10?'這次沒有 5★，再接再厲～':''));
+    save();info();
   }
   $('sim1').onclick=function(){pull(1)};$('sim10').onclick=function(){pull(10)};
-  $('simReset').onclick=function(){pity=0;guar=false;total=0;ups=0;$('simOut').innerHTML='';$('simMsg').textContent='';info()};
+  $('simReset').onclick=function(){pity=0;guar=false;total=0;own={};$('simOut').innerHTML='';$('simMsg').textContent='';save();info()};
   info();
 })();
 </script>
