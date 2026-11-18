@@ -125,9 +125,9 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .lr{display:flex;align-items:center;gap:10px}.undo{padding:5px 10px;font-size:12px;border-radius:12px;background:var(--soft);color:var(--sub);font-weight:600}.undo.p{background:#e5586f;color:#fff}
 .iq input{width:100%;margin:8px 0 6px}.iq .bt{display:flex;gap:8px;flex-wrap:wrap}.iq .bt button{padding:6px 12px;font-size:13px}.qa{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft);font-size:14px;line-height:1.5}.qa b{color:var(--acc)}.qa small{display:block;color:var(--sub);font-size:12px}.big{font-size:20px;font-weight:700;color:var(--acc);margin:0 0 4px}.sim-out{display:grid;gap:8px;margin:12px 0;min-height:40px}.sim-out.one{grid-template-columns:minmax(0,170px);justify-content:center}.sim-out.ten{grid-template-columns:repeat(5,1fr);gap:5px}
 .sc{border-radius:14px;padding:4px 3px 5px;background:#fff;border:2px solid #ecdde5;text-align:center;position:relative;overflow:hidden;animation:scIn .55s cubic-bezier(.2,1.4,.4,1) both}
-.sc .st{font-size:9px;letter-spacing:1px;color:#c9a0b4;line-height:1.2}.sc svg{width:100%;height:auto;display:block}.sc .nm{font-size:11px;font-weight:700;color:var(--ink,#5b3a4d);line-height:1.2;min-height:13px}
+.sc .st{font-size:9px;letter-spacing:1px;color:#c9a0b4;line-height:1.2}.sc svg{width:100%;height:auto;display:block}.sc .nm{font-size:11px;font-weight:700;color:#2b1a22;line-height:1.2;min-height:13px}
 .sim-out.one .sc{padding:8px 6px 10px}.sim-out.one .sc .st{font-size:14px}.sim-out.one .sc .nm{font-size:15px;margin-top:4px}
-.sc.s4{border-color:#b9a0f0;background:linear-gradient(160deg,#f3ecff,#fff);box-shadow:0 0 10px rgba(150,110,240,.45)}.sc.s4 .st{color:#8a63e0}
+.sc.no .nm{color:#8a7a82}.sc.s4{border-color:#b9a0f0;background:linear-gradient(160deg,#f3ecff,#fff);box-shadow:0 0 10px rgba(150,110,240,.45)}.sc.s4 .st{color:#8a63e0}
 .sc.s5{border-color:#f2b84b;background:linear-gradient(160deg,#fff3c4,#ffd48a 55%,#fff0c9);box-shadow:0 0 16px rgba(255,170,40,.75)}.sc.s5 .st{color:#e08a00}
 .sc.s5::after{content:"";position:absolute;top:-30%;left:-60%;width:40%;height:160%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);transform:rotate(20deg);animation:shine 2s infinite}
 .sc.lose{filter:saturate(.8)}.sc .tag{position:absolute;top:3px;right:3px;font-size:9px;background:#ff6f91;color:#fff;border-radius:6px;padding:0 4px}
@@ -258,7 +258,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <h3 style="margin-top:16px">我的卡冊 <span class="sub" id="dexCnt"></span></h3><div class="dtabs" id="dtabs"></div><div class="dex" id="dex"></div>
 </section>
 <section class="panel" id="p-ask" hidden>
-<h3>每日一問 💌</h3><p class="sub">每天可以問苑均一個問題（不一定要問）。按送出會跳出分享，選她就好。</p>
+<h3>每日一問 💌</h3><p class="sub">每天可以問苑均一個問題（不一定要問），按送出她就會看到，回覆會出現在首頁。</p>
 <textarea id="askText" rows="3" maxlength="100" placeholder="想問什麼都可以…"></textarea>
 <button class="p" id="askBtn" style="width:100%">送出給苑均</button>
 <div class="sub" id="askMsg" style="min-height:18px;margin-top:8px"></div>
@@ -554,8 +554,8 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
     }
     if(window.sendQuestion){
       $('askBtn').disabled=true;msg.textContent='送出中…';
-      window.sendQuestion(q).then(function(){done('已送出！苑均登入就會看到 💌')}).catch(function(){$('askBtn').disabled=false;msg.textContent='';fallback()});
-    }else fallback();
+      window.sendQuestion(q).then(function(){done('已送出！苑均登入就會看到 💌')}).catch(function(){$('askBtn').disabled=false;msg.textContent='送出失敗，請檢查網路後再試一次'});
+    }else msg.textContent='還在載入，請稍等一下再按送出';
   });
 })();
 </script>
