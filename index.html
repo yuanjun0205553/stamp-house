@@ -122,6 +122,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .nt.on{background:var(--acc);color:#fff}
 #pg-home[hidden],#pg-gifts[hidden],#pg-mine[hidden]{display:none}
 .g5{grid-template-columns:repeat(5,1fr)}.g5 button{padding:12px 0;font-size:14px}
+.lr{display:flex;align-items:center;gap:10px}.undo{padding:5px 10px;font-size:12px;border-radius:12px;background:var(--soft);color:var(--sub);font-weight:600}.undo.p{background:#e5586f;color:#fff}
 </style>
 </head>
 <body>
@@ -569,11 +570,24 @@ function render(){
   $('taskTitle').textContent=admin?'快速任務加點':'任務清單（完成後會幫你加點）';
   document.querySelectorAll('button.task').forEach(b=>{const dn=(S.done||{})[b.dataset.n]===today();b.disabled=dn||!admin;b.style.cursor=admin?'pointer':'default';b.style.opacity=dn?'.5':'1';b.querySelector('em').textContent=dn?'今天完成了 ✓':'+'+b.dataset.d+' 點'});
   $('admin').hidden=!admin;$('loginBox').hidden=admin||!showLogin;$('outBtn').hidden=!admin;
-  $('log').innerHTML=S.log.length?S.log.map(l=>{
+  $('log').innerHTML=S.log.length?S.log.map((l,i)=>{
     const d=new Date(l.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-    return '<div class="log"><div>'+esc(l.n||(l.d>0?'加點':'扣點'))+'<br><span>'+ds+'</span></div><div class="'+(l.d>0?'pos':'neg')+'">'+(l.d>0?'+':'')+l.d+'</div></div>';
+    return '<div class="log"><div>'+esc(l.n||(l.d>0?'加點':'扣點'))+'<br><span>'+ds+'</span></div><div class="lr"><span class="'+(l.d>0?'pos':'neg')+'">'+(l.d>0?'+':'')+l.d+'</span>'+(admin?'<button class="undo'+(undoArm===i?' p':'')+'" data-undo="'+i+'">'+(undoArm===i?'再按一次刪除':'刪除')+'</button>':'')+'</div></div>';
   }).join(''):'<span class="sub">還沒有紀錄</span>';
 }
+let undoArm=-1,undoT=0;
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-undo]');
+  if(!b||!admin)return;
+  const i=+b.dataset.undo,l=S.log[i];
+  if(!l)return;
+  if(undoArm!==i){undoArm=i;clearTimeout(undoT);undoT=setTimeout(()=>{undoArm=-1;render()},3000);render();return}
+  undoArm=-1;clearTimeout(undoT);
+  const done={...(S.done||{})};
+  if(l.n&&done[l.n]===today())delete done[l.n];
+  const gifts=String(l.n||'').startsWith('兌換：')?(S.gifts||[]).filter(x=>x.t!==l.t):(S.gifts||[]);
+  commit({points:Math.max(0,S.points-l.d),log:S.log.filter((_,k)=>k!==i),done,gifts});
+});
 function commit(next){
   const prev=S;S=next;render();
   q=q.then(()=>setDoc(ref,next)).catch(()=>{S=prev;render();$('msg').textContent='儲存失敗：請確認已登入管理員帳號'});
