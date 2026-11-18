@@ -268,7 +268,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div id="pg-earn" hidden>
 <div class="card" id="earnCard">
 <h2>賺點遊樂場 💰</h2><p class="sub" style="margin:0 0 10px">玩遊戲也能賺點數！</p>
-<h3 style="margin:4px 0">貓咪打地鼠 🔨</h3><p class="sub">30 秒內點冒出來的貓咪，越後面越快！25 隻以上 +5 點，35 隻以上 +10 點。每天只能玩一次，要加油喔！</p>
+<h3 style="margin:4px 0">貓咪打地鼠 🔨</h3><p class="sub">30 秒內點冒出來的貓咪，越後面越快！點到貓咪 +1 分，小心炸彈 💣 會 -1 分。30 分以上 +5 點，45 分以上 +10 點。每天只能玩一次，要加油喔！</p>
 <div class="sub" id="whInfo" style="margin:0 0 8px;text-align:center">按開始～</div>
 <div class="holes" id="holes"></div>
 <button class="p" id="whStart" style="width:100%;margin-top:10px">開始（30 秒）</button>
@@ -702,7 +702,7 @@ function rewardFor(n){
   if(tb)return Number(tb.dataset.d);
   let m;
   if(n.startsWith('🎮 知識問答｜')&&(m=/答對(\d+)題/.exec(n)))return Math.min(5,+m[1])*3;
-  if(n.startsWith('🎮 打地鼠｜')&&(m=/(\d+)分/.exec(n))){const sc=+m[1];return sc>=35?10:(sc>=25?5:0)}
+  if(n.startsWith('🎮 打地鼠｜')&&(m=/(\d+)分/.exec(n))){const sc=+m[1];return sc>=45?10:(sc>=30?5:0)}
   if(n.startsWith('🎁 卡冊｜')&&(m=/(\d+)張/.exec(n)))return CARD_MS[+m[1]]||0;
   return 0;
 }
@@ -952,46 +952,52 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   var $=function(i){return document.getElementById(i)};
   var holes=$('holes'),i;
   for(i=0;i<9;i++){var b=document.createElement('button');b.className='hole';b.setAttribute('aria-label','洞');b.dataset.i=i;holes.appendChild(b)}
-  var score=0,left=30,run=false,up=-1,tm=0,mt=0,last=-1,final=-1;
-  function cat(){return window.catArt?window.catArt('eyeroll',Math.random()<.5?'o':'t'):'🐱'}
-  function claimUI(){
-    var box=$('whClaim');
-    if(final<0){box.innerHTML='';return}
-    var name='🎮 打地鼠｜'+final+'分',need=final>=35?10:(final>=25?5:0);
-    if(!need){box.innerHTML='<div class="sub" style="margin-top:8px">差一點～25 隻以上才有獎勵</div>';return}
-    var st=window.rewardState?window.rewardState(name):'ok';
-    box.innerHTML=st==='done'?'<div class="sub" style="margin-top:8px">今天已經領過了 ✓</div>':st==='pend'?'<div class="sub" style="margin-top:8px">已送出，等苑均確認 ⏳</div>':'<button class="p" style="width:100%;margin-top:10px" data-claim="'+name+'">領獎 +'+need+' 點</button>';
-  }
+  var score=0,left=30,run=false,tm=0,mt=0,final=-1,ups={},rm={};
   function td(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
   function played(){try{return localStorage.getItem('whplay')===td()}catch(e){return false}}
   function lockBtn(){$('whStart').disabled=true;$('whStart').textContent='今天玩過了，明天再來 🌙'}
-  try{var sv=JSON.parse(localStorage.getItem('whscore')||'null');if(sv&&sv.d===td()){final=sv.s;$('whInfo').textContent='今天打到 '+sv.s+' 隻'}}catch(e){}
-  window.whackRefresh=claimUI;
-  function show(n){
-    var all=holes.children,k;for(k=0;k<9;k++){all[k].innerHTML='';all[k].classList.remove('hit')}
-    up=n;if(n>=0)all[n].innerHTML=cat();
+  function cat(){return window.catArt?window.catArt('eyeroll',Math.random()<.5?'o':'t'):'🐱'}
+  function info(){$('whInfo').textContent='剩 '+left+' 秒　得分 '+score}
+  function claimUI(){
+    var box=$('whClaim');
+    if(final<0){box.innerHTML='';return}
+    var name='🎮 打地鼠｜'+final+'分',need=final>=45?10:(final>=30?5:0);
+    if(!need){box.innerHTML='<div class="sub" style="margin-top:8px">差一點～30 分以上才有獎勵</div>';return}
+    var st=window.rewardState?window.rewardState(name):'ok';
+    box.innerHTML=st==='done'?'<div class="sub" style="margin-top:8px">今天已經領過了 ✓</div>':st==='pend'?'<div class="sub" style="margin-top:8px">已送出，等苑均確認 ⏳</div>':'<button class="p" style="width:100%;margin-top:10px" data-claim="'+name+'">領獎 +'+need+' 點</button>';
   }
+  window.whackRefresh=claimUI;
+  try{var sv=JSON.parse(localStorage.getItem('whscore')||'null');if(sv&&sv.d===td()){final=sv.s;$('whInfo').textContent='今天得了 '+sv.s+' 分'}}catch(e){}
+  function put(n,type){var h=holes.children[n];ups[n]=type;h.classList.remove('hit');h.innerHTML=type==='bomb'?'<div style="font-size:54px;align-self:center;line-height:1">💣</div>':cat();
+    clearTimeout(rm[n]);var f=1-(30-left)/30*0.5;rm[n]=setTimeout(function(){clear(n)},(320+Math.random()*160)*f)}
+  function clear(n){var h=holes.children[n];delete ups[n];h.innerHTML='';h.classList.remove('hit')}
+  function free(){var l=[],k;for(k=0;k<9;k++)if(!(k in ups))l.push(k);return l}
   function next(){
     if(!run)return;
-    var n;do{n=Math.floor(Math.random()*9)}while(n===last);last=n;show(n);
-    var f=1-(30-left)/30*0.45,up_ms=(430+Math.random()*180)*f;
-    mt=setTimeout(function(){show(-1);mt=setTimeout(next,(60+Math.random()*120)*f)},up_ms);
+    var f=1-(30-left)/30*0.5,c=free();
+    if(c.length){var n=c[Math.floor(Math.random()*c.length)];put(n,Math.random()<0.2?'bomb':'cat')}
+    if(left<=18&&Math.random()<0.4){c=free();if(c.length){var n2=c[Math.floor(Math.random()*c.length)];put(n2,Math.random()<0.2?'bomb':'cat')}}
+    mt=setTimeout(next,(150+Math.random()*120)*f);
   }
   function end(){
-    run=false;clearInterval(tm);clearTimeout(mt);show(-1);final=score;
-    $('whInfo').textContent='時間到！打到 '+score+' 隻 🎉';try{localStorage.setItem('whscore',JSON.stringify({d:td(),s:score}))}catch(e){}lockBtn();claimUI();
+    run=false;clearInterval(tm);clearTimeout(mt);Object.keys(ups).forEach(clear);final=score;
+    $('whInfo').textContent='時間到！得了 '+score+' 分 🎉';try{localStorage.setItem('whscore',JSON.stringify({d:td(),s:score}))}catch(e){}lockBtn();claimUI();
   }
   $('whStart').onclick=function(){
     if(played())return;try{localStorage.setItem('whplay',td())}catch(e){}
-    score=0;left=30;run=true;final=-1;last=-1;claimUI();$('whStart').disabled=true;
-    $('whInfo').textContent='剩 30 秒　打到 0 隻';
-    tm=setInterval(function(){left--;$('whInfo').textContent='剩 '+left+' 秒　打到 '+score+' 隻';if(left<=0)end()},1000);
+    score=0;left=30;run=true;final=-1;claimUI();$('whStart').disabled=true;info();
+    tm=setInterval(function(){left--;info();if(left<=0)end()},1000);
     next();
   };
   if(played())lockBtn();
   holes.addEventListener('pointerdown',function(e){
     var h=e.target.closest('.hole');if(!h||!run)return;
-    if(+h.dataset.i===up){score++;h.classList.add('hit');h.innerHTML='<div style="font-size:42px;align-self:center">💥</div>';up=-1;$('whInfo').textContent='剩 '+left+' 秒　打到 '+score+' 隻'}
+    var n=+h.dataset.i,t=ups[n];if(!t)return;
+    clearTimeout(rm[n]);delete ups[n];h.classList.add('hit');
+    if(t==='bomb'){score=Math.max(0,score-1);h.innerHTML='<div style="font-size:42px;align-self:center">💥</div><div style="position:absolute;font-weight:800;color:#c0392b;font-size:22px">-1</div>'}
+    else{score++;h.innerHTML='<div style="font-size:42px;align-self:center">⭐</div>'}
+    h.style.position='relative';info();
+    setTimeout(function(){if(!(n in ups)){h.innerHTML='';h.classList.remove('hit')}},250);
   });
 })();
 </script>
