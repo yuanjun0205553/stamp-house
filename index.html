@@ -123,7 +123,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 #pg-home[hidden],#pg-gifts[hidden],#pg-mine[hidden]{display:none}
 .g5{grid-template-columns:repeat(5,1fr)}.g5 button{padding:12px 0;font-size:14px}
 .lr{display:flex;align-items:center;gap:10px}.undo{padding:5px 10px;font-size:12px;border-radius:12px;background:var(--soft);color:var(--sub);font-weight:600}.undo.p{background:#e5586f;color:#fff}
-.iq input{width:100%;margin:8px 0 6px}.iq .bt{display:flex;gap:8px;flex-wrap:wrap}.iq .bt button{padding:6px 12px;font-size:13px}.qa{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft);font-size:14px;line-height:1.5}.qa b{color:var(--acc)}.qa small{display:block;color:var(--sub);font-size:12px}.big{font-size:20px;font-weight:700;color:var(--acc);margin:0 0 4px}.sim-out{display:grid;gap:8px;margin:12px 0;min-height:40px}.sim-out.one{grid-template-columns:minmax(0,170px);justify-content:center}.sim-out.ten{grid-template-columns:repeat(5,1fr);gap:5px}
+.iq input{width:100%;margin:8px 0 6px}.iq .bt{display:flex;gap:8px;flex-wrap:wrap}.iq .bt button{padding:6px 12px;font-size:13px}.qa{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft);font-size:14px;line-height:1.5}.qa b{color:var(--acc)}.qa small{display:block;color:var(--sub);font-size:12px}.big{font-size:20px;font-weight:700;color:var(--acc);margin:0 0 4px}.qzq{font-size:17px;font-weight:700;margin:4px 0 10px;line-height:1.5}.qzo{display:block;width:100%;margin-bottom:8px;text-align:left;padding:12px 14px}.qzo.ok{background:#bfe8c8;color:#17402a}.qzo.bad{background:#f6c3c3;color:#5a1c1c}.holes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.hole{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 70%,#7a5a66,#4b3641);border:4px solid #6b4a58;overflow:hidden;padding:0;display:flex;align-items:flex-end;justify-content:center;touch-action:manipulation}.hole svg{width:92%;height:auto;transform:translateY(8%)}.hole.hit{background:#ffd7a6}.msr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;margin-bottom:6px;border-radius:12px;background:var(--soft);font-size:13px}.msr button{padding:6px 10px;font-size:13px}.sim-out{display:grid;gap:8px;margin:12px 0;min-height:40px}.sim-out.one{grid-template-columns:minmax(0,170px);justify-content:center}.sim-out.ten{grid-template-columns:repeat(5,1fr);gap:5px}
 .sc{border-radius:14px;padding:4px 3px 5px;background:#fff;border:2px solid #ecdde5;text-align:center;position:relative;overflow:hidden;animation:scIn .55s cubic-bezier(.2,1.4,.4,1) both}
 .sc .st{font-size:9px;letter-spacing:1px;color:#c9a0b4;line-height:1.2}.sc svg{width:100%;height:auto;display:block}.sc .nm{font-size:11px;font-weight:700;color:#2b1a22;line-height:1.2;min-height:13px}
 .sim-out.one .sc{padding:8px 6px 10px}.sim-out.one .sc .st{font-size:14px}.sim-out.one .sc .nm{font-size:15px;margin-top:4px}
@@ -263,6 +263,14 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="p" id="askBtn" style="width:100%">送出給苑均</button>
 <div class="sub" id="askMsg" style="min-height:18px;margin-top:8px"></div>
 </section>
+</div>
+<div class="card" id="earnCard">
+<h2>賺點遊樂場 💰</h2><p class="sub" style="margin:0 0 10px">玩遊戲也能賺點數！</p>
+<h3 style="margin:4px 0">貓咪打地鼠 🔨</h3><p class="sub">30 秒內點冒出來的貓咪！15 隻以上 +5 點，25 隻以上 +10 點，每天可以領一次獎。</p>
+<div class="sub" id="whInfo" style="margin:0 0 8px;text-align:center">按開始～</div>
+<div class="holes" id="holes"></div>
+<button class="p" id="whStart" style="width:100%;margin-top:10px">開始（30 秒）</button>
+<div id="whClaim"></div>
 </div>
 </div>
 <div id="pg-gifts" hidden>
@@ -652,6 +660,7 @@ function streakTxt(){
   return '・連續登入 '+st.n+' 天 🔥（滿 7 天有 +20）';
 }
 function renderExtra(){
+  renderQuiz();renderQzAdmin();if(window.simInfo)window.simInfo();
   // anniversary
   const m=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(S.anniv||'');
   if(m){
@@ -680,6 +689,80 @@ function renderExtra(){
   }
 }
 $('annivSave').onclick=()=>{if(!admin)return;const v=$('annivIn').value;if(!v)return;commit({anniv:v.replace(/-0(\d)/g,'-$1')})};
+
+const CARD_MS={10:10,30:20,60:40,100:80,150:120,200:200,300:300,421:500};
+const baseOf=n=>String(n).split('｜')[0];
+const pk=n=>String(n).startsWith('🎁')?String(n):baseOf(n);
+function rewardFor(n){
+  n=String(n);
+  const tb=document.querySelector('button.task[data-n="'+n.replace(/"/g,'\\"')+'"]');
+  if(tb)return Number(tb.dataset.d);
+  let m;
+  if(n.startsWith('🎮 知識問答｜')&&(m=/答對(\d+)題/.exec(n)))return Math.min(5,+m[1])*3;
+  if(n.startsWith('🎮 打地鼠｜')&&(m=/(\d+)分/.exec(n))){const sc=+m[1];return sc>=25?10:(sc>=15?5:0)}
+  if(n.startsWith('🎁 卡冊｜')&&(m=/(\d+)張/.exec(n)))return CARD_MS[+m[1]]||0;
+  return 0;
+}
+function doneState(n){const d=S.done||{};return String(n).startsWith('🎁')?!!d[n]:d[baseOf(n)]===today()}
+window.rewardState=n=>doneState(n)?'done':(isPend(pk(n))?'pend':'ok');
+window.rewardFor=rewardFor;window.CARD_MS=CARD_MS;
+window.requestReward=function(n){
+  n=String(n);const d=rewardFor(n);
+  if(!d||doneState(n)||isPend(pk(n)))return Promise.resolve(false);
+  return addDoc(collection(db,'inbox'),{k:'task',n:n.slice(0,60),d:d,t:Date.now()})
+    .then(()=>{try{localStorage.setItem(pendKey(pk(n)),today())}catch(e){}render();$('msg').textContent='已通知苑均，等她確認後加點 💕';setTimeout(()=>{$('msg').textContent=''},4000);return true})
+    .catch(()=>{$('msg').textContent='送出失敗，請再試一次';return false});
+};
+let QZ=null;
+function claimBtn(name,label){
+  const st=window.rewardState(name);
+  if(st==='done')return '<div class="sub" style="margin:8px 0 0">已經領過了 ✓</div>';
+  if(st==='pend')return '<div class="sub" style="margin:8px 0 0">已送出，等苑均確認 ⏳</div>';
+  return '<button class="p" style="width:100%;margin-top:10px" data-claim="'+esc(name)+'">'+label+'</button>';
+}
+function renderQuiz(){
+  const box=$('quizBox');if(!box)return;
+  const qs=S.quiz||[];
+  if(QZ&&QZ.run){
+    const q=QZ.qs[QZ.i];
+    box.innerHTML='<div class="sub" style="margin:0 0 6px">第 '+(QZ.i+1)+' / '+QZ.qs.length+' 題</div><div class="qzq">'+esc(q.q)+'</div>'+
+      q.o.map((o,k)=>'<button class="qzo'+(QZ.pick!==null?(k===q.a?' ok':(k===QZ.pick?' bad':'')):'')+'" data-qa="'+k+'"'+(QZ.pick!==null?' disabled':'')+'>'+esc(o)+'</button>').join('')+
+      (QZ.pick!==null?'<button class="p" style="width:100%;margin-top:8px" data-qnext="1">'+(QZ.i+1>=QZ.qs.length?'看結果':'下一題')+'</button>':'');
+    return;
+  }
+  if(QZ&&QZ.fin){
+    box.innerHTML='<div class="big" style="text-align:center">答對 '+QZ.ok+' / '+QZ.n+' 題 '+(QZ.ok===QZ.n?'🎉':'💕')+'</div>'+
+      (QZ.ok>0?claimBtn('🎮 知識問答｜答對'+QZ.ok+'題','領獎 +'+QZ.ok*3+' 點'):'<div class="sub">再接再厲，多了解她一點～</div>')+
+      '<button style="width:100%;margin-top:8px" data-qstart="1">再玩一次</button>';
+    return;
+  }
+  if(qs.length<3){box.innerHTML='<p class="sub">苑均還在出題中，等一下再來玩 🐾</p>';return}
+  box.innerHTML='<p class="sub">每次最多 5 題，答對一題 +3 點，每天可以領一次獎（要等苑均確認）。</p><button class="p" style="width:100%" data-qstart="1">開始挑戰</button>';
+}
+document.addEventListener('click',e=>{
+  const st=e.target.closest('[data-qstart]');
+  if(st){const a=[...(S.quiz||[])].sort(()=>Math.random()-.5).slice(0,5);if(a.length<3)return;QZ={run:true,qs:a,i:0,ok:0,pick:null};renderQuiz();return}
+  const an=e.target.closest('[data-qa]');
+  if(an&&QZ&&QZ.run&&QZ.pick===null){const k=+an.dataset.qa;QZ.pick=k;if(k===QZ.qs[QZ.i].a)QZ.ok++;renderQuiz();return}
+  if(e.target.closest('[data-qnext]')&&QZ){QZ.i++;QZ.pick=null;if(QZ.i>=QZ.qs.length)QZ={fin:true,ok:QZ.ok,n:QZ.qs.length};renderQuiz();return}
+  const cl=e.target.closest('[data-claim]');
+  if(cl){window.requestReward(cl.dataset.claim).then(()=>{renderQuiz();window.whackRefresh&&window.whackRefresh()})}
+});
+function renderQzAdmin(){
+  if(!admin||!$('qzList'))return;
+  $('qzList').innerHTML=(S.quiz||[]).map((x,i)=>'<div class="iq"><div class="row2"><div class="qt">'+esc(x.q)+'<br><small>'+x.o.map((o,k)=>(k===x.a?'✅':'')+esc(o)).join('｜')+'</small></div><button class="undo" data-qdel="'+i+'">刪</button></div></div>').join('')||'<div class="sub">還沒有題目，至少出 3 題他才能玩</div>';
+}
+document.addEventListener('click',e=>{
+  if(!admin)return;
+  const dl=e.target.closest('[data-qdel]');
+  if(dl){commit({quiz:(S.quiz||[]).filter((_,i)=>i!==+dl.dataset.qdel)});return}
+  if(e.target.id==='qzAdd'){
+    const q=$('qzQ').value.trim(),o=[0,1,2].map(i=>$('qzA'+i).value.trim());
+    if(!q||o.some(x=>!x)){$('qzMsg').textContent='題目和三個選項都要填喔';return}
+    commit({quiz:[{q:q.slice(0,60),o:o.map(x=>x.slice(0,30)),a:+$('qzC').value},...(S.quiz||[])].slice(0,50)});
+    ['qzQ','qzA0','qzA1','qzA2'].forEach(i=>$(i).value='');$('qzMsg').textContent='已新增 ✓';
+  }
+});
 let undoArm=-1,undoT=0;
 document.addEventListener('click',e=>{
   const b=e.target.closest('button[data-undo]');
@@ -689,7 +772,7 @@ document.addEventListener('click',e=>{
   if(undoArm!==i){undoArm=i;clearTimeout(undoT);undoT=setTimeout(()=>{undoArm=-1;render()},3000);render();return}
   undoArm=-1;clearTimeout(undoT);
   const done={...(S.done||{})};
-  if(l.n&&done[l.n]===today())delete done[l.n];
+  {const kk=String(l.n||'').startsWith('🎮')?baseOf(l.n):l.n;if(kk&&done[kk]===today())delete done[kk]}
   const gifts=String(l.n||'').startsWith('兌換：')?(S.gifts||[]).filter(x=>x.t!==l.t):(S.gifts||[]);
   commit({points:Math.max(0,S.points-l.d),log:S.log.filter((_,k)=>k!==i),done,gifts});
 });
@@ -749,9 +832,8 @@ function renderInbox(){
   $('inboxList').innerHTML=inbox.map(x=>{
     const d=new Date(x.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     if(x.k==='task'){
-      const tb=document.querySelector('button.task[data-n="'+String(x.n).replace(/"/g,'\\"')+'"]');
-      const dn=tb&&(S.done||{})[x.n]===today();
-      return '<div class="iq"><div class="qt">✅ 他說完成了：'+esc(x.n)+(tb?' +'+tb.dataset.d:'')+'</div><small>'+ds+(dn?'（今天已加過）':'')+'</small><div class="bt">'+(tb&&!dn?'<button class="p" data-ok="'+esc(x.id)+'">確認 +'+tb.dataset.d+'</button>':'')+'<button class="undo" data-inbox="'+esc(x.id)+'">'+(dn?'清掉':'沒過')+'</button></div></div>';
+      const rd=rewardFor(x.n),dn=doneState(x.n);
+      return '<div class="iq"><div class="qt">✅ 他說完成了：'+esc(x.n)+(rd?' +'+rd:'')+'</div><small>'+ds+(dn?'（已經加過了）':'')+'</small><div class="bt">'+(rd&&!dn?'<button class="p" data-ok="'+esc(x.id)+'">確認 +'+rd+'</button>':'')+'<button class="undo" data-inbox="'+esc(x.id)+'">'+(dn?'清掉':'沒過')+'</button></div></div>';
     }
     return '<div class="iq"><div class="qt">❓ '+esc(x.q)+'</div><small>'+ds+'</small><input id="rp_'+esc(x.id)+'" maxlength="100" placeholder="回覆他…（他會在App看到）"><div class="bt"><button class="p" data-reply="'+esc(x.id)+'">回覆</button><button class="undo" data-inbox="'+esc(x.id)+'">收到了</button></div></div>';
   }).join('');
@@ -760,8 +842,8 @@ document.addEventListener('click',e=>{
   if(!admin)return;
   const ok=e.target.closest('button[data-ok]');
   if(ok){const x=inbox.find(v=>v.id===ok.dataset.ok);if(!x)return;
-    const tb=document.querySelector('button.task[data-n="'+String(x.n).replace(/"/g,'\\"')+'"]');
-    if(tb&&(S.done||{})[x.n]!==today())adjust(Number(tb.dataset.d),x.n,x.n);
+    const rd=rewardFor(x.n);
+    if(rd>0&&!doneState(x.n))adjust(rd,x.n,String(x.n).startsWith('🎁')?x.n:baseOf(x.n));
     deleteDoc(doc(db,'inbox',x.id)).catch(()=>{});return}
   const rp=e.target.closest('button[data-reply]');
   if(rp){const x=inbox.find(v=>v.id===rp.dataset.reply),inp=$('rp_'+rp.dataset.reply);
@@ -783,7 +865,7 @@ onAuthStateChanged(auth,u=>{
 const _t0=0;const t=setTimeout(()=>{$('msg').textContent='暫時連不上，資料可能不是最新'},10000);
 onSnapshot(ref,s=>{
   clearTimeout(t);$('msg').textContent='';
-  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{},gifts:v.gifts||[],qa:v.qa||[],anniv:v.anniv||'2026-9-25',streak:v.streak||null}}
+  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{},gifts:v.gifts||[],qa:v.qa||[],quiz:v.quiz||[],anniv:v.anniv||'2026-9-25',streak:v.streak||null}}
   render();
 },()=>{clearTimeout(t);$('msg').textContent='讀取失敗，請檢查網路或 Firebase 設定'});
 document.querySelectorAll('.nt').forEach(b=>b.addEventListener('click',()=>{
@@ -805,9 +887,9 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
   var CARDS=[],used={};
   function add(k,c,a,r,n,up){var id=k+c+a;if(used[id])return false;used[id]=1;CARDS.push({id:id,k:k,c:c,a:a,r:r,n:n||(COL[c]+ACN[a]+POSE[k]),up:up});return true}
-  add('hug','o','crown',5,'抱抱王子',1);add('kiss','y','crown',5,'親親王子',1);add('praise','w','crown',5,'誇誇王子',1);
-  [['massage','t'],['pat','t'],['daze','y'],['bite','o'],['air','w'],['eyeroll','g'],['thanks','k'],['hug','k'],['kiss','c'],['praise','g']].forEach(function(x){add(x[0],x[1],'crown',5)});
-  add('hug','w','tophat',5);add('kiss','t','tophat',5);
+  add('hug','o','crown',5,'抱抱王子',1);add('kiss','t','crown',5,'親親王子',1);add('praise','o','crown',5,'誇誇王子',1);
+  [['massage','o'],['pat','o'],['daze','o'],['bite','o'],['thanks','o'],['massage','t'],['pat','t'],['daze','t'],['bite','t'],['air','t'],['eyeroll','t']].forEach(function(x){add(x[0],x[1],'crown',5)});
+  add('hug','t','tophat',5);
   function pool(accs){var l=[];accs.forEach(function(a){PK.forEach(function(k){CK.forEach(function(c){l.push([k,c,a])})})});return shuf(l)}
   var n4=0;pool(['party','scarf','sunglasses','halo','tophat']).forEach(function(x){if(n4<36&&add(x[0],x[1],x[2],4))n4++});
   var n3=0;pool(['none','none','bow','flower','leaf','glasses','tie']).forEach(function(x){if(n3<100&&add(x[0],x[1],x[2],3))n3++});
@@ -859,7 +941,48 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   }
   $('sim1').onclick=function(){pull(1)};$('sim10').onclick=function(){pull(10)};
   $('simReset').onclick=function(){if(!confirm('要清掉所有卡片重新開始嗎？'))return;pity=0;guar=false;total=0;own={};$('simOut').innerHTML='';$('simMsg').textContent='';save();info()};
-  info();
+  window.simInfo=info;info();
+})();
+</script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var holes=$('holes'),i;
+  for(i=0;i<9;i++){var b=document.createElement('button');b.className='hole';b.setAttribute('aria-label','洞');b.dataset.i=i;holes.appendChild(b)}
+  var score=0,left=30,run=false,up=-1,tm=0,mt=0,last=-1,final=-1;
+  function cat(){return window.catArt?window.catArt('eyeroll',Math.random()<.5?'o':'t'):'🐱'}
+  function claimUI(){
+    var box=$('whClaim');
+    if(final<0){box.innerHTML='';return}
+    var name='🎮 打地鼠｜'+final+'分',need=final>=25?10:(final>=15?5:0);
+    if(!need){box.innerHTML='<div class="sub" style="margin-top:8px">差一點～15 隻以上才有獎勵</div>';return}
+    var st=window.rewardState?window.rewardState(name):'ok';
+    box.innerHTML=st==='done'?'<div class="sub" style="margin-top:8px">今天已經領過了 ✓</div>':st==='pend'?'<div class="sub" style="margin-top:8px">已送出，等苑均確認 ⏳</div>':'<button class="p" style="width:100%;margin-top:10px" data-claim="'+name+'">領獎 +'+need+' 點</button>';
+  }
+  window.whackRefresh=claimUI;
+  function show(n){
+    var all=holes.children,k;for(k=0;k<9;k++){all[k].innerHTML='';all[k].classList.remove('hit')}
+    up=n;if(n>=0)all[n].innerHTML=cat();
+  }
+  function next(){
+    if(!run)return;
+    var n;do{n=Math.floor(Math.random()*9)}while(n===last);last=n;show(n);
+    mt=setTimeout(function(){show(-1);mt=setTimeout(next,150+Math.random()*250)},550+Math.random()*250);
+  }
+  function end(){
+    run=false;clearInterval(tm);clearTimeout(mt);show(-1);final=score;
+    $('whInfo').textContent='時間到！打到 '+score+' 隻 🎉';$('whStart').disabled=false;$('whStart').textContent='再玩一次';claimUI();
+  }
+  $('whStart').onclick=function(){
+    score=0;left=30;run=true;final=-1;last=-1;claimUI();$('whStart').disabled=true;
+    $('whInfo').textContent='剩 30 秒　打到 0 隻';
+    tm=setInterval(function(){left--;$('whInfo').textContent='剩 '+left+' 秒　打到 '+score+' 隻';if(left<=0)end()},1000);
+    next();
+  };
+  holes.addEventListener('pointerdown',function(e){
+    var h=e.target.closest('.hole');if(!h||!run)return;
+    if(+h.dataset.i===up){score++;h.classList.add('hit');h.innerHTML='<div style="font-size:42px;align-self:center">💥</div>';up=-1;$('whInfo').textContent='剩 '+left+' 秒　打到 '+score+' 隻'}
+  });
 })();
 </script>
 </body>
