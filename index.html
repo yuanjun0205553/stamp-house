@@ -123,7 +123,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 #pg-home[hidden],#pg-gifts[hidden],#pg-mine[hidden]{display:none}
 .g5{grid-template-columns:repeat(5,1fr)}.g5 button{padding:12px 0;font-size:14px}
 .lr{display:flex;align-items:center;gap:10px}.undo{padding:5px 10px;font-size:12px;border-radius:12px;background:var(--soft);color:var(--sub);font-weight:600}.undo.p{background:#e5586f;color:#fff}
-.iq{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft)}.iq small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.iq .row2{display:flex;justify-content:space-between;align-items:center;gap:10px}.iq .qt{flex:1;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.iq input{width:100%;margin:8px 0 6px}.iq .bt{display:flex;gap:8px;flex-wrap:wrap}.iq .bt button{padding:6px 12px;font-size:13px}.qa{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft);font-size:14px;line-height:1.5}.qa b{color:var(--acc)}.qa small{display:block;color:var(--sub);font-size:12px}.big{font-size:20px;font-weight:700;color:var(--acc);margin:0 0 4px}.sim-out{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;min-height:34px}.sim-out span{padding:4px 10px;border-radius:999px;background:var(--soft);font-size:13px}.sim-out span.s5{background:linear-gradient(135deg,#ffe08a,#ffb36b);font-weight:700}.sim-out span.s4{background:#e4d6ff}.iq{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft)}.iq small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.iq .row2{display:flex;justify-content:space-between;align-items:center;gap:10px}.iq .qt{flex:1;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
 .gthumb.sm{width:46px;height:46px;font-size:22px;border-radius:13px;flex:none}
 </style>
 </head>
@@ -141,6 +141,8 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 </div>
 <nav class="navtabs" role="tablist"><button class="nt on" data-pg="home" role="tab" aria-selected="true"><span>🐾</span>集點卡</button><button class="nt" data-pg="gifts" role="tab" aria-selected="false"><span>🎁</span>禮物</button><button class="nt" data-pg="mine" role="tab" aria-selected="false"><span>🎫</span>我的禮物券<i class="bdg" id="mineBdg" hidden></i></button></nav>
 <div id="pg-home">
+<div class="card" id="annivCard" hidden><div class="big" id="annivBig"></div><div class="sub" id="annivSub" style="margin:0"></div></div>
+<div class="card" id="qaCard" hidden><h2>苑均的回覆 💌</h2><div id="qaList"></div></div>
 <div class="card" id="inboxCard" hidden><h2>收件匣 💌</h2><div id="inboxList"></div></div>
 <div class="card">
 <h2 id="taskTitle">任務清單</h2>
@@ -156,6 +158,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
 </div>
 <div id="admin" hidden>
+<div class="card"><h2>在一起的日子 💕</h2><input type="date" id="annivIn"><button class="p" id="annivSave" style="width:100%;margin-top:8px">儲存日期</button></div>
 <div class="card">
 <h2>手動調整點數</h2>
 <input id="note" placeholder="備註（選填，他也看得到）" maxlength="30">
@@ -172,6 +175,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="tab" data-t="wheel" role="tab" aria-selected="false">吃什麼</button>
 <button class="tab" data-t="rps" role="tab" aria-selected="false">猜拳</button>
 <button class="tab" data-t="memory" role="tab" aria-selected="false">配對</button>
+<button class="tab" data-t="sim" role="tab" aria-selected="false">模擬抽卡</button>
 <button class="tab" data-t="ask" role="tab" aria-selected="false">每日一問</button>
 </div>
 <section class="panel" id="p-gacha">
@@ -221,6 +225,14 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="memgrid" id="memGrid"></div>
 <button class="p" id="memAgain" style="width:100%" hidden>再玩一次</button>
 </section>
+<section class="panel" id="p-sim" hidden>
+<h3>模擬抽卡 🎰</h3><p class="sub">不花點數，純粹過癮！每次 5★ 有 50% 機率歪，歪了下一次一定是限定；90 抽內必出 5★。</p>
+<div class="sub" id="simInfo" style="margin:0 0 8px"></div>
+<div class="grid" style="grid-template-columns:1fr 1fr"><button id="sim1">抽 1 次</button><button class="p" id="sim10">抽 10 次</button></div>
+<div class="sim-out" id="simOut"></div>
+<div class="sub" id="simMsg" style="min-height:18px"></div>
+<button id="simReset" style="width:100%;margin-top:8px">重新開始</button>
+</section>
 <section class="panel" id="p-ask" hidden>
 <h3>每日一問 💌</h3><p class="sub">每天可以問苑均一個問題（不一定要問）。按送出會跳出分享，選她就好。</p>
 <textarea id="askText" rows="3" maxlength="100" placeholder="想問什麼都可以…"></textarea>
@@ -228,6 +240,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="sub" id="askMsg" style="min-height:18px;margin-top:8px"></div>
 </section>
 </div>
+<div class="card" id="weekCard" hidden><h2>每週回顧 📅</h2><div id="weekBody"></div></div>
 <div class="card"><h2>紀錄</h2><div id="log"><span class="sub">還沒有紀錄</span></div></div>
 <div class="card" id="loginBox">
 <h2>管理員登入</h2>
@@ -515,7 +528,7 @@ import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'htt
 const $=id=>document.getElementById(id);
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),ref=doc(db,'stamp','main');
 const PER=500; // 幾點換 1 份禮物
-let S={points:0,log:[],done:{},gifts:[]},admin=false,q=Promise.resolve();
+let S={points:0,log:[],done:{},gifts:[],anniv:'2026-9-25'},admin=false,q=Promise.resolve();
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const showLogin=new URLSearchParams(location.search).has('admin');
 const GROUPS=[
@@ -583,15 +596,51 @@ function render(){
   $('pts').textContent=p;
   $('cards').textContent=Math.floor(p/PER)+' 張';
   $('fill').style.width=(r*100/PER)+'%';
-  $('hint').textContent='每 '+PER+' 點 = 1 張禮物卡，目前 '+r+'/'+PER+' 點';renderGifts();renderMine();
-  $('taskTitle').textContent=admin?'快速任務加點':'任務清單（完成後會幫你加點）';
-  document.querySelectorAll('button.task').forEach(b=>{const dn=(S.done||{})[b.dataset.n]===today();b.disabled=dn||!admin;b.style.cursor=admin?'pointer':'default';b.style.opacity=dn?'.5':'1';b.querySelector('em').textContent=dn?'今天完成了 ✓':'+'+b.dataset.d+' 點'});
+  $('hint').textContent='每 '+PER+' 點 = 1 張禮物卡，目前 '+r+'/'+PER+' 點'+streakTxt();renderGifts();renderMine();
+  $('taskTitle').textContent=admin?'快速任務加點':'任務清單（做完按一下，等苑均確認就加點）';
+  document.querySelectorAll('button.task').forEach(b=>{const n=b.dataset.n,dn=(S.done||{})[n]===today(),pd=!admin&&!dn&&isPend(n);b.disabled=dn||pd;b.style.cursor='pointer';b.style.opacity=(dn||pd)?'.5':'1';b.querySelector('em').textContent=dn?'今天完成了 ✓':(pd?'已送出，等確認 ⏳':(admin?'+':'我完成了 +')+b.dataset.d+' 點')});
+   renderExtra();
   $('admin').hidden=!admin;$('loginBox').hidden=admin||!showLogin;$('outBtn').hidden=!admin;
   $('log').innerHTML=S.log.length?S.log.map((l,i)=>{
     const d=new Date(l.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     return '<div class="log"><div>'+esc(l.n||(l.d>0?'加點':'扣點'))+'<br><span>'+ds+'</span></div><div class="lr"><span class="'+(l.d>0?'pos':'neg')+'">'+(l.d>0?'+':'')+l.d+'</span>'+(admin?'<button class="undo'+(undoArm===i?' p':'')+'" data-undo="'+i+'">'+(undoArm===i?'再按一次刪除':'刪除')+'</button>':'')+'</div></div>';
   }).join(''):'<span class="sub">還沒有紀錄</span>';
 }
+function streakTxt(){
+  const st=S.streak;if(!st||!st.last)return '';
+  const y=new Date();y.setDate(y.getDate()-1);
+  if(st.last!==today()&&st.last!==ymd(y))return '';
+  return '・連續登入 '+st.n+' 天 🔥（滿 7 天有 +20）';
+}
+function renderExtra(){
+  // anniversary
+  const m=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(S.anniv||'');
+  if(m){
+    const st=new Date(+m[1],+m[2]-1,+m[3]),n=new Date(),t0=new Date(n.getFullYear(),n.getMonth(),n.getDate());
+    const days=Math.round((t0-st)/864e5)+1;
+    const nm=days%100===0?days:Math.ceil(days/100)*100,toM=nm-days;
+    let ann=new Date(t0.getFullYear(),st.getMonth(),st.getDate());if(ann<t0)ann=new Date(t0.getFullYear()+1,st.getMonth(),st.getDate());
+    const toA=Math.round((ann-t0)/864e5),yrs=ann.getFullYear()-st.getFullYear();
+    $('annivBig').textContent='在一起第 '+days+' 天 💕';
+    $('annivSub').textContent=(toM===0?'今天剛好是第 '+nm+' 天！🎉':'距離第 '+nm+' 天還有 '+toM+' 天')+'　｜　'+(toA===0?'今天是 '+yrs+' 週年！🎉':'距離 '+yrs+' 週年還有 '+toA+' 天');
+    $('annivCard').hidden=false;
+  }else $('annivCard').hidden=true;
+  if(admin&&document.activeElement!==$('annivIn'))$('annivIn').value=/^\d{4}-\d{1,2}-\d{1,2}$/.test(S.anniv||'')?S.anniv.replace(/-(\d)(?=-|$)/g,'-0$1'):'';
+  // replies
+  const qa=(S.qa||[]);
+  $('qaCard').hidden=!qa.length;
+  $('qaList').innerHTML=qa.slice(0,5).map(x=>{const d=new Date(x.t);return '<div class="qa">你問：'+esc(x.q)+'<br><b>苑均：'+esc(x.a)+'</b><small>'+(d.getMonth()+1)+'/'+d.getDate()+'</small></div>'}).join('');
+  // weekly
+  const cut=Date.now()-7*864e5,w=S.log.filter(l=>l.t>=cut);
+  $('weekCard').hidden=!w.length;
+  if(w.length){
+    const gain=w.filter(l=>l.d>0).reduce((a,l)=>a+l.d,0),red=w.filter(l=>String(l.n).startsWith('兌換：')).length;
+    const cnt={};w.filter(l=>l.d>0&&l.n&&!/^連續登入/.test(l.n)).forEach(l=>cnt[l.n]=(cnt[l.n]||0)+1);
+    const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];
+    $('weekBody').innerHTML='<div class="qa">最近 7 天賺了 <b>'+gain+'</b> 點'+(red?'，兌換了 <b>'+red+'</b> 份禮物':'')+'<br>完成任務 <b>'+w.filter(l=>l.d>0).length+'</b> 次'+(top?'，最常做：<b>'+esc(top[0])+'</b>（'+top[1]+' 次）':'')+'</div>';
+  }
+}
+$('annivSave').onclick=()=>{if(!admin)return;const v=$('annivIn').value;if(!v)return;commit({anniv:v.replace(/-0(\d)/g,'-$1')})};
 let undoArm=-1,undoT=0;
 document.addEventListener('click',e=>{
   const b=e.target.closest('button[data-undo]');
@@ -606,20 +655,29 @@ document.addEventListener('click',e=>{
   commit({points:Math.max(0,S.points-l.d),log:S.log.filter((_,k)=>k!==i),done,gifts});
 });
 function commit(next){
-  const prev=S;S=next;render();
+  const prev=S;next={...S,...next};S=next;render();
   q=q.then(()=>setDoc(ref,next)).catch(()=>{S=prev;render();$('msg').textContent='儲存失敗：請確認已登入管理員帳號'});
 }
+const ymd=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 function adjust(d,n,key){
   if(!admin)return;
-  const np=Math.max(0,S.points+d),real=np-S.points;
+  const np0=Math.max(0,S.points+d),real=np0-S.points;
   if(!real)return;
+  let np=np0,log=[{t:Date.now(),d:real,n:n||''},...S.log];
   const done={...(S.done||{})};if(key)done[key]=today();
-  commit({points:np,log:[{t:Date.now(),d:real,n:n||''},...S.log].slice(0,50),done,gifts:S.gifts||[]});
+  const patch={};
+  if(key==='每日登入禮'){
+    const st=S.streak||{last:'',n:0},y=new Date();y.setDate(y.getDate()-1);
+    const cnt=st.last===today()?st.n:(st.last===ymd(y)?st.n+1:1);
+    patch.streak={last:today(),n:cnt};
+    if(st.last!==today()&&cnt%7===0){np+=20;log=[{t:Date.now()+1,d:20,n:'連續登入 '+cnt+' 天獎勵 🎉'},...log]}
+  }
+  commit({...patch,points:np,log:log.slice(0,200),done,gifts:S.gifts||[]});
 }
 function redeem(g,cost){
   if(!admin||S.points<cost)return;
   const now=Date.now();
-  commit({points:S.points-cost,log:[{t:now,d:-cost,n:'兌換：'+g.n},...S.log].slice(0,50),done:{...(S.done||{})},gifts:[{t:now,n:g.n,u:0},...(S.gifts||[])].slice(0,100)});
+  commit({points:S.points-cost,log:[{t:now,d:-cost,n:'兌換：'+g.n},...S.log].slice(0,200),done:{...(S.done||{})},gifts:[{t:now,n:g.n,u:0},...(S.gifts||[])].slice(0,100)});
 }
 function markUsed(t){
   if(!admin)return;
@@ -630,9 +688,18 @@ document.addEventListener('click',e=>{
   if(!b)return;
   const isTask=b.classList.contains('task');
   if(isTask&&(S.done||{})[b.dataset.n]===today())return;
+  if(isTask&&!admin){requestTask(b);return}
   adjust(Number(b.dataset.d),isTask?b.dataset.n:$('note').value.trim(),isTask?b.dataset.n:null);
   if(!isTask)$('note').value='';
 });
+const pendKey=n=>'tp_'+n;
+const isPend=n=>{try{return localStorage.getItem(pendKey(n))===today()}catch(e){return false}};
+function requestTask(b){
+  const n=b.dataset.n;if(isPend(n))return;
+  addDoc(collection(db,'inbox'),{k:'task',n:n,d:Number(b.dataset.d),t:Date.now()})
+    .then(()=>{try{localStorage.setItem(pendKey(n),today())}catch(e){}render();$('msg').textContent='已通知苑均，等她確認後加點 💕';setTimeout(()=>{$('msg').textContent=''},4000)})
+    .catch(()=>{$('msg').textContent='送出失敗，請再試一次'});
+}
 $('loginBtn').onclick=()=>signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value)
   .then(()=>{$('pw').value='';$('msg').textContent=''}).catch(()=>{$('msg').textContent='登入失敗，請檢查 Email 和密碼'});
 $('outBtn').onclick=()=>signOut(auth);
@@ -642,9 +709,27 @@ function renderInbox(){
   $('inboxCard').hidden=!(admin&&inbox.length);
   $('inboxList').innerHTML=inbox.map(x=>{
     const d=new Date(x.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-    return '<div class="iq"><div class="row2"><div class="qt">'+esc(x.q)+'</div><button class="undo" data-inbox="'+esc(x.id)+'">收到了</button></div><small>'+ds+'</small></div>';
+    if(x.k==='task'){
+      const tb=document.querySelector('button.task[data-n="'+String(x.n).replace(/"/g,'\\"')+'"]');
+      const dn=tb&&(S.done||{})[x.n]===today();
+      return '<div class="iq"><div class="qt">✅ 他說完成了：'+esc(x.n)+(tb?' +'+tb.dataset.d:'')+'</div><small>'+ds+(dn?'（今天已加過）':'')+'</small><div class="bt">'+(tb&&!dn?'<button class="p" data-ok="'+esc(x.id)+'">確認 +'+tb.dataset.d+'</button>':'')+'<button class="undo" data-inbox="'+esc(x.id)+'">'+(dn?'清掉':'沒過')+'</button></div></div>';
+    }
+    return '<div class="iq"><div class="qt">❓ '+esc(x.q)+'</div><small>'+ds+'</small><input id="rp_'+esc(x.id)+'" maxlength="100" placeholder="回覆他…（他會在App看到）"><div class="bt"><button class="p" data-reply="'+esc(x.id)+'">回覆</button><button class="undo" data-inbox="'+esc(x.id)+'">收到了</button></div></div>';
   }).join('');
 }
+document.addEventListener('click',e=>{
+  if(!admin)return;
+  const ok=e.target.closest('button[data-ok]');
+  if(ok){const x=inbox.find(v=>v.id===ok.dataset.ok);if(!x)return;
+    const tb=document.querySelector('button.task[data-n="'+String(x.n).replace(/"/g,'\\"')+'"]');
+    if(tb&&(S.done||{})[x.n]!==today())adjust(Number(tb.dataset.d),x.n,x.n);
+    deleteDoc(doc(db,'inbox',x.id)).catch(()=>{});return}
+  const rp=e.target.closest('button[data-reply]');
+  if(rp){const x=inbox.find(v=>v.id===rp.dataset.reply),inp=$('rp_'+rp.dataset.reply);
+    const a=inp&&inp.value.trim();if(!x||!a)return;
+    commit({qa:[{q:x.q,a:a.slice(0,200),t:Date.now()},...(S.qa||[])].slice(0,20)});
+    deleteDoc(doc(db,'inbox',x.id)).catch(()=>{})}
+});
 document.addEventListener('click',e=>{
   const b=e.target.closest('button[data-inbox]');
   if(b&&admin)deleteDoc(doc(db,'inbox',b.dataset.inbox)).catch(()=>{$('msg').textContent='刪除失敗，請再試一次'});
@@ -656,10 +741,10 @@ onAuthStateChanged(auth,u=>{
   if(admin)inboxOff=onSnapshot(query(collection(db,'inbox'),orderBy('t','desc'),limit(30)),snap=>{inbox=snap.docs.map(d=>({id:d.id,...d.data()}));renderInbox()},()=>{});
   render();renderInbox();
 });
-const t=setTimeout(()=>{$('msg').textContent='暫時連不上，資料可能不是最新'},10000);
+const _t0=0;const t=setTimeout(()=>{$('msg').textContent='暫時連不上，資料可能不是最新'},10000);
 onSnapshot(ref,s=>{
   clearTimeout(t);$('msg').textContent='';
-  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{},gifts:v.gifts||[]}}
+  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{},gifts:v.gifts||[],qa:v.qa||[],anniv:v.anniv||'2026-9-25',streak:v.streak||null}}
   render();
 },()=>{clearTimeout(t);$('msg').textContent='讀取失敗，請檢查網路或 Firebase 設定'});
 document.querySelectorAll('.nt').forEach(b=>b.addEventListener('click',()=>{
@@ -669,6 +754,36 @@ document.querySelectorAll('.nt').forEach(b=>b.addEventListener('click',()=>{
 }));
 render();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+<script>
+(function(){
+  var pity=0,guar=false,total=0,ups=0,$=function(i){return document.getElementById(i)};
+  function info(){$('simInfo').textContent='已抽 '+total+' 次　距離保底還有 '+(90-pity)+' 抽　'+(guar?'（下一隻 5★ 必是限定！）':'')}
+  function one(){
+    pity++;total++;
+    var r=Math.random(),rate=pity<74?0.006:Math.min(1,0.006+(pity-73)*0.06);
+    if(pity>=90)rate=1;
+    if(r<rate){
+      pity=0;
+      if(guar||Math.random()<0.5){guar=false;ups++;return {c:'s5',t:'💖 限定貓咪公主'}}
+      guar=true;return {c:'s5',t:'🐱 常駐小貓（歪了）',lose:1}
+    }
+    if(Math.random()<0.051)return {c:'s4',t:'⭐4 小魚乾'};
+    return {c:'',t:['🧶 毛線球','🐟 小魚','🥫 罐罐'][Math.floor(Math.random()*3)]};
+  }
+  function pull(n){
+    var res=[],i;for(i=0;i<n;i++)res.push(one());
+    $('simOut').innerHTML=res.map(function(x){return '<span class="'+x.c+'">'+x.t+'</span>'}).join('');
+    var m='',w=res.filter(function(x){return x.lose}).length,u=res.filter(function(x){return x.c==='s5'&&!x.lose}).length;
+    if(u)m='出貨啦！🎉 限定貓咪公主來報到～';
+    else if(w)m='歪了也沒關係，下一隻 5★ 保證是限定的 🐾';
+    else m=n===10?'這次沒有 5★，再接再厲～':'';
+    $('simMsg').textContent=m;info();
+  }
+  $('sim1').onclick=function(){pull(1)};$('sim10').onclick=function(){pull(10)};
+  $('simReset').onclick=function(){pity=0;guar=false;total=0;ups=0;$('simOut').innerHTML='';$('simMsg').textContent='';info()};
+  info();
+})();
 </script>
 </body>
 </html>
