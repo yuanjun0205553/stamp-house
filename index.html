@@ -123,6 +123,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 #pg-home[hidden],#pg-gifts[hidden],#pg-mine[hidden]{display:none}
 .g5{grid-template-columns:repeat(5,1fr)}.g5 button{padding:12px 0;font-size:14px}
 .lr{display:flex;align-items:center;gap:10px}.undo{padding:5px 10px;font-size:12px;border-radius:12px;background:var(--soft);color:var(--sub);font-weight:600}.undo.p{background:#e5586f;color:#fff}
+.iq{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft)}.iq small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.iq .row2{display:flex;justify-content:space-between;align-items:center;gap:10px}.iq .qt{flex:1;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
 </style>
 </head>
 <body>
@@ -139,6 +140,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 </div>
 <nav class="navtabs" role="tablist"><button class="nt on" data-pg="home" role="tab" aria-selected="true"><span>🐾</span>集點卡</button><button class="nt" data-pg="gifts" role="tab" aria-selected="false"><span>🎁</span>禮物</button><button class="nt" data-pg="mine" role="tab" aria-selected="false"><span>🎫</span>我的禮物券<i class="bdg" id="mineBdg" hidden></i></button></nav>
 <div id="pg-home">
+<div class="card" id="inboxCard" hidden><h2>收件匣 💌</h2><div id="inboxList"></div></div>
 <div class="card">
 <h2 id="taskTitle">任務清單</h2>
 <button class="task" data-d="10" data-n="每日登入禮"><span>每日登入禮 🎁</span><em>+10 點</em></button>
@@ -490,15 +492,21 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
         navigator.clipboard.writeText(text).then(function(){done('已複製！貼給苑均就好 💌')},function(){msg.textContent='複製失敗，請自己複製上面的字，傳給苑均'});
       }else{msg.textContent='這個瀏覽器不能自動傳送，請自己複製上面的字，傳給苑均'}
     }
-    if(navigator.share){navigator.share({text:text}).then(function(){done('已送出！等苑均回答 💌')}).catch(function(e){if(!e||e.name!=='AbortError')copy()})}
-    else copy();
+    function fallback(){
+      if(navigator.share){navigator.share({text:text}).then(function(){done('已送出！等苑均回答 💌')}).catch(function(e){if(!e||e.name!=='AbortError')copy()})}
+      else copy();
+    }
+    if(window.sendQuestion){
+      $('askBtn').disabled=true;msg.textContent='送出中…';
+      window.sendQuestion(q).then(function(){done('已送出！苑均登入就會看到 💌')}).catch(function(){$('askBtn').disabled=false;msg.textContent='';fallback()});
+    }else fallback();
   });
 })();
 </script>
 <script type="module">
 import {firebaseConfig} from './config.js';
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import {getFirestore,doc,onSnapshot,setDoc} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import {getFirestore,doc,onSnapshot,setDoc,addDoc,collection,query,orderBy,limit,deleteDoc} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 const $=id=>document.getElementById(id);
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),ref=doc(db,'stamp','main');
@@ -619,7 +627,26 @@ document.addEventListener('click',e=>{
 $('loginBtn').onclick=()=>signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value)
   .then(()=>{$('pw').value='';$('msg').textContent=''}).catch(()=>{$('msg').textContent='登入失敗，請檢查 Email 和密碼'});
 $('outBtn').onclick=()=>signOut(auth);
-onAuthStateChanged(auth,u=>{admin=!!u;render()});
+window.sendQuestion=q=>addDoc(collection(db,'inbox'),{q:String(q).slice(0,100),t:Date.now()});
+let inbox=[],inboxOff=null;
+function renderInbox(){
+  $('inboxCard').hidden=!(admin&&inbox.length);
+  $('inboxList').innerHTML=inbox.map(x=>{
+    const d=new Date(x.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    return '<div class="iq"><div class="row2"><div class="qt">'+esc(x.q)+'</div><button class="undo" data-inbox="'+esc(x.id)+'">收到了</button></div><small>'+ds+'</small></div>';
+  }).join('');
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-inbox]');
+  if(b&&admin)deleteDoc(doc(db,'inbox',b.dataset.inbox)).catch(()=>{$('msg').textContent='刪除失敗，請再試一次'});
+});
+onAuthStateChanged(auth,u=>{
+  admin=!!u;
+  if(inboxOff){inboxOff();inboxOff=null}
+  inbox=[];
+  if(admin)inboxOff=onSnapshot(query(collection(db,'inbox'),orderBy('t','desc'),limit(30)),snap=>{inbox=snap.docs.map(d=>({id:d.id,...d.data()}));renderInbox()},()=>{});
+  render();renderInbox();
+});
 const t=setTimeout(()=>{$('msg').textContent='暫時連不上，資料可能不是最新'},10000);
 onSnapshot(ref,s=>{
   clearTimeout(t);$('msg').textContent='';
