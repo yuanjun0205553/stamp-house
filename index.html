@@ -121,6 +121,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .nt{flex:1;padding:8px 8px 9px;border-radius:18px;font-size:14px;line-height:1.3}.nt{position:relative}.nt span{display:block;font-size:22px}.bdg{position:absolute;top:2px;right:8px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e5586f;color:#fff;font-style:normal;font-size:11px;line-height:18px;text-align:center}
 .nt.on{background:var(--acc);color:#fff}
 #pg-home[hidden],#pg-gifts[hidden],#pg-mine[hidden]{display:none}
+.g5{grid-template-columns:repeat(5,1fr)}.g5 button{padding:12px 0;font-size:14px}
 </style>
 </head>
 <body>
@@ -143,15 +144,15 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="task" data-d="1" data-n="分享今日小確幸"><span>分享今日小確幸</span><em>+1 點</em></button>
 <button class="task" data-d="1" data-n="自己想要吃什麼"><span>自己想要吃什麼</span><em>+1 點</em></button>
 <button class="task" data-d="2" data-n="出去玩自己想行程"><span>出去玩自己想行程</span><em>+2 點</em></button>
-<button class="task" data-d="3" data-n="乖乖運動"><span>乖乖運動</span><em>+3 點</em></button>
+<button class="task" data-d="100" data-n="乖乖運動"><span>乖乖運動</span><em>+100 點</em></button>
 <button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
 </div>
 <div id="admin" hidden>
 <div class="card">
 <h2>手動調整點數</h2>
 <input id="note" placeholder="備註（選填，他也看得到）" maxlength="30">
-<div class="grid"><button class="p" data-d="1">+1</button><button class="p" data-d="5">+5</button><button class="p" data-d="10">+10</button></div>
-<div class="grid"><button data-d="-1">−1</button><button data-d="-5">−5</button><button data-d="-10">−10</button></div>
+<div class="grid g5"><button class="p" data-d="1">+1</button><button class="p" data-d="5">+5</button><button class="p" data-d="10">+10</button><button class="p" data-d="50">+50</button><button class="p" data-d="100">+100</button></div>
+<div class="grid g5"><button data-d="-1">−1</button><button data-d="-5">−5</button><button data-d="-10">−10</button><button data-d="-50">−50</button><button data-d="-100">−100</button></div>
 </div>
 </div>
 <div class="card games gacha">
@@ -230,7 +231,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 </div>
 </div>
 <div id="pg-gifts" hidden>
-<p class="sub" style="margin:2px 4px 10px">1 張禮物卡 = 1000 點，點數夠了就能兌換</p>
+<p class="sub" style="margin:2px 4px 10px">1 張禮物卡 = 500 點，點數夠了就能兌換</p>
 <div id="giftList"></div>
 </div>
 <div id="pg-mine" hidden>
@@ -499,7 +500,7 @@ import {getFirestore,doc,onSnapshot,setDoc} from 'https://www.gstatic.com/fireba
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 const $=id=>document.getElementById(id);
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),ref=doc(db,'stamp','main');
-const PER=1000; // 幾點換 1 份禮物
+const PER=500; // 幾點換 1 份禮物
 let S={points:0,log:[],done:{},gifts:[]},admin=false,q=Promise.resolve();
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const showLogin=new URLSearchParams(location.search).has('admin');
