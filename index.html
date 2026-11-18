@@ -118,7 +118,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .gbtn:disabled{opacity:.6;cursor:default}
 .gst{font-size:13px;color:var(--sub);white-space:nowrap}.gst.ok{color:var(--acc);font-weight:700}
 .navtabs{position:sticky;top:0;z-index:5;display:flex;gap:8px;padding:8px 0 10px;margin-bottom:6px;background:var(--bg)}
-.nt{flex:1;padding:8px 8px 9px;border-radius:18px;font-size:14px;line-height:1.3}.nt{position:relative}.nt span{display:block;font-size:22px}.bdg{position:absolute;top:2px;right:8px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e5586f;color:#fff;font-style:normal;font-size:11px;line-height:18px;text-align:center}
+.nt{flex:1;min-width:0;padding:8px 4px 9px;white-space:nowrap;border-radius:18px;font-size:14px;line-height:1.3}.nt{position:relative}.nt span{display:block;font-size:22px}.bdg{position:absolute;top:2px;right:8px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e5586f;color:#fff;font-style:normal;font-size:11px;line-height:18px;text-align:center}
 .nt.on{background:var(--acc);color:#fff}
 #pg-home[hidden],#pg-gifts[hidden],#pg-mine[hidden]{display:none}
 .g5{grid-template-columns:repeat(5,1fr)}.g5 button{padding:12px 0;font-size:14px}
@@ -132,7 +132,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .sc.s5::after{content:"";position:absolute;top:-30%;left:-60%;width:40%;height:160%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);transform:rotate(20deg);animation:shine 2s infinite}
 .sc.lose{filter:saturate(.8)}.sc .tag{position:absolute;top:3px;right:3px;font-size:9px;background:#ff6f91;color:#fff;border-radius:6px;padding:0 4px}
 @keyframes scIn{from{transform:rotateY(90deg) scale(.6);opacity:0}to{transform:none;opacity:1}}@keyframes shine{0%{left:-60%}60%,100%{left:130%}}
-.dex{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px}.dex .sc{animation:none}.dex .sc.no{filter:grayscale(1);opacity:.35}.dex .sc.no svg{opacity:.2}.dex .cnt{position:absolute;top:3px;left:3px;font-size:10px;background:#5b3a4d;color:#fff;border-radius:8px;padding:0 5px}
+.dtabs{display:flex;gap:6px;margin-top:6px}.dtabs button{flex:1;padding:8px 4px;font-size:13px}.dtabs button.on{background:var(--acc);color:#fff}.sc .nm{overflow-wrap:anywhere}.sim-out.ten .sc .nm{font-size:10px;min-height:24px}.dex{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px}.dex .sc{animation:none}.dex .sc.no{filter:grayscale(1);opacity:.35}.dex .sc.no svg{opacity:.2}.dex .cnt{position:absolute;top:3px;left:3px;font-size:10px;background:#5b3a4d;color:#fff;border-radius:8px;padding:0 5px}
 .iq{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft)}.iq small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.iq .row2{display:flex;justify-content:space-between;align-items:center;gap:10px}.iq .qt{flex:1;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
 .gthumb.sm{width:46px;height:46px;font-size:22px;border-radius:13px;flex:none}
 </style>
@@ -149,7 +149,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="bar"><i id="fill" style="width:0%"></i></div>
 <div class="sub" id="hint" style="margin:0"></div>
 </div>
-<nav class="navtabs" role="tablist"><button class="nt on" data-pg="home" role="tab" aria-selected="true"><span>🐾</span>集點卡</button><button class="nt" data-pg="gifts" role="tab" aria-selected="false"><span>🎁</span>禮物</button><button class="nt" data-pg="mine" role="tab" aria-selected="false"><span>🎫</span>我的禮物券<i class="bdg" id="mineBdg" hidden></i></button></nav>
+<nav class="navtabs" role="tablist"><button class="nt on" data-pg="home" role="tab" aria-selected="true"><span>🐾</span>集點卡</button><button class="nt" data-pg="games" role="tab" aria-selected="false"><span>🎮</span>遊戲</button><button class="nt" data-pg="gifts" role="tab" aria-selected="false"><span>🎁</span>禮物</button><button class="nt" data-pg="mine" role="tab" aria-selected="false"><span>🎫</span>我的禮物券<i class="bdg" id="mineBdg" hidden></i></button></nav>
 <div id="pg-home">
 <div class="card" id="annivCard" hidden><div class="big" id="annivBig"></div><div class="sub" id="annivSub" style="margin:0"></div></div>
 <div class="card" id="qaCard" hidden><h2>苑均的回覆 💌</h2><div id="qaList"></div></div>
@@ -176,6 +176,18 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="grid g5"><button data-d="-1">−1</button><button data-d="-5">−5</button><button data-d="-10">−10</button><button data-d="-50">−50</button><button data-d="-100">−100</button></div>
 </div>
 </div>
+<div class="card" id="weekCard" hidden><h2>每週回顧 📅</h2><div id="weekBody"></div></div>
+<div class="card"><h2>紀錄</h2><div id="log"><span class="sub">還沒有紀錄</span></div></div>
+<div class="card" id="loginBox">
+<h2>管理員登入</h2>
+<input id="em" type="email" placeholder="Email" autocomplete="username">
+<input id="pw" type="password" placeholder="密碼" autocomplete="current-password">
+<button class="p" id="loginBtn" style="width:100%">登入</button>
+</div>
+<div style="text-align:center"><button class="link" id="outBtn" hidden>登出</button></div>
+</div>
+</div>
+<div id="pg-games" hidden>
 <div class="card games gacha">
 <h2>小遊戲 🐾</h2>
 <p class="sub">玩玩看，都不會影響點數</p>
@@ -236,13 +248,13 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="p" id="memAgain" style="width:100%" hidden>再玩一次</button>
 </section>
 <section class="panel" id="p-sim" hidden>
-<h3>模擬抽卡 🎰</h3><p class="sub">不花點數，純粹過癮！每次 5★ 有 50% 機率歪，歪了下一次一定是限定；90 抽內必出 5★。</p>
+<h3>模擬抽卡 🎰</h3><p class="sub">不花點數，純粹過癮！每天限抽 10 次，明天再來！每次 5★ 有 50% 機率歪，歪了下一次一定是限定；90 抽內必出 5★。</p>
 <div class="sub" id="simInfo" style="margin:0 0 8px"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr"><button id="sim1">抽 1 次</button><button class="p" id="sim10">抽 10 次</button></div>
 <div class="sim-out one" id="simOut"></div>
 <div class="sub" id="simMsg" style="min-height:18px"></div>
 <button id="simReset" style="width:100%;margin-top:8px">重新開始</button>
-<h3 style="margin-top:16px">我的卡冊 <span class="sub" id="dexCnt"></span></h3><div class="dex" id="dex"></div>
+<h3 style="margin-top:16px">我的卡冊 <span class="sub" id="dexCnt"></span></h3><div class="dtabs" id="dtabs"></div><div class="dex" id="dex"></div>
 </section>
 <section class="panel" id="p-ask" hidden>
 <h3>每日一問 💌</h3><p class="sub">每天可以問苑均一個問題（不一定要問）。按送出會跳出分享，選她就好。</p>
@@ -250,16 +262,6 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="p" id="askBtn" style="width:100%">送出給苑均</button>
 <div class="sub" id="askMsg" style="min-height:18px;margin-top:8px"></div>
 </section>
-</div>
-<div class="card" id="weekCard" hidden><h2>每週回顧 📅</h2><div id="weekBody"></div></div>
-<div class="card"><h2>紀錄</h2><div id="log"><span class="sub">還沒有紀錄</span></div></div>
-<div class="card" id="loginBox">
-<h2>管理員登入</h2>
-<input id="em" type="email" placeholder="Email" autocomplete="username">
-<input id="pw" type="password" placeholder="密碼" autocomplete="current-password">
-<button class="p" id="loginBtn" style="width:100%">登入</button>
-</div>
-<div style="text-align:center"><button class="link" id="outBtn" hidden>登出</button></div>
 </div>
 </div>
 <div id="pg-gifts" hidden>
@@ -275,7 +277,12 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
   var INK='#5b3a4a',PINK='#ff7a9c',SKIN,LINE,STRIPE,EAR,WHITE=false;
   var CATS={
     o:{skin:'#ffe6cc',line:'#e3a06c',stripe:'#e3a06c',ear:'#ffb3cb',white:false},
-    t:{skin:'#bba58f',line:'#7b6450',stripe:'#5a4636',ear:'#eab9bd',white:true}
+    t:{skin:'#bba58f',line:'#7b6450',stripe:'#5a4636',ear:'#eab9bd',white:true},
+    g:{skin:'#c3cad4',line:'#8592a3',stripe:'#8592a3',ear:'#f0b8c4',white:false},
+    w:{skin:'#fffaf3',line:'#d6c4b0',stripe:'#e6d8c8',ear:'#ffc4d4',white:false},
+    y:{skin:'#f4b97c',line:'#c9783a',stripe:'#c9783a',ear:'#ffb3cb',white:true},
+    c:{skin:'#e6cfae',line:'#b38c60',stripe:'#b38c60',ear:'#f2b8b8',white:false},
+    k:{skin:'#9a94a6',line:'#565062',stripe:'#565062',ear:'#e8a9b9',white:false}
   };
   function useCat(c){var k=CATS[c]||CATS.o;SKIN=k.skin;LINE=k.line;STRIPE=k.stripe;EAR=k.ear;WHITE=k.white}
   function B(){
@@ -300,7 +307,20 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
     bite:function(){return B()+'<path d="M40 59 l11 5 l-11 5" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M80 59 l-11 5 l11 5" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M48 76 h24 v3 q-12 10 -24 0 z" fill="#fff" stroke="'+INK+'" stroke-width="2.5" stroke-linejoin="round"/><path d="M54 75 v6 M60 75 v7 M66 75 v6" stroke="'+LINE+'" stroke-width="1.5"/>'+bubble(66,2,50,'啊嗚 啊嗚',10)},
     thanks:function(){return B()+arc(41,64,1)+dot(74,62)+smile()+'<rect x="26" y="94" width="68" height="24" rx="8" fill="#fff" stroke="'+LINE+'" stroke-width="2.5"/><text x="60" y="111" text-anchor="middle" font-size="12" font-weight="700" fill="'+INK+'">銘謝惠顧</text>'}
   };
-  function art(k,c){useCat(c);return '<svg viewBox="0 0 120 124" width="128" height="132" aria-hidden="true" style="overflow:visible">'+ART[k]()+'</svg>'}
+  var ACC={
+    party:'<path d="M46 36 L60 5 L74 36 Z" fill="#ff8fab" stroke="#d9567b" stroke-width="2.5" stroke-linejoin="round"/><path d="M52 24 h16 M49 31 h22" stroke="#fff" stroke-width="2.5"/><circle cx="60" cy="5" r="4.5" fill="#ffd166" stroke="#e0a800" stroke-width="2"/>',
+    crown:'<path d="M42 37 L40 15 L52 25 L60 10 L68 25 L80 15 L78 37 Z" fill="#ffd54a" stroke="#d99a00" stroke-width="3" stroke-linejoin="round"/><circle cx="60" cy="10" r="3" fill="#ff6f91"/><circle cx="40" cy="15" r="2.5" fill="#ff6f91"/><circle cx="80" cy="15" r="2.5" fill="#ff6f91"/>',
+    bow:'<g transform="translate(86 32)"><path d="M0 0 L-14 -8 L-14 8 Z M0 0 L14 -8 L14 8 Z" fill="#ff7aa8" stroke="#d6457c" stroke-width="2.5" stroke-linejoin="round"/><circle r="4" fill="#ff4f8b" stroke="#d6457c" stroke-width="2"/></g>',
+    glasses:'<g fill="rgba(190,225,255,.3)" stroke="#5b3a4a" stroke-width="2.8"><circle cx="45" cy="63" r="11"/><circle cx="75" cy="63" r="11"/><path d="M56 62 q4 -4 8 0" fill="none"/><path d="M34 62 l-9 -3 M86 62 l9 -3" fill="none"/></g>',
+    sunglasses:'<path d="M31 55 h26 v10 q0 8 -13 8 q-13 0 -13 -8 z M63 55 h26 v10 q0 8 -13 8 q-13 0 -13 -8 z" fill="#2b2433" stroke="#2b2433" stroke-width="2" stroke-linejoin="round"/><path d="M57 58 h6" stroke="#2b2433" stroke-width="3"/><path d="M36 59 h8 M68 59 h8" stroke="#fff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/>',
+    scarf:'<path d="M28 90 Q60 112 92 90 L94 100 Q60 122 26 100 Z" fill="#ef6f6c" stroke="#b94441" stroke-width="2.5" stroke-linejoin="round"/><path d="M78 105 l4 15 l12 -4 l-4 -14 z" fill="#ef6f6c" stroke="#b94441" stroke-width="2.5" stroke-linejoin="round"/><path d="M40 98 v3 M52 103 v3 M64 103 v3" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>',
+    tie:'<g transform="translate(60 106)"><path d="M0 0 L-14 -8 L-14 8 Z M0 0 L14 -8 L14 8 Z" fill="#6a8de8" stroke="#3f5fc4" stroke-width="2.5" stroke-linejoin="round"/><circle r="4" fill="#8fb0ff" stroke="#3f5fc4" stroke-width="2"/></g>',
+    flower:'<g transform="translate(36 31)" fill="#ffb3d1" stroke="#e58aaf" stroke-width="1.5"><circle cy="-6" r="5"/><circle cx="6" cy="-2" r="5"/><circle cx="4" cy="5" r="5"/><circle cx="-4" cy="5" r="5"/><circle cx="-6" cy="-2" r="5"/><circle r="4" fill="#ffd54a" stroke="#e0a800"/></g>',
+    leaf:'<path d="M60 32 q-4 -14 10 -19 q4 14 -10 19 Z" fill="#7bd389" stroke="#3f9b52" stroke-width="2.5" stroke-linejoin="round"/><path d="M60 32 q4 -8 8 -14" stroke="#3f9b52" stroke-width="2" fill="none"/>',
+    tophat:'<path d="M46 36 L47 12 h26 L74 36 Z" fill="#3a3342" stroke="#2b2433" stroke-width="2.5" stroke-linejoin="round"/><path d="M38 36 h44" stroke="#2b2433" stroke-width="5" stroke-linecap="round"/><path d="M47 28 h26" stroke="#ff6f91" stroke-width="5"/>',
+    halo:'<ellipse cx="60" cy="13" rx="17" ry="5" fill="none" stroke="#ffd54a" stroke-width="4"/>'
+  };
+  function art(k,c,a){useCat(c);return '<svg viewBox="0 0 120 124" width="128" height="132" aria-hidden="true" style="overflow:visible">'+ART[k]()+(a&&ACC[a]?ACC[a]:'')+'</svg>'}
   var PRIZES=[
     {k:'hug',c:'o',t:'苑均抱抱'},{k:'kiss',c:'t',t:'苑均親親'},{k:'massage',c:'o',t:'苑均幫你按肩膀 30 秒'},
     {k:'praise',c:'t',t:'苑均誇你三句'},{k:'daze',c:'o',t:'苑均陪你發呆 5 分鐘'},{k:'air',c:'o',t:'苑均請你吃空氣'},
@@ -760,7 +780,7 @@ onSnapshot(ref,s=>{
 },()=>{clearTimeout(t);$('msg').textContent='讀取失敗，請檢查網路或 Firebase 設定'});
 document.querySelectorAll('.nt').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.nt').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});
-  ['home','gifts','mine'].forEach(k=>{$('pg-'+k).hidden=b.dataset.pg!==k});
+  ['home','games','gifts','mine'].forEach(k=>{$('pg-'+k).hidden=b.dataset.pg!==k});
   window.scrollTo(0,0);
 }));
 render();
@@ -769,47 +789,67 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
 <script>
 (function(){
   var $=function(i){return document.getElementById(i)};
-  var CARDS=[
-    {k:'hug',c:'o',n:'抱抱公主',r:5,up:1},{k:'kiss',c:'t',n:'親親公主',r:5,up:1},{k:'praise',c:'t',n:'誇誇小貓',r:5},
-    {k:'massage',c:'o',n:'按摩師傅',r:4},{k:'pat',c:'o',n:'摸摸頭貓',r:4},{k:'bite',c:'t',n:'咬咬貓',r:4},
-    {k:'daze',c:'o',n:'發呆貓',r:3},{k:'air',c:'o',n:'空氣貓',r:3},{k:'eyeroll',c:'t',n:'白眼貓',r:3},{k:'thanks',c:'t',n:'銘謝惠顧',r:3}
-  ];
-  var pity=0,guar=false,total=0,own={};
-  try{var sv=JSON.parse(localStorage.getItem('simdex')||'{}');own=sv.own||{};total=sv.total||0;pity=sv.pity||0;guar=!!sv.guar}catch(e){}
-  function save(){try{localStorage.setItem('simdex',JSON.stringify({own:own,total:total,pity:pity,guar:guar}))}catch(e){}}
-  function pick(f){var l=CARDS.filter(f);return l[Math.floor(Math.random()*l.length)]}
+  var POSE={hug:'抱抱',kiss:'親親',massage:'按摩',praise:'誇誇',daze:'發呆',air:'空氣',eyeroll:'白眼',pat:'摸頭',bite:'咬咬',thanks:'銘謝'};
+  var COL={o:'橘',t:'虎',g:'灰',w:'白',y:'花',c:'茶',k:'墨'};
+  var ACN={none:'貓',party:'派對',crown:'皇冠',bow:'蝶結',glasses:'眼鏡',sunglasses:'墨鏡',scarf:'圍巾',tie:'領結',flower:'小花',tophat:'紳士',leaf:'小葉',halo:'天使'};
+  var PK=Object.keys(POSE),CK=Object.keys(COL);
+  var seed=20260925;function rnd(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}
+  function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
+  var CARDS=[],used={};
+  function add(k,c,a,r,n,up){var id=k+c+a;if(used[id])return false;used[id]=1;CARDS.push({id:id,k:k,c:c,a:a,r:r,n:n||(COL[c]+ACN[a]+POSE[k]),up:up});return true}
+  add('hug','o','crown',5,'抱抱王子',1);add('kiss','y','crown',5,'親親王子',1);add('praise','w','crown',5,'誇誇王子',1);
+  [['massage','t'],['pat','t'],['daze','y'],['bite','o'],['air','w'],['eyeroll','g'],['thanks','k'],['hug','k'],['kiss','c'],['praise','g']].forEach(function(x){add(x[0],x[1],'crown',5)});
+  add('hug','w','tophat',5);add('kiss','t','tophat',5);
+  function pool(accs){var l=[];accs.forEach(function(a){PK.forEach(function(k){CK.forEach(function(c){l.push([k,c,a])})})});return shuf(l)}
+  var n4=0;pool(['party','scarf','sunglasses','halo','tophat']).forEach(function(x){if(n4<36&&add(x[0],x[1],x[2],4))n4++});
+  var n3=0;pool(['none','none','bow','flower','leaf','glasses','tie']).forEach(function(x){if(n3<100&&add(x[0],x[1],x[2],3))n3++});
+  var BYR={3:[],4:[],5:[]};CARDS.forEach(function(c){BYR[c.r].push(c)});
+  var DAILY=10,pity=0,guar=false,total=0,own={},tab=5,used0={d:'',n:0};
+  try{var sv=JSON.parse(localStorage.getItem('simdex3')||'{}');own=sv.own||{};total=sv.total||0;pity=sv.pity||0;guar=!!sv.guar;used0=sv.u||used0}catch(e){}
+  function save(){try{localStorage.setItem('simdex3',JSON.stringify({own:own,total:total,pity:pity,guar:guar,u:used0}))}catch(e){}}
+  function pick(l){return l[Math.floor(Math.random()*l.length)]}
   function stars(n){return new Array(n+1).join('★')}
   function card(c,extra,delay){
-    var a=window.catArt?window.catArt(c.k,c.c):'';
-    return '<div class="sc s'+c.r+(extra&&extra.lose?' lose':'')+'" style="animation-delay:'+(delay||0)+'ms"><div class="st">'+stars(c.r)+'</div>'+a+'<div class="nm">'+c.n+'</div>'+(c.up?'<span class="tag">限定</span>':'')+'</div>';
+    var a=window.catArt?window.catArt(c.k,c.c,c.a):'';
+    return '<div class="sc s'+c.r+'" style="animation-delay:'+(delay||0)+'ms"><div class="st">'+stars(c.r)+'</div>'+a+'<div class="nm">'+c.n+'</div>'+(c.up?'<span class="tag">限定</span>':'')+'</div>';
   }
-  function info(){$('simInfo').textContent='已抽 '+total+' 次　距離保底還有 '+(90-pity)+' 抽　'+(guar?'（下一隻 5★ 必是限定！）':'');
-    var n=0;
-    $('dex').innerHTML=CARDS.map(function(c){var k=own[c.k]||0;if(k)n++;return k?card(c).replace('<div class="nm">','<span class="cnt">×'+k+'</span><div class="nm">'):'<div class="sc no"><div class="st">'+stars(c.r)+'</div><svg viewBox="0 0 120 124"><text x="60" y="80" font-size="60" text-anchor="middle">?</text></svg><div class="nm">？？？</div></div>'}).join('');
-    $('dexCnt').textContent='（'+n+'/'+CARDS.length+'）'}
+  function td(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+  function left(){if(used0.d!==td())used0={d:td(),n:0};return Math.max(0,DAILY-used0.n)}
+  function info(){
+    var L=left();$('sim1').disabled=L<1;$('sim10').disabled=L<10;$('sim1').style.opacity=L<1?'.45':'1';$('sim10').style.opacity=L<10?'.45':'1';
+    $('simInfo').textContent='今天還剩 '+L+' 抽（每天 '+DAILY+' 抽）　已抽 '+total+' 次　距離保底還有 '+(90-pity)+' 抽　'+(guar?'（下一隻 5★ 必是限定！）':'');
+    var cnt={3:0,4:0,5:0},all=0;CARDS.forEach(function(c){if(own[c.id])cnt[c.r]++});all=cnt[3]+cnt[4]+cnt[5];
+    $('dexCnt').textContent='（'+all+'/'+CARDS.length+'）';
+    $('dtabs').innerHTML=[5,4,3].map(function(r){return '<button data-r="'+r+'" class="'+(tab===r?'on':'')+'">'+r+'★ '+cnt[r]+'/'+BYR[r].length+'</button>'}).join('');
+    $('dex').innerHTML=BYR[tab].map(function(c){var k=own[c.id]||0;
+      return k?card(c).replace('<div class="nm">','<span class="cnt">×'+k+'</span><div class="nm">'):'<div class="sc no"><div class="st">'+stars(c.r)+'</div><div style="height:50px;font-size:34px;line-height:50px;color:#c9a0b4">?</div><div class="nm">？？？</div></div>'}).join('');
+  }
+  $('dtabs').onclick=function(e){var b=e.target.closest('button');if(b){tab=+b.dataset.r;info()}};
   function one(){
     pity++;total++;
-    var rate=pity<74?0.006:Math.min(1,0.006+(pity-73)*0.06);if(pity>=90)rate=1;
+    var rate=pity<74?0.004:Math.min(1,0.004+(pity-73)*0.06);if(pity>=90)rate=1;
     var c,lose=0;
     if(Math.random()<rate){
       pity=0;
-      if(guar||Math.random()<0.5){guar=false;c=pick(function(x){return x.up})}
-      else{guar=true;lose=1;c=pick(function(x){return x.r===5&&!x.up})}
-    }else if(Math.random()<0.051)c=pick(function(x){return x.r===4});
-    else c=pick(function(x){return x.r===3});
-    own[c.k]=(own[c.k]||0)+1;
+      if(guar||Math.random()<0.5){guar=false;c=pick(BYR[5].filter(function(x){return x.up}))}
+      else{guar=true;lose=1;c=pick(BYR[5].filter(function(x){return !x.up}))}
+    }else if(Math.random()<0.035)c=pick(BYR[4]);
+    else c=pick(BYR[3]);
+    own[c.id]=(own[c.id]||0)+1;
     return {c:c,lose:lose};
   }
   function pull(n){
+    if(left()<n){$('simMsg').textContent='今天的抽數用完囉，明天再來 🌙';return}
+    used0.n+=n;
     var res=[],i;for(i=0;i<n;i++)res.push(one());
     var o=$('simOut');o.className='sim-out '+(n===1?'one':'ten');
     o.innerHTML=res.map(function(x,i){return card(x.c,x,i*120)}).join('');
-    var w=res.some(function(x){return x.lose}),u=res.some(function(x){return x.c.up});
-    $('simMsg').textContent=u?'出貨啦！🎉 限定貓咪公主來報到～':(w?'歪了也沒關係，下一隻 5★ 保證是限定的 🐾':(n===10?'這次沒有 5★，再接再厲～':''));
+    var w=res.some(function(x){return x.lose}),u=res.some(function(x){return x.c.up}),f=res.some(function(x){return x.c.r===4});
+    $('simMsg').textContent=u?'出貨啦！🎉 限定貓咪王子來報到～':(w?'歪了也沒關係，下一隻 5★ 保證是限定的 🐾':(f?'有紫色的耶！':(n===10?'這次沒有好的，再接再厲～':'')));
     save();info();
   }
   $('sim1').onclick=function(){pull(1)};$('sim10').onclick=function(){pull(10)};
-  $('simReset').onclick=function(){pity=0;guar=false;total=0;own={};$('simOut').innerHTML='';$('simMsg').textContent='';save();info()};
+  $('simReset').onclick=function(){if(!confirm('要清掉所有卡片重新開始嗎？'))return;pity=0;guar=false;total=0;own={};$('simOut').innerHTML='';$('simMsg').textContent='';save();info()};
   info();
 })();
 </script>
