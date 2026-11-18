@@ -132,7 +132,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .sc.s5::after{content:"";position:absolute;top:-30%;left:-60%;width:40%;height:160%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);transform:rotate(20deg);animation:shine 2s infinite}
 .sc.lose{filter:saturate(.8)}.sc .tag{position:absolute;top:3px;right:3px;font-size:9px;background:#ff6f91;color:#fff;border-radius:6px;padding:0 4px}
 @keyframes scIn{from{transform:rotateY(90deg) scale(.6);opacity:0}to{transform:none;opacity:1}}@keyframes shine{0%{left:-60%}60%,100%{left:130%}}
-.dtabs{display:flex;gap:6px;margin-top:6px}.dtabs button{flex:1;padding:8px 4px;font-size:13px}.dtabs button.on{background:var(--acc);color:#fff}.sc .nm{overflow-wrap:anywhere}.sim-out.ten .sc .nm{font-size:10px;min-height:24px}.dex{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px}.dex .sc{animation:none}.dex .sc.no{filter:grayscale(1);opacity:.35}.dex .sc.no svg{opacity:.2}.dex .cnt{position:absolute;top:3px;left:3px;font-size:10px;background:#5b3a4d;color:#fff;border-radius:8px;padding:0 5px}
+.dtabs{display:flex;gap:6px;margin-top:6px}.rates{font-size:13px;line-height:1.7;background:var(--soft);border-radius:14px;padding:8px 10px;margin:0 0 8px}.rates small{color:var(--sub)}.sc.s1{border-color:#e9e2e6;background:#fbf8fa}.sc.s2{border-color:#cfe3d4;background:#f6fbf7}.dtabs button{flex:1;padding:8px 0;font-size:11px}.dtabs button.on{background:var(--acc);color:#fff}.sc .nm{overflow-wrap:anywhere}.sim-out.ten .sc .nm{font-size:10px;min-height:24px}.dex{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px}.dex .sc{animation:none}.dex .sc.no{filter:grayscale(1);opacity:.35}.dex .sc.no svg{opacity:.2}.dex .cnt{position:absolute;top:3px;left:3px;font-size:10px;background:#5b3a4d;color:#fff;border-radius:8px;padding:0 5px}
 .iq{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft)}.iq small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.iq .row2{display:flex;justify-content:space-between;align-items:center;gap:10px}.iq .qt{flex:1;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
 .gthumb.sm{width:46px;height:46px;font-size:22px;border-radius:13px;flex:none}
 </style>
@@ -160,7 +160,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="task" data-d="1" data-n="誇獎漂亮女友"><span>誇獎漂亮女友</span><em>+1 點</em></button>
 <button class="task" data-d="1" data-n="分享今日小確幸"><span>分享今日小確幸</span><em>+1 點</em></button>
 <button class="task" data-d="1" data-n="自己想要吃什麼"><span>自己想要吃什麼</span><em>+1 點</em></button>
-<button class="task" data-d="2" data-n="出去玩自己想行程"><span>出去玩自己想行程</span><em>+2 點</em></button>
+<button class="task" data-d="100" data-n="出去玩自己想行程"><span>出去玩自己想行程</span><em>+100 點</em></button>
 <button class="task" data-d="100" data-n="乖乖運動"><span>乖乖運動</span><em>+100 點</em></button>
 <button class="task" data-d="5" data-n="喝水一壺（請拍照傳給苑均）"><span>喝水一壺（請拍照傳給苑均）</span><em>+5 點</em></button>
 <button class="task" data-d="10" data-n="喝水二壺（請拍照傳給苑均）"><span>喝水二壺（請拍照傳給苑均）</span><em>+10 點</em></button>
@@ -248,7 +248,8 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="p" id="memAgain" style="width:100%" hidden>再玩一次</button>
 </section>
 <section class="panel" id="p-sim" hidden>
-<h3>模擬抽卡 🎰</h3><p class="sub">不花點數，純粹過癮！每天限抽 10 次，明天再來！每次 5★ 有 50% 機率歪，歪了下一次一定是限定；90 抽內必出 5★。</p>
+<h3>模擬抽卡 🎰</h3><p class="sub">不花點數，純粹過癮！每天可以抽 30 次，明天再來～</p>
+<div class="rates">機率：<b>5★ 0.4%</b>　<b>4★ 3.5%</b>　<b>3★ 16%</b>　<b>2★ 30%</b>　<b>1★ 50.1%</b><br><small>抽到第 90 次一定會出 5★（第 74 次起機率逐漸提高）</small></div>
 <div class="sub" id="simInfo" style="margin:0 0 8px"></div>
 <div class="grid" style="grid-template-columns:1fr 1fr"><button id="sim1">抽 1 次</button><button class="p" id="sim10">抽 10 次</button></div>
 <div class="sim-out one" id="simOut"></div>
@@ -318,6 +319,13 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
     flower:'<g transform="translate(36 31)" fill="#ffb3d1" stroke="#e58aaf" stroke-width="1.5"><circle cy="-6" r="5"/><circle cx="6" cy="-2" r="5"/><circle cx="4" cy="5" r="5"/><circle cx="-4" cy="5" r="5"/><circle cx="-6" cy="-2" r="5"/><circle r="4" fill="#ffd54a" stroke="#e0a800"/></g>',
     leaf:'<path d="M60 32 q-4 -14 10 -19 q4 14 -10 19 Z" fill="#7bd389" stroke="#3f9b52" stroke-width="2.5" stroke-linejoin="round"/><path d="M60 32 q4 -8 8 -14" stroke="#3f9b52" stroke-width="2" fill="none"/>',
     tophat:'<path d="M46 36 L47 12 h26 L74 36 Z" fill="#3a3342" stroke="#2b2433" stroke-width="2.5" stroke-linejoin="round"/><path d="M38 36 h44" stroke="#2b2433" stroke-width="5" stroke-linecap="round"/><path d="M47 28 h26" stroke="#ff6f91" stroke-width="5"/>',
+    cap:'<path d="M40 38 Q42 14 60 14 Q78 14 80 38 Z" fill="#5aa0e6" stroke="#2f6db3" stroke-width="2.5" stroke-linejoin="round"/><path d="M76 36 q16 0 18 6 h-18 z" fill="#3f86cf" stroke="#2f6db3" stroke-width="2.5" stroke-linejoin="round"/><circle cx="60" cy="14" r="3" fill="#2f6db3"/>',
+    bell:'<path d="M30 92 Q60 108 90 92" fill="none" stroke="#e25555" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="104" r="7" fill="#ffd54a" stroke="#d99a00" stroke-width="2.5"/><path d="M53 104 h14" stroke="#d99a00" stroke-width="2"/>',
+    mustache:'<path d="M60 73 q-6 -5 -15 -1 q4 9 15 4 q11 5 15 -4 q-9 -4 -15 1 z" fill="#4a3a3a" stroke="#4a3a3a" stroke-width="1.5" stroke-linejoin="round"/>',
+    headband:'<path d="M27 50 Q60 26 93 50" fill="none" stroke="#ef4f4f" stroke-width="7" stroke-linecap="round"/><path d="M27 50 Q60 26 93 50" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 5"/>',
+    star:'<path d="M88 61 l2.6 5.4 5.9 .8 -4.3 4.1 1 5.9 -5.2 -2.8 -5.2 2.8 1 -5.9 -4.3 -4.1 5.9 -.8 z" fill="#ffd54a" stroke="#d99a00" stroke-width="1.8" stroke-linejoin="round"/>',
+    bandana:'<path d="M30 90 Q60 106 90 90 L60 118 Z" fill="#4db6ac" stroke="#2a8076" stroke-width="2.5" stroke-linejoin="round"/><circle cx="56" cy="99" r="1.8" fill="#fff"/><circle cx="66" cy="99" r="1.8" fill="#fff"/><circle cx="60" cy="108" r="1.8" fill="#fff"/>',
+    plaster:'<g transform="rotate(-25 84 72)"><rect x="74" y="67" width="20" height="9" rx="4.5" fill="#ffd9b8" stroke="#d9a47a" stroke-width="1.8"/><rect x="80" y="67" width="8" height="9" fill="#f2c299"/></g>',
     halo:'<ellipse cx="60" cy="13" rx="17" ry="5" fill="none" stroke="#ffd54a" stroke-width="4"/>'
   };
   function art(k,c,a){useCat(c);return '<svg viewBox="0 0 120 124" width="128" height="132" aria-hidden="true" style="overflow:visible">'+ART[k]()+(a&&ACC[a]?ACC[a]:'')+'</svg>'}
@@ -791,7 +799,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   var $=function(i){return document.getElementById(i)};
   var POSE={hug:'抱抱',kiss:'親親',massage:'按摩',praise:'誇誇',daze:'發呆',air:'空氣',eyeroll:'白眼',pat:'摸頭',bite:'咬咬',thanks:'銘謝'};
   var COL={o:'橘',t:'虎',g:'灰',w:'白',y:'花',c:'茶',k:'墨'};
-  var ACN={none:'貓',party:'派對',crown:'皇冠',bow:'蝶結',glasses:'眼鏡',sunglasses:'墨鏡',scarf:'圍巾',tie:'領結',flower:'小花',tophat:'紳士',leaf:'小葉',halo:'天使'};
+  var ACN={none:'貓',party:'派對',crown:'皇冠',bow:'蝶結',glasses:'眼鏡',sunglasses:'墨鏡',scarf:'圍巾',tie:'領結',flower:'小花',tophat:'紳士',leaf:'小葉',halo:'天使',cap:'球帽',bell:'鈴鐺',mustache:'鬍子',headband:'頭巾',star:'星星',bandana:'領巾',plaster:'OK繃'};
   var PK=Object.keys(POSE),CK=Object.keys(COL);
   var seed=20260925;function rnd(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}
   function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
@@ -803,40 +811,41 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   function pool(accs){var l=[];accs.forEach(function(a){PK.forEach(function(k){CK.forEach(function(c){l.push([k,c,a])})})});return shuf(l)}
   var n4=0;pool(['party','scarf','sunglasses','halo','tophat']).forEach(function(x){if(n4<36&&add(x[0],x[1],x[2],4))n4++});
   var n3=0;pool(['none','none','bow','flower','leaf','glasses','tie']).forEach(function(x){if(n3<100&&add(x[0],x[1],x[2],3))n3++});
-  var BYR={3:[],4:[],5:[]};CARDS.forEach(function(c){BYR[c.r].push(c)});
-  var DAILY=10,pity=0,guar=false,total=0,own={},tab=5,used0={d:'',n:0};
-  try{var sv=JSON.parse(localStorage.getItem('simdex3')||'{}');own=sv.own||{};total=sv.total||0;pity=sv.pity||0;guar=!!sv.guar;used0=sv.u||used0}catch(e){}
-  function save(){try{localStorage.setItem('simdex3',JSON.stringify({own:own,total:total,pity:pity,guar:guar,u:used0}))}catch(e){}}
+  var n1=0;pool(['none']).forEach(function(x){if(n1<120&&add(x[0],x[1],x[2],1))n1++});
+  pool(['leaf','flower','bell','cap','bandana']).forEach(function(x){if(n1<120&&add(x[0],x[1],x[2],1))n1++});
+  var n2=0;pool(['bow','flower','leaf','glasses','tie','cap','bell','headband','bandana','plaster','mustache','star']).forEach(function(x){if(n2<150&&add(x[0],x[1],x[2],2))n2++});
+  var BYR={1:[],2:[],3:[],4:[],5:[]};CARDS.forEach(function(c){BYR[c.r].push(c)});
+  var DAILY=30,pity=0,guar=false,total=0,own={},tab=5,used0={d:'',n:0};
+  try{var sv=JSON.parse(localStorage.getItem('simdex4')||'{}');own=sv.own||{};total=sv.total||0;pity=sv.pity||0;guar=!!sv.guar;used0=sv.u||used0}catch(e){}
+  function save(){try{localStorage.setItem('simdex4',JSON.stringify({own:own,total:total,pity:pity,guar:guar,u:used0}))}catch(e){}}
   function pick(l){return l[Math.floor(Math.random()*l.length)]}
   function stars(n){return new Array(n+1).join('★')}
   function card(c,extra,delay){
     var a=window.catArt?window.catArt(c.k,c.c,c.a):'';
-    return '<div class="sc s'+c.r+'" style="animation-delay:'+(delay||0)+'ms"><div class="st">'+stars(c.r)+'</div>'+a+'<div class="nm">'+c.n+'</div>'+(c.up?'<span class="tag">限定</span>':'')+'</div>';
+    return '<div class="sc s'+c.r+'" style="animation-delay:'+(delay||0)+'ms"><div class="st">'+stars(c.r)+'</div>'+a+'<div class="nm">'+c.n+'</div>'+''+'</div>';
   }
   function td(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
   function left(){if(used0.d!==td())used0={d:td(),n:0};return Math.max(0,DAILY-used0.n)}
   function info(){
     var L=left();$('sim1').disabled=L<1;$('sim10').disabled=L<10;$('sim1').style.opacity=L<1?'.45':'1';$('sim10').style.opacity=L<10?'.45':'1';
-    $('simInfo').textContent='今天還剩 '+L+' 抽（每天 '+DAILY+' 抽）　已抽 '+total+' 次　距離保底還有 '+(90-pity)+' 抽　'+(guar?'（下一隻 5★ 必是限定！）':'');
-    var cnt={3:0,4:0,5:0},all=0;CARDS.forEach(function(c){if(own[c.id])cnt[c.r]++});all=cnt[3]+cnt[4]+cnt[5];
+    $('simInfo').textContent='今天還剩 '+L+' 抽（每天 '+DAILY+' 抽）　已抽 '+total+' 次　距離保底還有 '+(90-pity)+' 抽';
+    var cnt={1:0,2:0,3:0,4:0,5:0},all=0;CARDS.forEach(function(c){if(own[c.id]){cnt[c.r]++;all++}});
     $('dexCnt').textContent='（'+all+'/'+CARDS.length+'）';
-    $('dtabs').innerHTML=[5,4,3].map(function(r){return '<button data-r="'+r+'" class="'+(tab===r?'on':'')+'">'+r+'★ '+cnt[r]+'/'+BYR[r].length+'</button>'}).join('');
+    $('dtabs').innerHTML=[5,4,3,2,1].map(function(r){return '<button data-r="'+r+'" class="'+(tab===r?'on':'')+'">'+r+'★ '+cnt[r]+'/'+BYR[r].length+'</button>'}).join('');
     $('dex').innerHTML=BYR[tab].map(function(c){var k=own[c.id]||0;
       return k?card(c).replace('<div class="nm">','<span class="cnt">×'+k+'</span><div class="nm">'):'<div class="sc no"><div class="st">'+stars(c.r)+'</div><div style="height:50px;font-size:34px;line-height:50px;color:#c9a0b4">?</div><div class="nm">？？？</div></div>'}).join('');
   }
   $('dtabs').onclick=function(e){var b=e.target.closest('button');if(b){tab=+b.dataset.r;info()}};
+  var RATE={5:0.004,4:0.035,3:0.16,2:0.30};
   function one(){
     pity++;total++;
-    var rate=pity<74?0.004:Math.min(1,0.004+(pity-73)*0.06);if(pity>=90)rate=1;
-    var c,lose=0;
-    if(Math.random()<rate){
-      pity=0;
-      if(guar||Math.random()<0.5){guar=false;c=pick(BYR[5].filter(function(x){return x.up}))}
-      else{guar=true;lose=1;c=pick(BYR[5].filter(function(x){return !x.up}))}
-    }else if(Math.random()<0.035)c=pick(BYR[4]);
-    else c=pick(BYR[3]);
+    var r,rate=pity<74?RATE[5]:Math.min(1,RATE[5]+(pity-73)*0.06);if(pity>=90)rate=1;
+    var x=Math.random();
+    if(x<rate){r=5;pity=0}
+    else{var y=Math.random();r=y<RATE[4]/(1-RATE[5])?4:(y<(RATE[4]+RATE[3])/(1-RATE[5])?3:(y<(RATE[4]+RATE[3]+RATE[2])/(1-RATE[5])?2:1))}
+    var c=pick(BYR[r]);
     own[c.id]=(own[c.id]||0)+1;
-    return {c:c,lose:lose};
+    return {c:c};
   }
   function pull(n){
     if(left()<n){$('simMsg').textContent='今天的抽數用完囉，明天再來 🌙';return}
@@ -844,8 +853,8 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
     var res=[],i;for(i=0;i<n;i++)res.push(one());
     var o=$('simOut');o.className='sim-out '+(n===1?'one':'ten');
     o.innerHTML=res.map(function(x,i){return card(x.c,x,i*120)}).join('');
-    var w=res.some(function(x){return x.lose}),u=res.some(function(x){return x.c.up}),f=res.some(function(x){return x.c.r===4});
-    $('simMsg').textContent=u?'出貨啦！🎉 限定貓咪王子來報到～':(w?'歪了也沒關係，下一隻 5★ 保證是限定的 🐾':(f?'有紫色的耶！':(n===10?'這次沒有好的，再接再厲～':'')));
+    var h5=res.some(function(x){return x.c.r===5}),h4=res.some(function(x){return x.c.r===4});
+    $('simMsg').textContent=h5?'出貨啦！🎉 金色的 5★ 來報到～':(h4?'有紫色的耶！':(n===10?'這次沒有好的，再接再厲～':''));
     save();info();
   }
   $('sim1').onclick=function(){pull(1)};$('sim10').onclick=function(){pull(10)};
