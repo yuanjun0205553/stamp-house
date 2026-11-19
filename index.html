@@ -172,7 +172,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <input id="qzQ" maxlength="60" placeholder="題目，例如：我最喜歡的飲料是？">
 <input id="qzA0" maxlength="30" placeholder="選項 1" style="margin-top:6px"><input id="qzA1" maxlength="30" placeholder="選項 2" style="margin-top:6px"><input id="qzA2" maxlength="30" placeholder="選項 3" style="margin-top:6px">
 <select id="qzC" style="width:100%;margin-top:6px;padding:10px;border-radius:12px"><option value="0">正確答案：選項 1</option><option value="1">正確答案：選項 2</option><option value="2">正確答案：選項 3</option></select>
-<button class="p" id="qzAdd" style="width:100%;margin-top:8px">新增題目</button><div class="sub" id="qzMsg" style="min-height:16px"></div>
+<button class="p" id="qzAdd" style="width:100%;margin-top:8px">新增選擇題</button><button class="p" id="qzAddOpen" style="width:100%;margin-top:8px">只填上面題目 → 新增問答題（他自己打字）</button><div class="sub" id="qzMsg" style="min-height:16px"></div>
 <div id="qzList"></div></div>
 <div class="card" id="adminCards" hidden><h2>他的卡冊 🃏</h2><div id="adminCardsBody"></div><details style="margin-top:10px"><summary>進階設定（小心使用）</summary><div style="margin-top:8px">
 <div class="sub" style="margin:0 0 6px">目前是第 <b id="seasonNow">1</b> 個卡包</div>
@@ -742,6 +742,7 @@ window.requestReward=function(n){
     .catch(()=>{$('msg').textContent='送出失敗，請再試一次';return false});
 };
 let QZ=null;
+const sendAns=t=>{try{addDoc(collection(db,'inbox'),{q:String(t).slice(0,100),t:Date.now()}).catch(()=>{})}catch(e){}};
 function claimBtn(name,label){
   const st=window.rewardState(name);
   if(st==='done')return '<div class="sub" style="margin:8px 0 0">已經領過了 ✓</div>';
@@ -755,7 +756,7 @@ function renderQuiz(){
   if(QZ&&QZ.run){
     const q=QZ.qs[QZ.i];
     box.innerHTML='<div class="sub" style="margin:0 0 6px">第 '+(QZ.i+1)+' / '+QZ.qs.length+' 題</div><div class="qzq">'+esc(q.q)+'</div>'+
-      q.o.map((o,k)=>'<button class="qzo'+(QZ.pick!==null?(k===q.a?' ok':(k===QZ.pick?' bad':'')):'')+'" data-qa="'+k+'"'+(QZ.pick!==null?' disabled':'')+'>'+esc(o)+'</button>').join('')+
+      (q.open?(QZ.pick===null?'<input id="qzOpen" maxlength="40" placeholder="寫下你的答案…" style="width:100%;box-sizing:border-box;margin-top:6px"><button class="p" style="width:100%;margin-top:8px" data-qopen="1">送出答案</button>':'<div class="sub" style="margin:8px 0">已送出給苑均 💌</div>'):q.o.map((o,k)=>'<button class="qzo'+(QZ.pick!==null?(k===q.a?' ok':(k===QZ.pick?' bad':'')):'')+'" data-qa="'+k+'"'+(QZ.pick!==null?' disabled':'')+'>'+esc(o)+'</button>').join(''))+
       (QZ.pick!==null?'<button class="p" style="width:100%;margin-top:8px" data-qnext="1">'+(QZ.i+1>=QZ.qs.length?'看結果':'下一題')+'</button>':'');
     return;
   }
@@ -779,19 +780,24 @@ document.addEventListener('click',e=>{
   const st=e.target.closest('[data-qstart]');
   if(st){const a=[...(S.quiz||[])].sort(()=>Math.random()-.5).slice(0,5);if(a.length<5)return;QZ={run:true,qs:a,i:0,ok:0,pick:null};try{localStorage.setItem('qzplay',today())}catch(e){}renderQuiz();return}
   const an=e.target.closest('[data-qa]');
-  if(an&&QZ&&QZ.run&&QZ.pick===null){const k=+an.dataset.qa;QZ.pick=k;if(k===QZ.qs[QZ.i].a)QZ.ok++;renderQuiz();return}
+  if(an&&QZ&&QZ.run&&QZ.pick===null){const k=+an.dataset.qa,q=QZ.qs[QZ.i];QZ.pick=k;const r=k===q.a;if(r)QZ.ok++;sendAns('🧠 '+q.q.slice(0,30)+'｜他選：'+q.o[k].slice(0,20)+(r?' ✓':' ✗（答案：'+q.o[q.a].slice(0,15)+'）'));renderQuiz();return}
+  if(e.target.closest('[data-qopen]')&&QZ&&QZ.run&&QZ.pick===null){const v=($('qzOpen').value||'').trim();if(!v)return;const q=QZ.qs[QZ.i];QZ.pick=-1;QZ.ok++;sendAns('🧠 問答｜'+q.q.slice(0,30)+'｜他答：'+v.slice(0,40));renderQuiz();return}
   if(e.target.closest('[data-qnext]')&&QZ){QZ.i++;QZ.pick=null;if(QZ.i>=QZ.qs.length){QZ={fin:true,ok:QZ.ok,n:QZ.qs.length};try{localStorage.setItem('qzscore',JSON.stringify({d:today(),ok:QZ.ok,n:QZ.n}))}catch(e){}}renderQuiz();return}
   const cl=e.target.closest('[data-claim]');
   if(cl){window.requestReward(cl.dataset.claim).then(()=>{renderQuiz();window.whackRefresh&&window.whackRefresh()})}
 });
 function renderQzAdmin(){
   if(!admin||!$('qzList'))return;
-  $('qzList').innerHTML=(S.quiz||[]).map((x,i)=>'<div class="iq"><div class="row2"><div class="qt">'+esc(x.q)+'<br><small>'+x.o.map((o,k)=>(k===x.a?'✅':'')+esc(o)).join('｜')+'</small></div><button class="undo" data-qdel="'+i+'">刪</button></div></div>').join('')||'<div class="sub">還沒有題目，至少出 3 題他才能玩</div>';
+  $('qzList').innerHTML=(S.quiz||[]).map((x,i)=>'<div class="iq"><div class="row2"><div class="qt">'+esc(x.q)+'<br><small>'+(x.open?'✏️ 問答題（他自己打字回答）':x.o.map((o,k)=>(k===x.a?'✅':'')+esc(o)).join('｜'))+'</small></div><button class="undo" data-qdel="'+i+'">刪</button></div></div>').join('')||'<div class="sub">還沒有題目，至少出 3 題他才能玩</div>';
 }
 document.addEventListener('click',e=>{
   if(!admin)return;
   const dl=e.target.closest('[data-qdel]');
   if(dl){commit({quiz:(S.quiz||[]).filter((_,i)=>i!==+dl.dataset.qdel)});return}
+  if(e.target.id==='qzAddOpen'){
+    const q=$('qzQ').value.trim();if(!q){$('qzMsg').textContent='題目要填喔';return}
+    commit({quiz:[{q:q.slice(0,60),o:[],a:0,open:true},...(S.quiz||[])].slice(0,50)});
+    $('qzQ').value='';$('qzMsg').textContent='已新增問答題 ✓';return}
   if(e.target.id==='qzAdd'){
     const q=$('qzQ').value.trim(),o=[0,1,2].map(i=>$('qzA'+i).value.trim());
     if(!q||o.some(x=>!x)){$('qzMsg').textContent='題目和三個選項都要填喔';return}
@@ -921,6 +927,7 @@ function renderInbox(){
       const rd=rewardFor(x.n),dn=doneState(x.n);
       return '<div class="iq"><div class="qt">✅ 他說完成了：'+esc(x.n)+(rd?' +'+rd:'')+'</div><small>'+ds+(dn?'（已經加過了）':'')+'</small><div class="bt">'+(rd&&!dn?'<button class="p" data-ok="'+esc(x.id)+'">確認 +'+rd+'</button>':'')+'<button class="undo" data-inbox="'+esc(x.id)+'">'+(dn?'清掉':'沒過')+'</button></div></div>';
     }
+    if(String(x.q).startsWith('🧠'))return '<div class="iq"><div class="qt">'+esc(x.q)+'</div><small>'+ds+'</small><div class="bt"><button class="undo" data-inbox="'+esc(x.id)+'">收到了</button></div></div>';
     return '<div class="iq"><div class="qt">❓ '+esc(x.q)+'</div><small>'+ds+'</small><input id="rp_'+esc(x.id)+'" maxlength="100" placeholder="回覆他…（他會在App看到）"><div class="bt"><button class="p" data-reply="'+esc(x.id)+'">回覆</button><button class="undo" data-inbox="'+esc(x.id)+'">收到了</button></div></div>';
   }).join('');
 }
