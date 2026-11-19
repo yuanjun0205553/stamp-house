@@ -732,7 +732,7 @@ function rewardFor(n){
   if(n.startsWith('🎁 卡冊｜')&&(m=/集滿\s*(\d+)\s*張/.exec(n)))return CARD_MS[+m[1]]||0;
   return 0;
 }
-function doneState(n){const d=S.done||{};return String(n).startsWith('🎁')?!!d[n]:d[baseOf(n)]===today()}
+function doneState(n){const d=S.done||{};n=String(n);if(n.startsWith('🎮'))return false;return n.startsWith('🎁')?!!d[n]:d[baseOf(n)]===today()}
 window.rewardState=n=>doneState(n)?'done':(isPend(pk(n))?'pend':'ok');
 window.getSeason=()=>S.season||1;window.getDrawReset=()=>S.drawReset||0;
 window.rewardFor=rewardFor;window.CARD_MS=CARD_MS;
