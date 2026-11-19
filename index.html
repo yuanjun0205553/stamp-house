@@ -139,11 +139,21 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 
 .mgb{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:7px;border-radius:16px;background:var(--soft);touch-action:none;max-width:340px;margin:10px auto;user-select:none;-webkit-user-select:none}
 .mgcell{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.07)}
-.mgt{width:100%;height:100%;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:26px;line-height:1.05;color:#2b1a22;background:#f6e3ea;overflow:hidden}
-.mgt i{font-style:normal;font-size:10px;font-weight:700;opacity:.65}.mgt b{font-size:11px}.mgt svg{width:78%;height:auto;overflow:hidden}
+.mgt{width:100%;height:100%;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;font-size:26px;line-height:1;color:#2b1a22;background:#f6e3ea;overflow:hidden;padding-top:2px;box-sizing:border-box}
+.mgt i{font-style:normal;font-size:10px;font-weight:700;opacity:.65}.mgt b{font-size:11px}.mgt svg{width:80%;height:auto;overflow:visible;margin-top:2px}
 .mgt.v4{background:#f9d9e6}.mgt.v8{background:#f6c3d6}.mgt.v16{background:#f2aac5}.mgt.v32{background:#e98fb4}.mgt.v64{background:#d97aa6}.mgt.v128{background:#ffd98a}.mgt.v256{background:#ffb866;box-shadow:0 0 0 2px #ff9a2e inset}.mgt.v512{background:#c9d3de;box-shadow:0 0 0 2px #6f8296 inset}.mgt.v1024{background:#ffe27a}
 .fstrack{position:relative;height:34px;border-radius:17px;background:#7ec9e8;margin:12px 0;overflow:hidden}
 .fszone{position:absolute;top:0;bottom:0;background:#3fbf7f;opacity:.9}.fsmark{position:absolute;top:3px;width:6px;height:28px;border-radius:3px;background:#fff;box-shadow:0 0 4px rgba(0,0,0,.4)}
+.fsscene{position:relative;border-radius:18px;overflow:hidden;margin:8px 0 0;aspect-ratio:340/230;background:#cfe9f7}.fsscene svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.fscat{position:absolute;left:5%;top:5%;width:27%}.fscat svg{position:static;width:100%;height:auto;overflow:visible}
+.fswave{animation:fsw 3s ease-in-out infinite alternate}@keyframes fsw{to{transform:translateX(12px)}}
+.fsshadow{opacity:0;transform:translate(200px,160px)}.fsshadow.on{opacity:1;animation:fssw 2.4s linear infinite}@keyframes fssw{0%{transform:translate(240px,168px)}50%{transform:translate(160px,150px)}100%{transform:translate(240px,168px)}}
+.fsbob{animation:fsbb 2s ease-in-out infinite}.fsbob.nib{animation:fsnb .45s ease-in-out infinite}@keyframes fsbb{50%{transform:translateY(2px)}}@keyframes fsnb{50%{transform:translateY(7px)}}
+.fsring.on{animation:fsrg 1s ease-out infinite}@keyframes fsrg{0%{opacity:.9;transform:scale(.6);transform-origin:196px 144px}100%{opacity:0;transform:scale(2.4);transform-origin:196px 144px}}
+.fsflyer{position:absolute;left:55%;top:50%;font-size:48px;opacity:0;pointer-events:none}.fsflyer.go{animation:fsfly 1.1s ease-out forwards}@keyframes fsfly{0%{opacity:1;transform:translate(0,40px) scale(.6)}50%{opacity:1;transform:translate(-30px,-60px) scale(1.4) rotate(-15deg)}100%{opacity:0;transform:translate(-90px,-10px) scale(1)}}
+.fstrack{box-shadow:inset 0 2px 6px rgba(0,0,0,.25);border:2px solid #fff}.fszone{background:linear-gradient(#5be0a0,#2fae78);box-shadow:0 0 10px #5be0a0}
+.fsres{margin-top:10px;border-radius:18px;padding:14px 8px;text-align:center;background:var(--soft)}.fsres .pe{font-size:56px;line-height:1.1}.fsres .pt{font-weight:800;margin-top:4px}.fsres .st{color:#e0a000;letter-spacing:2px;font-size:14px}.fsres.pop{animation:fspop .5s cubic-bezier(.2,1.5,.4,1)}.fsres.rare{box-shadow:0 0 0 3px #ffd54a,0 0 18px rgba(255,200,60,.7)}@keyframes fspop{0%{transform:scale(.8)}100%{transform:scale(1)}}
+.fsdex{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.fsdex div{border-radius:12px;background:var(--soft);padding:6px 2px;text-align:center;font-size:11px;line-height:1.3}.fsdex b{display:block;font-size:26px;line-height:1.2}.fsdex .no b{filter:grayscale(1) brightness(.4);opacity:.45}.fsdex small{display:block;font-size:10px;color:var(--sub)}
 </style>
 </head>
 <body>
@@ -221,7 +231,6 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="tabs" role="tablist">
 <button class="tab on" data-t="gacha" role="tab" aria-selected="true">扭蛋</button>
 <button class="tab" data-t="fortune" role="tab" aria-selected="false">占卜</button>
-<button class="tab" data-t="code" role="tab" aria-selected="false">終極密碼</button>
 <button class="tab" data-t="fish" role="tab" aria-selected="false">釣魚</button>
 <button class="tab" data-t="wheel" role="tab" aria-selected="false">吃什麼</button>
 <button class="tab" data-t="rps" role="tab" aria-selected="false">猜拳</button>
@@ -253,21 +262,32 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="prizebox" id="fortuneOut" aria-live="polite"><div class="pe">🔮</div><div class="pt">按下去看今天的運勢</div></div>
 <button class="p" id="fortuneBtn" style="width:100%">請貓咪占卜</button>
 </section>
-<section class="panel" id="p-code" hidden>
-<h3>終極密碼 🔢</h3><p class="sub">我偷偷想了一個 1～100 的數字，猜猜看！</p>
-<div class="big" id="cdRange" style="text-align:center">1 ～ 100</div>
-<input id="cdIn" type="number" inputmode="numeric" min="1" max="100" placeholder="輸入你猜的數字" style="width:100%;box-sizing:border-box">
-<button class="p" id="cdBtn" style="width:100%;margin-top:8px">猜！</button>
-<div class="sub" id="cdMsg" style="min-height:18px;margin-top:8px;text-align:center"></div>
-<button id="cdAgain" style="width:100%" hidden>再玩一次</button>
-</section>
 <section class="panel" id="p-fish" hidden>
 <h3>貓咪釣魚 🎣</h3><p class="sub">按「甩竿」，白線跑進綠色區的時候按「拉！」。每天可以釣 5 次。</p>
-<div class="sub" id="fsInfo" style="text-align:center"></div>
+<div class="fsscene" id="fsScene">
+<svg viewBox="0 0 340 230" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<defs><linearGradient id="fsSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd9e8"/><stop offset="1" stop-color="#fff1e0"/></linearGradient><linearGradient id="fsWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd3f0"/><stop offset="1" stop-color="#3b8fc4"/></linearGradient></defs>
+<rect width="340" height="230" fill="url(#fsSky)"/>
+<circle cx="288" cy="42" r="22" fill="#ffe08a"/><circle cx="288" cy="42" r="30" fill="#ffe08a" opacity=".3"/>
+<g fill="#fff" opacity=".9"><ellipse cx="70" cy="34" rx="26" ry="9"/><ellipse cx="90" cy="28" rx="18" ry="9"/><ellipse cx="205" cy="52" rx="22" ry="7"/><ellipse cx="222" cy="47" rx="14" ry="7"/></g>
+<rect y="100" width="340" height="130" fill="url(#fsWater)"/>
+<g class="fswave" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".55"><path d="M120 118 q8 -6 16 0 t16 0"/><path d="M230 140 q8 -6 16 0 t16 0"/><path d="M150 170 q8 -6 16 0 t16 0"/><path d="M270 190 q8 -6 16 0 t16 0"/><path d="M60 200 q8 -6 16 0 t16 0"/></g>
+<g id="fsShadow" class="fsshadow"><ellipse cx="0" cy="0" rx="16" ry="7" fill="#1d5a87" opacity=".45"/><path d="M-14 0 l-10 -7 v14 z" fill="#1d5a87" opacity=".45"/></g>
+<rect x="0" y="96" width="118" height="12" rx="3" fill="#b98253"/><rect x="0" y="108" width="118" height="5" fill="#8d5f38"/><rect x="12" y="108" width="8" height="40" fill="#8d5f38"/><rect x="96" y="108" width="8" height="40" fill="#8d5f38"/>
+<path d="M88 74 L168 22" stroke="#8d5f38" stroke-width="3.5" stroke-linecap="round"/>
+<path id="fsLine" d="M168 22 Q200 80 196 138" fill="none" stroke="#fff" stroke-width="1.6"/>
+<g id="fsBob" class="fsbob"><circle cx="196" cy="138" r="6.5" fill="#fff" stroke="#e5586f" stroke-width="2"/><path d="M189.5 138 a6.5 6.5 0 0 1 13 0 z" fill="#e5586f"/></g>
+<g id="fsRing" class="fsring" opacity="0"><ellipse cx="196" cy="144" rx="10" ry="3" fill="none" stroke="#fff" stroke-width="2"/></g>
+</svg>
+<div class="fscat" id="fsCat"></div>
+<div class="fsflyer" id="fsFly"></div>
+</div>
+<div class="sub" id="fsInfo" style="text-align:center;margin-top:8px"></div>
 <div class="fstrack"><div class="fszone" id="fsZone"></div><div class="fsmark" id="fsMark"></div></div>
 <button class="p" id="fsBtn" style="width:100%">甩竿 🎣</button>
-<div class="prizebox" id="fsMsg" style="margin-top:10px"><div class="pe">🐱</div><div class="pt">貓咪等著吃魚魚</div></div>
-<div class="sub" id="fsDex" style="margin-top:8px;text-align:center"></div>
+<div class="fsres" id="fsMsg"><div class="pe">🐱</div><div class="pt">貓咪等著吃魚魚</div></div>
+<h3 style="margin:14px 0 6px">魚圖鑑 <span class="sub" id="fsCnt"></span></h3>
+<div class="fsdex" id="fsDex"></div>
 </section>
 <section class="panel" id="p-wheel" hidden>
 <h3>今天吃什麼 🍜</h3><p class="sub">不知道吃什麼就轉一下，也可以自己加選項</p>
@@ -372,7 +392,11 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
     eyeroll:function(){return B()+'<circle cx="46" cy="63" r="7" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/><circle cx="74" cy="63" r="7" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/><circle cx="47" cy="58.5" r="3" fill="'+INK+'"/><circle cx="75" cy="58.5" r="3" fill="'+INK+'"/><path d="M54 81 h12" stroke="'+INK+'" stroke-width="3" stroke-linecap="round"/><text x="96" y="40" font-size="14">💢</text>'},
     pat:function(){return B()+arc(41,64,1)+arc(69,64,1)+smile()+'<ellipse cx="60" cy="14" rx="15" ry="8" fill="'+SKIN+'" stroke="'+LINE+'" stroke-width="3"/><path d="M82 8 q5 -4 8 0 M86 18 q6 -3 9 1" fill="none" stroke="'+LINE+'" stroke-width="2.5" stroke-linecap="round"/><path d="M38 8 q-5 -4 -8 0" fill="none" stroke="'+LINE+'" stroke-width="2.5" stroke-linecap="round"/>'},
     bite:function(){return B()+'<path d="M40 59 l11 5 l-11 5" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M80 59 l-11 5 l11 5" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M48 76 h24 v3 q-12 10 -24 0 z" fill="#fff" stroke="'+INK+'" stroke-width="2.5" stroke-linejoin="round"/><path d="M54 75 v6 M60 75 v7 M66 75 v6" stroke="'+LINE+'" stroke-width="1.5"/>'+bubble(66,2,50,'啊嗚 啊嗚',10)},
-    thanks:function(){return B()+arc(41,64,1)+dot(74,62)+smile()+'<rect x="26" y="94" width="68" height="24" rx="8" fill="#fff" stroke="'+LINE+'" stroke-width="2.5"/><text x="60" y="111" text-anchor="middle" font-size="12" font-weight="700" fill="'+INK+'">銘謝惠顧</text>'}
+    thanks:function(){return B()+arc(41,64,1)+dot(74,62)+smile()+'<rect x="26" y="94" width="68" height="24" rx="8" fill="#fff" stroke="'+LINE+'" stroke-width="2.5"/><text x="60" y="111" text-anchor="middle" font-size="12" font-weight="700" fill="'+INK+'">銘謝惠顧</text>'},
+    happy:function(){return B()+arc(41,64,1)+arc(69,64,1)+smile()},
+    cute:function(){return B()+dot(46,62)+dot(74,62)+smile()},
+    wink:function(){return B()+dot(46,62)+arc(69,64,1)+smile()},
+    shine:function(){return B()+'<circle cx="46" cy="63" r="6.5" fill="'+INK+'"/><circle cx="74" cy="63" r="6.5" fill="'+INK+'"/><circle cx="44" cy="60.5" r="2.4" fill="#fff"/><circle cx="72" cy="60.5" r="2.4" fill="#fff"/><circle cx="48" cy="66" r="1.3" fill="#fff"/><circle cx="76" cy="66" r="1.3" fill="#fff"/>'+smile()}
   };
   var ACC={
     party:'<path d="M46 36 L60 5 L74 36 Z" fill="#ff8fab" stroke="#d9567b" stroke-width="2.5" stroke-linejoin="round"/><path d="M52 24 h16 M49 31 h22" stroke="#fff" stroke-width="2.5"/><circle cx="60" cy="5" r="4.5" fill="#ffd166" stroke="#e0a800" stroke-width="2"/>',
@@ -624,21 +648,6 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
       window.sendQuestion(q).then(function(){done('已送出！苑均登入就會看到 💌')}).catch(function(){$('askBtn').disabled=false;msg.textContent='送出失敗，請檢查網路後再試一次'});
     }else msg.textContent='還在載入，請稍等一下再按送出';
   });
-})();
-</script>
-<script>
-(function(){
-  var $=function(i){return document.getElementById(i)},lo,hi,n,tries,over;
-  function start(){lo=1;hi=100;n=1+Math.floor(Math.random()*100);tries=0;over=false;$('cdRange').textContent='1 ～ 100';$('cdMsg').textContent='';$('cdIn').value='';$('cdIn').disabled=false;$('cdBtn').hidden=false;$('cdAgain').hidden=true}
-  function go(){
-    if(over)return;var v=parseInt($('cdIn').value,10);
-    if(!(v>=lo&&v<=hi)){$('cdMsg').textContent='請猜 '+lo+' ～ '+hi+' 之間的數字喔';return}
-    tries++;
-    if(v===n){over=true;$('cdMsg').textContent='🎉 答對了！答案就是 '+n+'，你猜了 '+tries+' 次';$('cdRange').textContent=n;$('cdBtn').hidden=true;$('cdIn').disabled=true;$('cdAgain').hidden=false;return}
-    if(v<n)lo=v+1;else hi=v-1;
-    $('cdRange').textContent=lo+' ～ '+hi;$('cdMsg').textContent=(v<n?'太小了 ⬆️':'太大了 ⬇️')+'（第 '+tries+' 次）';$('cdIn').value='';
-  }
-  $('cdBtn').addEventListener('click',go);$('cdIn').addEventListener('keydown',function(e){if(e.key==='Enter')go()});$('cdAgain').addEventListener('click',start);start();
 })();
 </script>
 <script type="module">
@@ -1218,15 +1227,15 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   var $=function(i){return document.getElementById(i)};
   function td(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
   var N=4,bd=[],over=true,run=false,moves=0;
-  var EMO={2:'🐱',4:'😺',8:'😸',16:'😻',32:'🐈',64:'🐈‍⬛',128:'🦁'};
-  function art(c){return window.catArt?window.catArt('eyeroll',c):(c==='o'?'🧡':'🩶')}
+  var TIERS={2:['cute','w',''],4:['happy','c','bow'],8:['wink','g','bell'],16:['cute','y','flower'],32:['happy','k','scarf'],64:['wink','w','sunglasses'],128:['cute','c','tophat'],256:['shine','o','crown'],512:['shine','t','crown'],1024:['shine','t','star']};
+  function art(v){var t=TIERS[Math.min(v,1024)];return window.catArt?window.catArt(t[0],t[1],t[2]):'🐱'}
   function reward(v){return v>=512?10:v>=256?8:v>=128?5:v>=64?2:v>=32?1:0}
   function mx(){return Math.max.apply(null,bd.concat([0]))}
   function played(){try{return localStorage.getItem('mgplay')===td()}catch(e){return false}}
   function save(){try{localStorage.setItem('mgst',JSON.stringify({d:td(),b:bd,o:over,m:moves}))}catch(e){}}
   function tile(v){
     if(!v)return '<div class="mgcell"></div>';
-    var inner=v===256?art('o')+'<b>噹噹</b>':v===512?art('t')+'<b>咚咚</b>':v>512?'<span>👑</span><i>'+v+'</i>':'<span>'+EMO[v]+'</span><i>'+v+'</i>';
+    var inner=art(v)+(v===256?'<b>噹噹</b>':v===512?'<b>咚咚</b>':'<i>'+v+'</i>');
     return '<div class="mgcell"><div class="mgt v'+Math.min(v,1024)+'">'+inner+'</div></div>';
   }
   function draw(){
@@ -1309,34 +1318,39 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
 (function(){
   var $=function(i){return document.getElementById(i)};
   function td(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
-  var FISH=[['🐟',50],['🐠',25],['🐡',12],['🦐',8],['🐙',3.5],['🦈',1.5]],MAX=5;
+  var FISH=[['🐟','小魚',40,1],['🐠','熱帶魚',25,1],['🦐','小蝦',14,2],['🐡','河豚',8,2],['🦀','螃蟹',6,2],['🦑','魷魚',3.5,3],['🐙','章魚',2,3],['🐬','海豚',1,4],['🦈','鯊魚',.4,4],['🐳','鯨魚',.1,5]],MAX=5;
   function load(k,def){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v||def}catch(e){return def}}
   function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
   function used(){var s=load('fishst',null);return s&&s.d===td()?s.n:0}
   var phase=0,raf=0,t0=0,sp=1,zs=0,zw=.22,pos=0;
+  if($('fsCat'))$('fsCat').innerHTML=window.catArt?window.catArt('happy','o','bow'):'🐱';
   function info(){var left=MAX-used();$('fsInfo').textContent='今天還能釣 '+left+' 次';
     if(phase===0){$('fsBtn').disabled=left<=0;$('fsBtn').textContent=left<=0?'今天釣完了，明天再來 🌙':'甩竿 🎣'}}
-  function dex(){var d=load('fishdex',{}),o=FISH.map(function(f){return d[f[0]]?f[0]+'×'+d[f[0]]:''}).filter(Boolean);$('fsDex').textContent=o.length?'我的魚：'+o.join('　'):''}
-  function pickFish(){var t=FISH.reduce(function(a,f){return a+f[1]},0),r=Math.random()*t,i;for(i=0;i<FISH.length;i++){r-=FISH[i][1];if(r<=0)return FISH[i][0]}return FISH[0][0]}
+  function dex(){var d=load('fishdex',{}),n=0;
+    $('fsDex').innerHTML=FISH.map(function(f){var c=d[f[0]]||0;if(c)n++;return '<div class="'+(c?'':'no')+'"><b>'+f[0]+'</b>'+(c?f[1]+'<small>×'+c+'</small>':'？<small>'+'★'.repeat(f[3])+'</small>')+'</div>'}).join('');
+    $('fsCnt').textContent='（'+n+' / '+FISH.length+'）'}
+  function pickFish(){var t=FISH.reduce(function(a,f){return a+f[2]},0),r=Math.random()*t,i;for(i=0;i<FISH.length;i++){r-=FISH[i][2];if(r<=0)return FISH[i]}return FISH[0]}
   function frame(ts){
     if(phase!==1)return;if(!t0)t0=ts;
     var x=((ts-t0)/1000*sp)%2;pos=x<1?x:2-x;
     $('fsMark').style.left=(pos*(100-1.8))+'%';
     raf=requestAnimationFrame(frame);
   }
-  function msg(e,t){$('fsMsg').innerHTML='<div class="pe">'+e+'</div><div class="pt">'+t+'</div>'}
+  function scene(on){$('fsShadow').classList.toggle('on',on);$('fsBob').classList.toggle('nib',on);$('fsRing').classList.toggle('on',on)}
+  function msg(e,t,extra,cls){var m=$('fsMsg');m.className='fsres'+(cls?' '+cls:'');m.innerHTML='<div class="pe">'+e+'</div><div class="pt">'+t+'</div>'+(extra?'<div class="st">'+extra+'</div>':'');void m.offsetWidth;m.classList.add('pop')}
+  function fly(e){var f=$('fsFly');f.textContent=e;f.classList.remove('go');void f.offsetWidth;f.classList.add('go')}
   $('fsBtn').onclick=function(){
     if(phase===0){
       if(used()>=MAX)return;
       save('fishst',{d:td(),n:used()+1});
       zw=.2+Math.random()*.06;zs=.05+Math.random()*(.9-zw);sp=.9+Math.random()*.9;
       $('fsZone').style.left=(zs*100)+'%';$('fsZone').style.width=(zw*100)+'%';
-      phase=1;t0=0;$('fsBtn').textContent='拉！';msg('🎣','抓準時機～');
+      phase=1;t0=0;$('fsBtn').textContent='拉！';msg('🎣','有魚在咬餌…抓準時機！');scene(true);
       raf=requestAnimationFrame(frame);
     }else{
-      phase=0;cancelAnimationFrame(raf);
+      phase=0;cancelAnimationFrame(raf);scene(false);
       var c=pos*(1-.018)+.009;
-      if(c>=zs&&c<=zs+zw){var f=pickFish(),d=load('fishdex',{});d[f]=(d[f]||0)+1;save('fishdex',d);msg(f,'釣到了！貓咪好開心 🎉');dex()}
+      if(c>=zs&&c<=zs+zw){var f=pickFish(),d=load('fishdex',{}),nw=!d[f[0]];d[f[0]]=(d[f[0]]||0)+1;save('fishdex',d);fly(f[0]);msg(f[0],'釣到 '+f[1]+'！'+(nw?' 🆕新魚種':''),'★'.repeat(f[3]),f[3]>=4?'rare':'');dex()}
       else msg('💨',used()>=MAX?'魚跑掉了…明天再來釣吧':'魚跑掉了…再試一次');
       info();
     }
