@@ -883,14 +883,14 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
 (function(){
   var $=function(i){return document.getElementById(i)};
   var POSE={hug:'抱抱',kiss:'親親',massage:'按摩',praise:'誇誇',daze:'發呆',air:'空氣',eyeroll:'白眼',pat:'摸頭',bite:'咬咬',thanks:'銘謝'};
-  var COL={o:'咚咚',t:'噹噹',g:'灰',w:'白',y:'花',c:'茶',k:'墨'};
+  var COL={o:'噹噹',t:'咚咚',g:'灰',w:'白',y:'花',c:'茶',k:'墨'};
   var ACN={none:'貓',party:'派對',crown:'皇冠',bow:'蝶結',glasses:'眼鏡',sunglasses:'墨鏡',scarf:'圍巾',tie:'領結',flower:'小花',tophat:'紳士',leaf:'小葉',halo:'天使',cap:'球帽',bell:'鈴鐺',mustache:'鬍子',headband:'頭巾',star:'星星',bandana:'領巾',plaster:'OK繃'};
   var PK=Object.keys(POSE),CK=Object.keys(COL);
   var seed=20260925;function rnd(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}
   function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
   var CARDS=[],used={};
   function add(k,c,a,r,n,up){var id=k+c+a;if(used[id])return false;used[id]=1;CARDS.push({id:id,k:k,c:c,a:a,r:r,n:n||(COL[c]+(a==='none'?((c==='o'||c==='t')?'':'貓'):ACN[a])+POSE[k]),up:up});return true}
-  add('hug','o','crown',5,'咚咚抱抱王子',1);add('kiss','t','crown',5,'噹噹親親王子',1);add('praise','o','crown',5,'咚咚誇誇王子',1);
+  add('hug','o','crown',5,'噹噹抱抱王子',1);add('kiss','t','crown',5,'咚咚親親王子',1);add('praise','o','crown',5,'噹噹誇誇王子',1);
   [['massage','o'],['pat','o'],['daze','o'],['bite','o'],['thanks','o'],['massage','t'],['pat','t'],['daze','t'],['bite','t'],['air','t'],['eyeroll','t']].forEach(function(x){add(x[0],x[1],'crown',5)});
   add('hug','t','tophat',5);
   function pool(accs){var l=[];accs.forEach(function(a){PK.forEach(function(k){CK.forEach(function(c){l.push([k,c,a])})})});return shuf(l)}
