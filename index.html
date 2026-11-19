@@ -381,9 +381,10 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
       save(i);show(i);
       box.classList.add('pop');void hearts.offsetWidth;hearts.classList.add('go');
       drop.classList.remove('fall');machine.classList.remove('jig');
-      lock();rolling=false;
+      lock();rolling=false;if(window.gachaPending)setTimeout(window.gachaPending,300);
     },1850);
   });
+  window.gachaPrize=function(i){var p=PRIZES[i];return p&&p.k!=='thanks'?p.t:null};
   window.catArt=art;
 })();
 </script>
@@ -618,12 +619,12 @@ function renderMine(){
   if(!list.length){$('mineList').innerHTML='<div class="vempty">還沒有兌換過禮物 🎁<br>到「禮物」換一個吧</div>';return}
   $('mineList').innerHTML=list.map(x=>{
     const gi=GIFTS.findIndex(g=>g.n===x.n),g=gi>=0?GIFTS[gi]:null;
-    const d=new Date(x.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' 兌換';
-    const th=g&&g.cat&&window.catArt?'<span class="gcat">'+window.catArt(g.cat[0],g.cat[1])+'</span>':'<div class="gthumb" style="background:'+(g?g.bg:'linear-gradient(135deg,#ffc2d4,#ffe0a3)')+'"><span>'+(g?g.e:'🎁')+'</span>'+(g&&g.img?'<img src="'+g.img+'" alt="" onerror="this.remove()">':'')+'</div>';
+    const gz=String(x.n).startsWith('🎰'),d=new Date(x.t),ds=(d.getMonth()+1)+'/'+d.getDate()+(gz?' 扭到':' 兌換');
+    const th=gz?'<div class="gthumb" style="background:linear-gradient(135deg,#ffb3d1,#ffe29a)"><span>🎰</span></div>':g&&g.cat&&window.catArt?'<span class="gcat">'+window.catArt(g.cat[0],g.cat[1])+'</span>':'<div class="gthumb" style="background:'+(g?g.bg:'linear-gradient(135deg,#ffc2d4,#ffe0a3)')+'"><span>'+(g?g.e:'🎁')+'</span>'+(g&&g.img?'<img src="'+g.img+'" alt="" onerror="this.remove()">':'')+'</div>';
     let st;
     if(x.u){const u=new Date(x.u);st='<div class="vs2 done">已兌現 ✓<br><small>'+(u.getMonth()+1)+'/'+u.getDate()+'</small></div>'}
     else st=admin?'<button class="gbtn p" data-use="'+x.t+'">標記已兌現</button>':'<div class="vs2">未使用<br><small>等苑均兌現</small></div>';
-    return '<div class="vc'+(x.u?' used':'')+'">'+th+'<div class="vn">'+esc(x.n)+'<small>'+ds+'</small></div>'+st+'</div>';
+    return '<div class="vc'+(x.u?' used':'')+'">'+th+'<div class="vn">'+esc(String(x.n).replace('｜','：'))+'<small>'+ds+'</small></div>'+st+'</div>';
   }).join('');
 }
 document.addEventListener('click',e=>{
@@ -766,6 +767,16 @@ document.addEventListener('click',e=>{
     ['qzQ','qzA0','qzA1','qzA2'].forEach(i=>$(i).value='');$('qzMsg').textContent='已新增 ✓';
   }
 });
+function gachaPending(){
+  try{
+    const g=JSON.parse(localStorage.getItem('gacha')||'null');
+    if(!g||g.d!==today()||localStorage.getItem('gsent')===today())return;
+    const p=window.gachaPrize&&window.gachaPrize(g.i);if(!p)return;
+    addDoc(collection(db,'inbox'),{k:'task',n:('🎰 扭蛋｜'+p).slice(0,60),d:0,t:Date.now()})
+      .then(()=>{try{localStorage.setItem('gsent',today())}catch(e){}}).catch(()=>{});
+  }catch(e){}
+}
+window.gachaPending=gachaPending;
 let undoArm=-1,undoT=0;
 document.addEventListener('click',e=>{
   const b=e.target.closest('button[data-undo]');
@@ -828,12 +839,17 @@ function requestTask(b){
 $('loginBtn').onclick=()=>signInWithEmailAndPassword(auth,$('em').value.trim(),$('pw').value)
   .then(()=>{$('pw').value='';$('msg').textContent=''}).catch(()=>{$('msg').textContent='登入失敗，請檢查 Email 和密碼'});
 $('outBtn').onclick=()=>signOut(auth);
+setTimeout(gachaPending,800);
 window.sendQuestion=q=>addDoc(collection(db,'inbox'),{q:String(q).slice(0,100),t:Date.now()});
 let inbox=[],inboxOff=null;
 function renderInbox(){
   $('inboxCard').hidden=!(admin&&inbox.length);
   $('inboxList').innerHTML=inbox.map(x=>{
     const d=new Date(x.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    if(x.k==='task'&&String(x.n).startsWith('🎰 扭蛋｜')){
+      const pz=String(x.n).split('｜')[1]||'',dn=(S.done||{})['🎰 扭蛋']===today();
+      return '<div class="iq"><div class="qt">🎰 他今天扭到：'+esc(pz)+'</div><small>'+ds+(dn?'（今天已經發過券了）':'')+'</small><div class="bt">'+(dn?'':'<button class="p" data-issue="'+esc(x.id)+'">發禮物券</button>')+'<button class="undo" data-inbox="'+esc(x.id)+'">'+(dn?'清掉':'不發')+'</button></div></div>';
+    }
     if(x.k==='task'){
       const rd=rewardFor(x.n),dn=doneState(x.n);
       return '<div class="iq"><div class="qt">✅ 他說完成了：'+esc(x.n)+(rd?' +'+rd:'')+'</div><small>'+ds+(dn?'（已經加過了）':'')+'</small><div class="bt">'+(rd&&!dn?'<button class="p" data-ok="'+esc(x.id)+'">確認 +'+rd+'</button>':'')+'<button class="undo" data-inbox="'+esc(x.id)+'">'+(dn?'清掉':'沒過')+'</button></div></div>';
@@ -847,6 +863,13 @@ document.addEventListener('click',e=>{
   if(ok){const x=inbox.find(v=>v.id===ok.dataset.ok);if(!x)return;
     const rd=rewardFor(x.n);
     if(rd>0&&!doneState(x.n))adjust(rd,x.n,String(x.n).startsWith('🎁')?x.n:baseOf(x.n));
+    deleteDoc(doc(db,'inbox',x.id)).catch(()=>{});return}
+  const is=e.target.closest('button[data-issue]');
+  if(is){const x=inbox.find(v=>v.id===is.dataset.issue);if(!x)return;
+    if((S.done||{})['🎰 扭蛋']!==today()){
+      const pz=String(x.n).split('｜')[1]||'扭蛋禮物';
+      commit({gifts:[{t:Date.now(),n:'🎰 扭蛋券｜'+pz},...(S.gifts||[])],done:{...(S.done||{}),'🎰 扭蛋':today()}});
+    }
     deleteDoc(doc(db,'inbox',x.id)).catch(()=>{});return}
   const rp=e.target.closest('button[data-reply]');
   if(rp){const x=inbox.find(v=>v.id===rp.dataset.reply),inp=$('rp_'+rp.dataset.reply);
