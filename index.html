@@ -123,7 +123,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 #pg-home[hidden],#pg-gifts[hidden],#pg-mine[hidden]{display:none}
 .g5{grid-template-columns:repeat(5,1fr)}.g5 button{padding:12px 0;font-size:14px}
 .lr{display:flex;align-items:center;gap:10px}.undo{padding:5px 10px;font-size:12px;border-radius:12px;background:var(--soft);color:var(--sub);font-weight:600}.undo.p{background:#e5586f;color:#fff}
-.iq input{width:100%;margin:8px 0 6px}.iq .bt{display:flex;gap:8px;flex-wrap:wrap}.iq .bt button{padding:6px 12px;font-size:13px}.qa{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft);font-size:14px;line-height:1.5}.qa b{color:var(--acc)}.qa small{display:block;color:var(--sub);font-size:12px}.big{font-size:20px;font-weight:700;color:var(--acc);margin:0 0 4px}.qzq{font-size:17px;font-weight:700;margin:4px 0 10px;line-height:1.5}.qzo{display:block;width:100%;margin-bottom:8px;text-align:left;padding:12px 14px}.qzo.ok{background:#bfe8c8;color:#17402a}.qzo.bad{background:#f6c3c3;color:#5a1c1c}.holes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:290px;margin:0 auto}.hole{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 70%,#7a5a66,#4b3641);border:4px solid #6b4a58;overflow:hidden;padding:0;display:flex;align-items:flex-end;justify-content:center;touch-action:manipulation}.hole svg{width:92%;height:auto;transform:translateY(8%)}.hole.hit{background:#ffd7a6}.msr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;margin-bottom:6px;border-radius:12px;background:var(--soft);font-size:13px}.msr button{padding:6px 10px;font-size:13px}.sim-out{display:grid;gap:8px;margin:12px 0;min-height:40px}.sim-out.one{grid-template-columns:minmax(0,170px);justify-content:center}.sim-out.ten{grid-template-columns:repeat(5,1fr);gap:5px}
+.iq input{width:100%;margin:8px 0 6px}.iq .bt{display:flex;gap:8px;flex-wrap:wrap}.iq .bt button{padding:6px 12px;font-size:13px}.qa{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft);font-size:14px;line-height:1.5}.qa b{color:var(--acc)}.qa small{display:block;color:var(--sub);font-size:12px}.big{font-size:20px;font-weight:700;color:var(--acc);margin:0 0 4px}.qzq{font-size:17px;font-weight:700;margin:4px 0 10px;line-height:1.5}.qzo{display:block;width:100%;margin-bottom:8px;text-align:left;padding:12px 14px}.qzo.ok{background:#bfe8c8;color:#17402a}.qzo.bad{background:#f6c3c3;color:#5a1c1c}.fbar{height:14px;border-radius:99px;background:var(--soft);overflow:hidden}.fbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffb3d1,#ffd166);border-radius:99px;transition:width .4s}.holes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:290px;margin:0 auto}.hole{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 70%,#7a5a66,#4b3641);border:4px solid #6b4a58;overflow:hidden;padding:0;display:flex;align-items:flex-end;justify-content:center;touch-action:manipulation}.hole svg{width:92%;height:auto;transform:translateY(8%)}.hole.hit{background:#ffd7a6}.msr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;margin-bottom:6px;border-radius:12px;background:var(--soft);font-size:13px}.msr button{padding:6px 10px;font-size:13px}.sim-out{display:grid;gap:8px;margin:12px 0;min-height:40px}.sim-out.one{grid-template-columns:minmax(0,170px);justify-content:center}.sim-out.ten{grid-template-columns:repeat(5,1fr);gap:5px}
 .sc{border-radius:14px;padding:4px 3px 5px;background:#fff;border:2px solid #ecdde5;text-align:center;position:relative;overflow:hidden;animation:scIn .55s cubic-bezier(.2,1.4,.4,1) both}
 .sc .st{font-size:9px;letter-spacing:1px;color:#c9a0b4;line-height:1.2}.sc svg{width:100%;height:auto;display:block}.sc .nm{font-size:11px;font-weight:700;color:#2b1a22;line-height:1.2;min-height:13px}
 .sim-out.one .sc{padding:8px 6px 10px}.sim-out.one .sc .st{font-size:14px}.sim-out.one .sc .nm{font-size:15px;margin-top:4px}
@@ -168,6 +168,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
 </div>
 <div id="admin" hidden>
+<div class="card" id="adminCards" hidden><h2>他的卡冊 🃏</h2><div id="adminCardsBody"></div><button id="newSeason" style="width:100%;margin-top:8px">換新卡包（他的卡冊歸零）</button></div>
 <div class="card"><h2>在一起的日子 💕</h2><input type="date" id="annivIn"><button class="p" id="annivSave" style="width:100%;margin-top:8px">儲存日期</button></div>
 <div class="card">
 <h2>手動調整點數</h2>
@@ -273,6 +274,11 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="holes" id="holes"></div>
 <button class="p" id="whStart" style="width:100%;margin-top:10px">開始（30 秒）</button>
 <div id="whClaim"></div>
+</div>
+<div class="card" id="fullCard">
+<h2>集滿卡冊大獎 🏆</h2><p class="sub" style="margin:0 0 8px">到「遊戲」的模擬抽卡，把卡冊全部集滿，就能領 <b>1000 點</b>（每個卡包集滿都能領一次）！</p>
+<div class="fbar"><i id="fullFill"></i></div><div class="sub" id="fullTxt" style="margin:6px 0 0;text-align:center"></div>
+<div id="fullClaim"></div>
 </div>
 </div>
 <div id="pg-gifts" hidden>
@@ -578,7 +584,7 @@ import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'htt
 const $=id=>document.getElementById(id);
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),ref=doc(db,'stamp','main');
 const PER=500; // 幾點換 1 份禮物
-let S={points:0,log:[],done:{},gifts:[],anniv:'2026-9-25'},admin=false,q=Promise.resolve();
+let S={points:0,log:[],done:{},gifts:[],anniv:'2026-9-25',season:1},admin=false,q=Promise.resolve();
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const showLogin=new URLSearchParams(location.search).has('admin');
 const GROUPS=[
@@ -663,6 +669,7 @@ function streakTxt(){
   return '・連續登入 '+st.n+' 天 🔥（滿 7 天有 +20）';
 }
 function renderExtra(){
+  renderAdminCards();
   if(window.whackRefresh)window.whackRefresh();
   renderQuiz();renderQzAdmin();if(window.simInfo)window.simInfo();
   // anniversary
@@ -694,7 +701,7 @@ function renderExtra(){
 }
 $('annivSave').onclick=()=>{if(!admin)return;const v=$('annivIn').value;if(!v)return;commit({anniv:v.replace(/-0(\d)/g,'-$1')})};
 
-const CARD_MS={10:10,30:20,60:40,100:80,150:120,200:200,300:300,421:500};
+const CARD_MS={421:1000};
 const baseOf=n=>String(n).split('｜')[0];
 const pk=n=>String(n).startsWith('🎁')?String(n):baseOf(n);
 function rewardFor(n){
@@ -704,11 +711,12 @@ function rewardFor(n){
   let m;
   if(n.startsWith('🎮 知識問答｜')&&(m=/答對(\d+)題/.exec(n)))return Math.min(5,+m[1])*3;
   if(n.startsWith('🎮 打地鼠｜')&&(m=/(\d+)分/.exec(n))){const sc=+m[1];return sc>=35?10:(sc>=22?5:0)}
-  if(n.startsWith('🎁 卡冊｜')&&(m=/(\d+)張/.exec(n)))return CARD_MS[+m[1]]||0;
+  if(n.startsWith('🎁 卡冊｜')&&(m=/集滿\s*(\d+)\s*張/.exec(n)))return CARD_MS[+m[1]]||0;
   return 0;
 }
 function doneState(n){const d=S.done||{};return String(n).startsWith('🎁')?!!d[n]:d[baseOf(n)]===today()}
 window.rewardState=n=>doneState(n)?'done':(isPend(pk(n))?'pend':'ok');
+window.getSeason=()=>S.season||1;
 window.rewardFor=rewardFor;window.CARD_MS=CARD_MS;
 window.requestReward=function(n){
   n=String(n);const d=rewardFor(n);
@@ -777,6 +785,34 @@ function gachaPending(){
   }catch(e){}
 }
 window.gachaPending=gachaPending;
+let CD=null,cdOff=null,syncT=0,lastSync='';
+window.syncCards=function(st){
+  if(admin)return;try{if(localStorage.getItem('isAdminDev'))return}catch(e){}
+  clearTimeout(syncT);syncT=setTimeout(()=>{
+    const j=JSON.stringify(st);if(j===lastSync)return;lastSync=j;
+    setDoc(doc(db,'cards','main'),{own:st.own,total:st.total,season:st.season,t:Date.now()}).catch(()=>{lastSync=''});
+  },700);
+};
+setTimeout(()=>{if(window.simState)window.syncCards(window.simState())},2000);
+function renderAdminCards(){
+  const box=$('adminCards');if(!box)return;box.hidden=!admin;if(!admin)return;
+  const cs=window.simCards?window.simCards():[],cur=S.season||1;
+  let h='';
+  if(!CD||(CD.season||1)!==cur||!cs.length){h='<div class="sub">他還沒開始收集（或還沒更新）。第 '+cur+' 個卡包</div>'}
+  else{
+    const own=CD.own||{},by={1:[],2:[],3:[],4:[],5:[]};let all=0;
+    cs.forEach(c=>{if(own[c.id]){by[c.r].push(c);all++}});
+    const tot={1:0,2:0,3:0,4:0,5:0};cs.forEach(c=>tot[c.r]++);
+    h='<div class="qa"><b>第 '+cur+' 個卡包</b>：已收集 <b>'+all+' / '+cs.length+'</b> 張，共抽了 '+(CD.total||0)+' 次'+(all>=cs.length?'<br>🎉 <b>他集滿了！</b>':'')+'<br>'+[5,4,3,2,1].map(r=>r+'★ '+by[r].length+'/'+tot[r]).join('　')+'</div>';
+    h+=[5,4,3,2,1].map(r=>'<details style="margin-bottom:6px"><summary>'+r+'★ 抽到的（'+by[r].length+'）</summary><div class="sub" style="margin:6px 0">'+(by[r].map(c=>esc(c.n)+(own[c.id]>1?'×'+own[c.id]:'')).join('、')||'還沒有')+'</div></details>').join('');
+  }
+  $('adminCardsBody').innerHTML=h;
+}
+document.addEventListener('click',e=>{
+  if(!admin||e.target.id!=='newSeason')return;
+  if(!confirm('要換新卡包嗎？他的卡冊會歸零重新開始，卡片組合也會換一批。'))return;
+  commit({season:(S.season||1)+1});CD=null;renderAdminCards();
+});
 let undoArm=-1,undoT=0;
 document.addEventListener('click',e=>{
   const b=e.target.closest('button[data-undo]');
@@ -886,12 +922,16 @@ onAuthStateChanged(auth,u=>{
   if(inboxOff){inboxOff();inboxOff=null}
   inbox=[];
   if(admin)inboxOff=onSnapshot(query(collection(db,'inbox'),orderBy('t','desc'),limit(30)),snap=>{inbox=snap.docs.map(d=>({id:d.id,...d.data()}));renderInbox()},()=>{});
+  if(cdOff){cdOff();cdOff=null}
+  CD=null;
+  if(admin){try{localStorage.setItem('isAdminDev','1')}catch(e){}cdOff=onSnapshot(doc(db,'cards','main'),sn=>{CD=sn.exists()?sn.data():null;renderAdminCards()},()=>{})}
   render();renderInbox();
 });
 const _t0=0;const t=setTimeout(()=>{$('msg').textContent='暫時連不上，資料可能不是最新'},10000);
 onSnapshot(ref,s=>{
   clearTimeout(t);$('msg').textContent='';
-  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{},gifts:v.gifts||[],qa:v.qa||[],quiz:v.quiz||[],anniv:v.anniv||'2026-9-25',streak:v.streak||null}}
+  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{},gifts:v.gifts||[],qa:v.qa||[],quiz:v.quiz||[],anniv:v.anniv||'2026-9-25',streak:v.streak||null,season:v.season||1}}
+  window.seasonReady=true;
   render();
 },()=>{clearTimeout(t);$('msg').textContent='讀取失敗，請檢查網路或 Firebase 設定'});
 document.querySelectorAll('.nt').forEach(b=>b.addEventListener('click',()=>{
@@ -911,7 +951,10 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   var PK=Object.keys(POSE),CK=Object.keys(COL);
   var seed=20260925;function rnd(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}
   function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
-  var CARDS=[],used={};
+  var CARDS=[],used={},BYR={},SEASON=1;
+  try{SEASON=+localStorage.getItem('simseason')||1}catch(e){}
+  function build(){
+    seed=20260925+(SEASON-1)*7919;CARDS=[];used={};
   function add(k,c,a,r,n,up){var id=k+c+a;if(used[id])return false;used[id]=1;CARDS.push({id:id,k:k,c:c,a:a,r:r,n:n||(COL[c]+(a==='none'?((c==='o'||c==='t')?'':'貓'):ACN[a])+POSE[k]),up:up});return true}
   add('hug','o','crown',5,'噹噹抱抱王子',1);add('kiss','t','crown',5,'咚咚親親王子',1);add('praise','o','crown',5,'噹噹誇誇王子',1);
   [['massage','o'],['pat','o'],['daze','o'],['bite','o'],['thanks','o'],['massage','t'],['pat','t'],['daze','t'],['bite','t'],['air','t'],['eyeroll','t']].forEach(function(x){add(x[0],x[1],'crown',5)});
@@ -922,10 +965,19 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   var n1=0;pool(['none']).forEach(function(x){if(n1<120&&add(x[0],x[1],x[2],1))n1++});
   pool(['leaf','flower','bell','cap','bandana']).forEach(function(x){if(n1<120&&add(x[0],x[1],x[2],1))n1++});
   var n2=0;pool(['bow','flower','leaf','glasses','tie','cap','bell','headband','bandana','plaster','mustache','star']).forEach(function(x){if(n2<150&&add(x[0],x[1],x[2],2))n2++});
-  var BYR={1:[],2:[],3:[],4:[],5:[]};CARDS.forEach(function(c){BYR[c.r].push(c)});
+    BYR={1:[],2:[],3:[],4:[],5:[]};CARDS.forEach(function(c){BYR[c.r].push(c)});
+  }
+  build();
   var DAILY=30,pity=0,guar=false,total=0,own={},tab=5,used0={d:'',n:0};
   try{var sv=JSON.parse(localStorage.getItem('simdex4')||'{}');own=sv.own||{};total=sv.total||0;pity=sv.pity||0;guar=!!sv.guar;used0=sv.u||used0}catch(e){}
-  function save(){try{localStorage.setItem('simdex4',JSON.stringify({own:own,total:total,pity:pity,guar:guar,u:used0}))}catch(e){}}
+  function save(){try{localStorage.setItem('simdex4',JSON.stringify({own:own,total:total,pity:pity,guar:guar,u:used0}))}catch(e){}if(window.syncCards)window.syncCards({own:own,total:total,season:SEASON})}
+  window.simState=function(){return {own:own,total:total,season:SEASON}};
+  window.simCards=function(){return CARDS};
+  function checkSeason(){
+    if(!window.seasonReady)return;
+    var cur=window.getSeason();
+    if(cur!==SEASON){SEASON=cur;try{localStorage.setItem('simseason',cur)}catch(e){}own={};total=0;pity=0;guar=false;build();$('simOut').innerHTML='';$('simMsg').textContent='新卡包來囉！卡冊重新開始 🎉';save()}
+  }
   function pick(l){return l[Math.floor(Math.random()*l.length)]}
   function stars(n){return new Array(n+1).join('★')}
   function card(c,extra,delay){
@@ -935,10 +987,16 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   function td(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
   function left(){if(used0.d!==td())used0={d:td(),n:0};return Math.max(0,DAILY-used0.n)}
   function info(){
+    checkSeason();
     var L=left();$('sim1').disabled=L<1;$('sim10').disabled=L<10;$('sim1').style.opacity=L<1?'.45':'1';$('sim10').style.opacity=L<10?'.45':'1';
     $('simInfo').textContent='今天還剩 '+L+' 抽（每天 '+DAILY+' 抽）　已抽 '+total+' 次　距離保底還有 '+(90-pity)+' 抽';
     var cnt={1:0,2:0,3:0,4:0,5:0},all=0;CARDS.forEach(function(c){if(own[c.id]){cnt[c.r]++;all++}});
     $('dexCnt').textContent='（'+all+'/'+CARDS.length+'）';
+    if($('fullTxt')){
+      $('fullFill').style.width=(all/CARDS.length*100)+'%';$('fullTxt').textContent='已收集 '+all+' / '+CARDS.length+' 張';
+      var fn='🎁 卡冊｜'+(SEASON>1?'第'+SEASON+'季':'')+'集滿 '+CARDS.length+' 張',fs=window.rewardState?window.rewardState(fn):'ok';
+      $('fullClaim').innerHTML=all<CARDS.length?'':(fs==='done'?'<div class="sub" style="margin-top:8px;text-align:center">已經領過了 ✓</div>':fs==='pend'?'<div class="sub" style="margin-top:8px;text-align:center">已送出，等苑均確認 ⏳</div>':'<button class="p" style="width:100%;margin-top:10px" data-claim="'+fn+'">領取 1000 點 🎉</button>');
+    }
     $('dtabs').innerHTML=[5,4,3,2,1].map(function(r){return '<button data-r="'+r+'" class="'+(tab===r?'on':'')+'">'+r+'★ '+cnt[r]+'/'+BYR[r].length+'</button>'}).join('');
     $('dex').innerHTML=BYR[tab].map(function(c){var k=own[c.id]||0;
       return k?card(c).replace('<div class="nm">','<span class="cnt">×'+k+'</span><div class="nm">'):'<div class="sc no"><div class="st">'+stars(c.r)+'</div><div style="height:50px;font-size:34px;line-height:50px;color:#c9a0b4">?</div><div class="nm">？？？</div></div>'}).join('');
