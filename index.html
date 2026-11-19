@@ -168,6 +168,12 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
 </div>
 <div id="admin" hidden>
+<div class="card"><h2>知識問答出題 🧠</h2><p class="sub" style="margin:0 0 8px">出他會答的問題（至少 3 題他才能玩），答對一題 +3 點，每次最多 5 題。</p>
+<input id="qzQ" maxlength="60" placeholder="題目，例如：我最喜歡的飲料是？">
+<input id="qzA0" maxlength="30" placeholder="選項 1" style="margin-top:6px"><input id="qzA1" maxlength="30" placeholder="選項 2" style="margin-top:6px"><input id="qzA2" maxlength="30" placeholder="選項 3" style="margin-top:6px">
+<select id="qzC" style="width:100%;margin-top:6px;padding:10px;border-radius:12px"><option value="0">正確答案：選項 1</option><option value="1">正確答案：選項 2</option><option value="2">正確答案：選項 3</option></select>
+<button class="p" id="qzAdd" style="width:100%;margin-top:8px">新增題目</button><div class="sub" id="qzMsg" style="min-height:16px"></div>
+<div id="qzList"></div></div>
 <div class="card" id="adminCards" hidden><h2>他的卡冊 🃏</h2><div id="adminCardsBody"></div><details style="margin-top:10px"><summary>進階設定（小心使用）</summary><div style="margin-top:8px">
 <div class="sub" style="margin:0 0 6px">目前是第 <b id="seasonNow">1</b> 個卡包</div>
 <input type="number" id="seasonIn" min="1" max="99" placeholder="卡包編號，例如 1">
@@ -269,6 +275,10 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="holes" id="holes"></div>
 <button class="p" id="whStart" style="width:100%;margin-top:10px">開始（30 秒）</button>
 <div id="whClaim"></div>
+</div>
+<div class="card" id="quizCard">
+<h2>苑均知識問答 💕</h2><p class="sub" style="margin:0 0 8px">看看你有多了解她～</p>
+<div id="quizBox"></div>
 </div>
 <div class="card" id="simCard">
 <h2>模擬抽卡 🎰</h2>
@@ -750,19 +760,26 @@ function renderQuiz(){
   }
   if(QZ&&QZ.fin){
     box.innerHTML='<div class="big" style="text-align:center">答對 '+QZ.ok+' / '+QZ.n+' 題 '+(QZ.ok===QZ.n?'🎉':'💕')+'</div>'+
-      (QZ.ok>0?claimBtn('🎮 知識問答｜答對'+QZ.ok+'題','領獎 +'+QZ.ok*3+' 點'):'<div class="sub">再接再厲，多了解她一點～</div>')+
-      '<button style="width:100%;margin-top:8px" data-qstart="1">再玩一次</button>';
+      (QZ.ok>0?claimBtn('🎮 知識問答｜答對'+QZ.ok+'題','領獎 +'+QZ.ok*3+' 點'):'<div class="sub">再接再厲，多了解她一點～</div>');
+    return;
+  }
+  const pl=(()=>{try{return localStorage.getItem('qzplay')===today()}catch(e){return false}})();
+  if(pl){
+    let sc=null;try{sc=JSON.parse(localStorage.getItem('qzscore')||'null')}catch(e){}
+    if(sc&&sc.d===today()){
+      box.innerHTML='<div class="big" style="text-align:center">今天答對 '+sc.ok+' / '+sc.n+' 題 '+(sc.ok===sc.n?'🎉':'💕')+'</div>'+(sc.ok>0?claimBtn('🎮 知識問答｜答對'+sc.ok+'題','領獎 +'+sc.ok*3+' 點'):'<div class="sub" style="text-align:center">明天再來挑戰 🌙</div>');
+    }else box.innerHTML='<p class="sub" style="text-align:center">今天玩過了，明天再來 🌙</p>';
     return;
   }
   if(qs.length<3){box.innerHTML='<p class="sub">苑均還在出題中，等一下再來玩 🐾</p>';return}
-  box.innerHTML='<p class="sub">每次最多 5 題，答對一題 +3 點，每天可以領一次獎（要等苑均確認）。</p><button class="p" style="width:100%" data-qstart="1">開始挑戰</button>';
+  box.innerHTML='<p class="sub">每次最多 5 題，答對一題 +3 點。每天只能玩一次，領獎要等苑均確認。</p><button class="p" style="width:100%" data-qstart="1">開始挑戰</button>';
 }
 document.addEventListener('click',e=>{
   const st=e.target.closest('[data-qstart]');
-  if(st){const a=[...(S.quiz||[])].sort(()=>Math.random()-.5).slice(0,5);if(a.length<3)return;QZ={run:true,qs:a,i:0,ok:0,pick:null};renderQuiz();return}
+  if(st){const a=[...(S.quiz||[])].sort(()=>Math.random()-.5).slice(0,5);if(a.length<3)return;QZ={run:true,qs:a,i:0,ok:0,pick:null};try{localStorage.setItem('qzplay',today())}catch(e){}renderQuiz();return}
   const an=e.target.closest('[data-qa]');
   if(an&&QZ&&QZ.run&&QZ.pick===null){const k=+an.dataset.qa;QZ.pick=k;if(k===QZ.qs[QZ.i].a)QZ.ok++;renderQuiz();return}
-  if(e.target.closest('[data-qnext]')&&QZ){QZ.i++;QZ.pick=null;if(QZ.i>=QZ.qs.length)QZ={fin:true,ok:QZ.ok,n:QZ.qs.length};renderQuiz();return}
+  if(e.target.closest('[data-qnext]')&&QZ){QZ.i++;QZ.pick=null;if(QZ.i>=QZ.qs.length){QZ={fin:true,ok:QZ.ok,n:QZ.qs.length};try{localStorage.setItem('qzscore',JSON.stringify({d:today(),ok:QZ.ok,n:QZ.n}))}catch(e){}}renderQuiz();return}
   const cl=e.target.closest('[data-claim]');
   if(cl){window.requestReward(cl.dataset.claim).then(()=>{renderQuiz();window.whackRefresh&&window.whackRefresh()})}
 });
