@@ -152,7 +152,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <nav class="navtabs" role="tablist"><button class="nt on" data-pg="home" role="tab" aria-selected="true"><span>🐾</span>集點卡</button><button class="nt" data-pg="games" role="tab" aria-selected="false"><span>🎮</span>遊戲</button><button class="nt" data-pg="earn" role="tab" aria-selected="false"><span>💰</span>賺點</button><button class="nt" data-pg="gifts" role="tab" aria-selected="false"><span>🎁</span>禮物</button><button class="nt" data-pg="mine" role="tab" aria-selected="false"><span>🎫</span>禮物券<i class="bdg" id="mineBdg" hidden></i></button><button class="nt" id="navAdmin" data-pg="admin" role="tab" aria-selected="false" hidden><span>🔧</span>管理<i class="bdg" id="admBdg" hidden></i></button></nav>
 <div id="pg-home">
 <div class="card" id="annivCard" hidden><div class="big" id="annivBig"></div><div class="sub" id="annivSub" style="margin:0"></div></div>
-<div class="card" id="qaCard" hidden><h2>苑均的回覆 💌</h2><div id="qaList"></div></div>
+<div class="card" id="qaCard" hidden><h2>苑均的回覆 💌</h2><div id="qaList"></div><details id="qaMore" style="margin-top:8px" hidden><summary>看更早的回覆（<span id="qaN">0</span>）</summary><div id="qaOld"></div></details></div>
 <div class="card">
 <h2 id="taskTitle">任務清單</h2>
 <button class="task" data-d="10" data-n="每日登入禮"><span>每日登入禮 🎁</span><em>+10 點</em></button>
@@ -706,7 +706,9 @@ function renderExtra(){
   // replies
   const qa=(S.qa||[]);
   $('qaCard').hidden=!qa.length;
-  $('qaList').innerHTML=qa.slice(0,5).map(x=>{const d=new Date(x.t);return '<div class="qa">你問：'+esc(x.q)+'<br><b>苑均：'+esc(x.a)+'</b><small>'+(d.getMonth()+1)+'/'+d.getDate()+'</small></div>'}).join('');
+  const qaH=x=>{const d=new Date(x.t);return '<div class="qa">你問：'+esc(x.q)+'<br><b>苑均：'+esc(x.a)+'</b><small>'+(d.getMonth()+1)+'/'+d.getDate()+'</small></div>'};
+  $('qaList').innerHTML=qa.slice(0,1).map(qaH).join('');
+  $('qaMore').hidden=qa.length<2;$('qaN').textContent=Math.max(0,qa.length-1);$('qaOld').innerHTML=qa.slice(1).map(qaH).join('');
   // weekly
   const cut=Date.now()-7*864e5,w=S.log.filter(l=>l.t>=cut);
   $('weekCard').hidden=!w.length;
