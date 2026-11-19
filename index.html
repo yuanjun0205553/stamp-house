@@ -69,6 +69,7 @@ input{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px so
 .tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;margin-bottom:6px;-webkit-overflow-scrolling:touch}
 .tab{flex:none;padding:8px 14px;border-radius:999px;font-size:14px;white-space:nowrap}
 .tab.on{background:var(--acc);color:#fff}
+.etab{flex:none;padding:8px 14px;border-radius:999px;font-size:14px;white-space:nowrap}.etab.on{background:var(--acc);color:#fff}
 .panel[hidden]{display:none}
 h3{font-size:16px;margin:4px 0 2px}
 .stars{color:#f0a53a;letter-spacing:2px;font-size:16px}
@@ -135,6 +136,14 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .dtabs{display:flex;gap:6px;margin-top:6px}.rates{font-size:13px;line-height:1.7;background:var(--soft);border-radius:14px;padding:8px 10px;margin:0 0 8px}.rates small{color:var(--sub)}.sc.s1{border-color:#e9e2e6;background:#fbf8fa}.sc.s2{border-color:#cfe3d4;background:#f6fbf7}.dtabs button{flex:1;padding:8px 0;font-size:11px}.dtabs button.on{background:var(--acc);color:#fff}.sc .nm{overflow-wrap:anywhere}.sim-out.ten .sc .nm{font-size:10px;min-height:24px}.dex{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:8px}.dex .sc{animation:none}.dex .sc.no{filter:grayscale(1);opacity:.35}.dex .sc.no svg{opacity:.2}.dex .cnt{position:absolute;top:3px;left:3px;font-size:10px;background:#5b3a4d;color:#fff;border-radius:8px;padding:0 5px}
 .iq{padding:10px 12px;margin-bottom:8px;border-radius:16px;background:var(--soft)}.iq small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.iq .row2{display:flex;justify-content:space-between;align-items:center;gap:10px}.iq .qt{flex:1;font-size:15px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
 .gthumb.sm{width:46px;height:46px;font-size:22px;border-radius:13px;flex:none}
+
+.mgb{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:7px;border-radius:16px;background:var(--soft);touch-action:none;max-width:340px;margin:10px auto;user-select:none;-webkit-user-select:none}
+.mgcell{aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.07)}
+.mgt{width:100%;height:100%;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:26px;line-height:1.05;color:#2b1a22;background:#f6e3ea;overflow:hidden}
+.mgt i{font-style:normal;font-size:10px;font-weight:700;opacity:.65}.mgt b{font-size:11px}.mgt svg{width:78%;height:auto;overflow:hidden}
+.mgt.v4{background:#f9d9e6}.mgt.v8{background:#f6c3d6}.mgt.v16{background:#f2aac5}.mgt.v32{background:#e98fb4}.mgt.v64{background:#d97aa6}.mgt.v128{background:#ffd98a}.mgt.v256{background:#ffb866;box-shadow:0 0 0 2px #ff9a2e inset}.mgt.v512{background:#c9d3de;box-shadow:0 0 0 2px #6f8296 inset}.mgt.v1024{background:#ffe27a}
+.fstrack{position:relative;height:34px;border-radius:17px;background:#7ec9e8;margin:12px 0;overflow:hidden}
+.fszone{position:absolute;top:0;bottom:0;background:#3fbf7f;opacity:.9}.fsmark{position:absolute;top:3px;width:6px;height:28px;border-radius:3px;background:#fff;box-shadow:0 0 4px rgba(0,0,0,.4)}
 </style>
 </head>
 <body>
@@ -213,6 +222,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="tab on" data-t="gacha" role="tab" aria-selected="true">扭蛋</button>
 <button class="tab" data-t="fortune" role="tab" aria-selected="false">占卜</button>
 <button class="tab" data-t="code" role="tab" aria-selected="false">終極密碼</button>
+<button class="tab" data-t="fish" role="tab" aria-selected="false">釣魚</button>
 <button class="tab" data-t="wheel" role="tab" aria-selected="false">吃什麼</button>
 <button class="tab" data-t="rps" role="tab" aria-selected="false">猜拳</button>
 <button class="tab" data-t="memory" role="tab" aria-selected="false">配對</button>
@@ -251,6 +261,14 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="sub" id="cdMsg" style="min-height:18px;margin-top:8px;text-align:center"></div>
 <button id="cdAgain" style="width:100%" hidden>再玩一次</button>
 </section>
+<section class="panel" id="p-fish" hidden>
+<h3>貓咪釣魚 🎣</h3><p class="sub">按「甩竿」，白線跑進綠色區的時候按「拉！」。每天可以釣 5 次。</p>
+<div class="sub" id="fsInfo" style="text-align:center"></div>
+<div class="fstrack"><div class="fszone" id="fsZone"></div><div class="fsmark" id="fsMark"></div></div>
+<button class="p" id="fsBtn" style="width:100%">甩竿 🎣</button>
+<div class="prizebox" id="fsMsg" style="margin-top:10px"><div class="pe">🐱</div><div class="pt">貓咪等著吃魚魚</div></div>
+<div class="sub" id="fsDex" style="margin-top:8px;text-align:center"></div>
+</section>
 <section class="panel" id="p-wheel" hidden>
 <h3>今天吃什麼 🍜</h3><p class="sub">不知道吃什麼就轉一下，也可以自己加選項</p>
 <div class="wheelwrap"><div class="ptr">▼</div><svg id="wheel" viewBox="0 0 300 300" aria-label="美食輪盤"></svg></div>
@@ -275,19 +293,28 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 </div>
 </div>
 <div id="pg-earn" hidden>
-<div class="card" id="earnCard">
-<h2>賺點遊樂場 💰</h2><p class="sub" style="margin:0 0 10px">玩遊戲也能賺點數！</p>
+<div class="card"><h2>賺點遊樂場 💰</h2><p class="sub" style="margin:0 0 8px">玩遊戲也能賺點數！</p>
+<div class="tabs" id="etabs" style="margin-bottom:0;padding-bottom:2px"><button class="etab on" data-e="whack">打地鼠</button><button class="etab" data-e="quiz">知識問答</button><button class="etab" data-e="merge">合成貓咪</button><button class="etab" data-e="sim">抽卡</button></div></div>
+<div class="card" id="earnCard" data-ep="whack">
 <h3 style="margin:4px 0">貓咪打地鼠 🔨</h3><p class="sub">30 秒內點冒出來的貓咪，越後面越快！點到貓咪 +1 分，小心炸彈 💣 會 -1 分。22 分以上 +5 點，35 分以上 +10 點。每天只能玩一次，要加油喔！</p>
 <div class="sub" id="whInfo" style="margin:0 0 8px;text-align:center">按開始～</div>
 <div class="holes" id="holes"></div>
 <button class="p" id="whStart" style="width:100%;margin-top:10px">開始（30 秒）</button>
 <div id="whClaim"></div>
 </div>
-<div class="card" id="quizCard">
+<div class="card" id="quizCard" data-ep="quiz" hidden>
 <h2>苑均知識問答 💕</h2><p class="sub" style="margin:0 0 8px">看看你有多了解她～</p>
 <div id="quizBox"></div>
 </div>
-<div class="card" id="simCard">
+<div class="card" id="mergeCard" data-ep="merge" hidden>
+<h2>合成貓咪 🐱</h2><p class="sub" style="margin:0 0 6px">滑動畫面，把一樣的貓咪合在一起，合出更大的貓！最大的是噹噹和咚咚。合到 32 +1 點、64 +2 點、128 +5 點、噹噹 +8 點、咚咚 +10 點。每天只能玩一次。</p>
+<div class="sub" id="mgInfo" style="text-align:center">按開始～</div>
+<div class="mgb" id="mgBoard"></div>
+<button class="p" id="mgStart" style="width:100%">開始</button>
+<button id="mgEnd" style="width:100%;margin-top:8px" hidden>不玩了，結算</button>
+<div id="mgClaim"></div>
+</div>
+<div class="card" id="simCard" data-ep="sim" hidden>
 <h2>模擬抽卡 🎰</h2>
 <p class="sub">每天可以抽 30 次，把卡冊集滿有大獎喔！</p>
 <div class="rates">機率：<b>5★ 0.4%</b>　<b>4★ 3.5%</b>　<b>3★ 16%</b>　<b>2★ 30%</b>　<b>1★ 50.1%</b><br><small>抽到第 90 次一定會出 5★（第 74 次起機率逐漸提高）</small></div>
@@ -298,7 +325,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button id="simReset" hidden>重新開始</button>
 <h3 style="margin-top:16px">我的卡冊 <span class="sub" id="dexCnt"></span></h3><div class="dtabs" id="dtabs"></div><div class="dex" id="dex"></div>
 </div>
-<div class="card" id="fullCard">
+<div class="card" id="fullCard" data-ep="sim" hidden>
 <h2>集滿卡冊大獎 🏆</h2><p class="sub" style="margin:0 0 8px">用上面的模擬抽卡，把卡冊全部集滿，就能領 <b>1000 點</b>（每個卡包集滿都能領一次）！</p>
 <div class="fbar"><i id="fullFill"></i></div><div class="sub" id="fullTxt" style="margin:6px 0 0;text-align:center"></div>
 <div id="fullClaim"></div>
@@ -754,6 +781,7 @@ function rewardFor(n){
   let m;
   if(n.startsWith('🎮 知識問答｜')&&(m=/答對(\d+)題/.exec(n))){const k=Math.min(5,+m[1]);return k+(k===5?5:0)}
   if(n.startsWith('🎮 打地鼠｜')&&(m=/(\d+)分/.exec(n))){const sc=+m[1];return sc>=35?10:(sc>=22?5:0)}
+  if(n.startsWith('🎮 合成貓咪｜')&&(m=/最大(\d+)/.exec(n))){const v=+m[1];return v>=512?10:v>=256?8:v>=128?5:v>=64?2:v>=32?1:0}
   if(n.startsWith('🎁 卡冊｜')&&(m=/集滿\s*(\d+)\s*張/.exec(n)))return CARD_MS[+m[1]]||0;
   return 0;
 }
@@ -1183,6 +1211,146 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
     h.style.position='relative';info();
     setTimeout(function(){if(!(n in ups)){h.innerHTML='';h.classList.remove('hit')}},250);
   });
+})();
+</script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  function td(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+  var N=4,bd=[],over=true,run=false,moves=0;
+  var EMO={2:'🐱',4:'😺',8:'😸',16:'😻',32:'🐈',64:'🐈‍⬛',128:'🦁'};
+  function art(c){return window.catArt?window.catArt('eyeroll',c):(c==='o'?'🧡':'🩶')}
+  function reward(v){return v>=512?10:v>=256?8:v>=128?5:v>=64?2:v>=32?1:0}
+  function mx(){return Math.max.apply(null,bd.concat([0]))}
+  function played(){try{return localStorage.getItem('mgplay')===td()}catch(e){return false}}
+  function save(){try{localStorage.setItem('mgst',JSON.stringify({d:td(),b:bd,o:over,m:moves}))}catch(e){}}
+  function tile(v){
+    if(!v)return '<div class="mgcell"></div>';
+    var inner=v===256?art('o')+'<b>噹噹</b>':v===512?art('t')+'<b>咚咚</b>':v>512?'<span>👑</span><i>'+v+'</i>':'<span>'+EMO[v]+'</span><i>'+v+'</i>';
+    return '<div class="mgcell"><div class="mgt v'+Math.min(v,1024)+'">'+inner+'</div></div>';
+  }
+  function draw(){
+    $('mgBoard').innerHTML=bd.map(tile).join('');
+    var m=mx();
+    $('mgInfo').textContent=run?'目前最大：'+(m===256?'噹噹':m===512?'咚咚':m)+'　步數 '+moves:(over&&m?'結束了！最大是 '+(m===256?'噹噹':m===512?'咚咚':m):'按開始～');
+  }
+  function claimUI(){
+    var box=$('mgClaim');
+    if(run||!over||!mx()){box.innerHTML='';return}
+    var m=mx(),need=reward(m),name='🎮 合成貓咪｜最大'+m;
+    if(!need){box.innerHTML='<div class="sub" style="margin-top:8px">差一點～合到 32 以上才有獎勵</div>';return}
+    var st=window.rewardState?window.rewardState(name):'ok';
+    box.innerHTML=st==='done'?'<div class="sub" style="margin-top:8px">今天已經領過了 ✓</div>':st==='pend'?'<div class="sub" style="margin-top:8px">已送出，等苑均確認 ⏳</div>':'<button class="p" style="width:100%;margin-top:10px" data-claim="'+name+'">領獎 +'+need+' 點</button>';
+  }
+  function lock(){$('mgStart').disabled=true;$('mgStart').textContent='今天玩過了，明天再來 🌙';$('mgEnd').hidden=true}
+  function addTile(){
+    var e=[],i;for(i=0;i<16;i++)if(!bd[i])e.push(i);
+    if(!e.length)return;bd[e[Math.floor(Math.random()*e.length)]]=Math.random()<.9?2:4;
+  }
+  function slide(a){
+    var f=a.filter(Boolean),o=[],i;
+    for(i=0;i<f.length;i++){if(f[i]===f[i+1]){o.push(f[i]*2);i++}else o.push(f[i])}
+    while(o.length<N)o.push(0);return o;
+  }
+  function lines(dir){
+    var L=[],r,c,l;
+    for(r=0;r<N;r++){l=[];for(c=0;c<N;c++)l.push(dir===0?r*N+c:dir===2?r*N+(N-1-c):dir===1?c*N+r:(N-1-c)*N+r);L.push(l)}
+    return L;
+  }
+  function canMove(){
+    var i;for(i=0;i<16;i++){if(!bd[i])return true}
+    for(i=0;i<16;i++){var r=Math.floor(i/4),c=i%4;if(c<3&&bd[i]===bd[i+1])return true;if(r<3&&bd[i]===bd[i+4])return true}
+    return false;
+  }
+  function move(dir){
+    if(!run)return;
+    var moved=false;
+    lines(dir).forEach(function(l){
+      var vals=l.map(function(i){return bd[i]}),res=slide(vals);
+      l.forEach(function(idx,k){if(bd[idx]!==res[k])moved=true;bd[idx]=res[k]});
+    });
+    if(!moved)return;
+    moves++;addTile();
+    if(!canMove())finish();else{save();draw()}
+  }
+  function finish(){run=false;over=true;save();$('mgEnd').hidden=true;lock();draw();claimUI()}
+  function init(){bd=[];for(var i=0;i<16;i++)bd.push(0);addTile();addTile();moves=0}
+  $('mgStart').onclick=function(){
+    if(played()||run)return;try{localStorage.setItem('mgplay',td())}catch(e){}
+    init();over=false;run=true;$('mgStart').disabled=true;$('mgStart').textContent='進行中…';$('mgEnd').hidden=false;save();draw();claimUI();
+  };
+  $('mgEnd').onclick=function(){if(!run)return;if(!confirm('要結算了嗎？今天就不能再玩囉'))return;finish()};
+  var sx=0,sy=0,tr=false,B=$('mgBoard');
+  B.addEventListener('touchstart',function(e){var t=e.touches[0];sx=t.clientX;sy=t.clientY;tr=true},{passive:true});
+  B.addEventListener('touchmove',function(e){if(run)e.preventDefault()},{passive:false});
+  B.addEventListener('touchend',function(e){
+    if(!tr)return;tr=false;var t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.max(Math.abs(dx),Math.abs(dy))<24)return;
+    move(Math.abs(dx)>Math.abs(dy)?(dx<0?0:2):(dy<0?1:3));
+  });
+  var ms=false;
+  B.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse'){ms=true;sx=e.clientX;sy=e.clientY}});
+  document.addEventListener('pointerup',function(e){
+    if(!ms)return;ms=false;var dx=e.clientX-sx,dy=e.clientY-sy;
+    if(Math.max(Math.abs(dx),Math.abs(dy))<24)return;
+    move(Math.abs(dx)>Math.abs(dy)?(dx<0?0:2):(dy<0?1:3));
+  });
+  document.addEventListener('keydown',function(e){
+    var k={ArrowLeft:0,ArrowUp:1,ArrowRight:2,ArrowDown:3}[e.key];
+    if(k===undefined||!run||$('pg-earn').hidden)return;e.preventDefault();move(k);
+  });
+  window.mgMove=move;
+  try{var sv=JSON.parse(localStorage.getItem('mgst')||'null');if(sv&&sv.d===td()&&sv.b&&sv.b.length===16){bd=sv.b;over=!!sv.o;moves=sv.m||0;run=!over}}catch(e){}
+  if(!bd.length)init(),over=true,bd=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  if(played()){if(run){$('mgStart').disabled=true;$('mgStart').textContent='進行中…';$('mgEnd').hidden=false}else lock()}
+  draw();claimUI();
+  var _wr=window.whackRefresh;window.whackRefresh=function(){if(_wr)_wr();claimUI()};
+})();
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  function td(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+  var FISH=[['🐟',50],['🐠',25],['🐡',12],['🦐',8],['🐙',3.5],['🦈',1.5]],MAX=5;
+  function load(k,def){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v||def}catch(e){return def}}
+  function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function used(){var s=load('fishst',null);return s&&s.d===td()?s.n:0}
+  var phase=0,raf=0,t0=0,sp=1,zs=0,zw=.22,pos=0;
+  function info(){var left=MAX-used();$('fsInfo').textContent='今天還能釣 '+left+' 次';
+    if(phase===0){$('fsBtn').disabled=left<=0;$('fsBtn').textContent=left<=0?'今天釣完了，明天再來 🌙':'甩竿 🎣'}}
+  function dex(){var d=load('fishdex',{}),o=FISH.map(function(f){return d[f[0]]?f[0]+'×'+d[f[0]]:''}).filter(Boolean);$('fsDex').textContent=o.length?'我的魚：'+o.join('　'):''}
+  function pickFish(){var t=FISH.reduce(function(a,f){return a+f[1]},0),r=Math.random()*t,i;for(i=0;i<FISH.length;i++){r-=FISH[i][1];if(r<=0)return FISH[i][0]}return FISH[0][0]}
+  function frame(ts){
+    if(phase!==1)return;if(!t0)t0=ts;
+    var x=((ts-t0)/1000*sp)%2;pos=x<1?x:2-x;
+    $('fsMark').style.left=(pos*(100-1.8))+'%';
+    raf=requestAnimationFrame(frame);
+  }
+  function msg(e,t){$('fsMsg').innerHTML='<div class="pe">'+e+'</div><div class="pt">'+t+'</div>'}
+  $('fsBtn').onclick=function(){
+    if(phase===0){
+      if(used()>=MAX)return;
+      save('fishst',{d:td(),n:used()+1});
+      zw=.2+Math.random()*.06;zs=.05+Math.random()*(.9-zw);sp=.9+Math.random()*.9;
+      $('fsZone').style.left=(zs*100)+'%';$('fsZone').style.width=(zw*100)+'%';
+      phase=1;t0=0;$('fsBtn').textContent='拉！';msg('🎣','抓準時機～');
+      raf=requestAnimationFrame(frame);
+    }else{
+      phase=0;cancelAnimationFrame(raf);
+      var c=pos*(1-.018)+.009;
+      if(c>=zs&&c<=zs+zw){var f=pickFish(),d=load('fishdex',{});d[f]=(d[f]||0)+1;save('fishdex',d);msg(f,'釣到了！貓咪好開心 🎉');dex()}
+      else msg('💨',used()>=MAX?'魚跑掉了…明天再來釣吧':'魚跑掉了…再試一次');
+      info();
+    }
+  };
+  info();dex();
+})();
+</script>
+<script>
+(function(){
+  var bs=document.querySelectorAll('.etab');
+  bs.forEach(function(b){b.addEventListener('click',function(){
+    bs.forEach(function(x){x.classList.toggle('on',x===b)});
+    document.querySelectorAll('[data-ep]').forEach(function(c){c.hidden=c.dataset.ep!==b.dataset.e});
+  })});
 })();
 </script>
 </body>
