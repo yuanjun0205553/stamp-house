@@ -168,7 +168,13 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
 </div>
 <div id="admin" hidden>
-<div class="card" id="adminCards" hidden><h2>他的卡冊 🃏</h2><div id="adminCardsBody"></div><button id="newSeason" style="width:100%;margin-top:8px">換新卡包（他的卡冊歸零）</button></div>
+<div class="card" id="adminCards" hidden><h2>他的卡冊 🃏</h2><div id="adminCardsBody"></div><details style="margin-top:10px"><summary>進階設定（小心使用）</summary><div style="margin-top:8px">
+<div class="sub" style="margin:0 0 6px">目前是第 <b id="seasonNow">1</b> 個卡包</div>
+<input type="number" id="seasonIn" min="1" max="99" placeholder="卡包編號，例如 1">
+<button id="seasonSet" style="width:100%;margin-top:6px">設定卡包編號（回到舊卡包）</button>
+<button id="drawReset" style="width:100%;margin-top:6px">讓他今天重新抽（抽數歸零）</button>
+<button id="newSeason" style="width:100%;margin-top:6px">換新卡包（編號 +1，他的卡冊歸零）</button>
+</div></details></div>
 <div class="card"><h2>在一起的日子 💕</h2><input type="date" id="annivIn"><button class="p" id="annivSave" style="width:100%;margin-top:8px">儲存日期</button></div>
 <div class="card">
 <h2>手動調整點數</h2>
@@ -584,7 +590,7 @@ import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'htt
 const $=id=>document.getElementById(id);
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),ref=doc(db,'stamp','main');
 const PER=500; // 幾點換 1 份禮物
-let S={points:0,log:[],done:{},gifts:[],anniv:'2026-9-25',season:1},admin=false,q=Promise.resolve();
+let S={points:0,log:[],done:{},gifts:[],anniv:'2026-9-25',season:1,drawReset:0},admin=false,q=Promise.resolve();
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const showLogin=new URLSearchParams(location.search).has('admin');
 const GROUPS=[
@@ -716,7 +722,7 @@ function rewardFor(n){
 }
 function doneState(n){const d=S.done||{};return String(n).startsWith('🎁')?!!d[n]:d[baseOf(n)]===today()}
 window.rewardState=n=>doneState(n)?'done':(isPend(pk(n))?'pend':'ok');
-window.getSeason=()=>S.season||1;
+window.getSeason=()=>S.season||1;window.getDrawReset=()=>S.drawReset||0;
 window.rewardFor=rewardFor;window.CARD_MS=CARD_MS;
 window.requestReward=function(n){
   n=String(n);const d=rewardFor(n);
@@ -805,12 +811,20 @@ function renderAdminCards(){
     h='<div class="qa"><b>第 '+cur+' 個卡包</b>：已收集 <b>'+all+' / '+cs.length+'</b> 張，共抽了 '+(CD.total||0)+' 次'+(all>=cs.length?'<br>🎉 <b>他集滿了！</b>':'')+'<br>'+[5,4,3,2,1].map(r=>r+'★ '+by[r].length+'/'+tot[r]).join('　')+'</div>';
     h+=[5,4,3,2,1].map(r=>'<details style="margin-bottom:6px"><summary>'+r+'★ 抽到的（'+by[r].length+'）</summary><div class="sub" style="margin:6px 0">'+(by[r].map(c=>esc(c.n)+(own[c.id]>1?'×'+own[c.id]:'')).join('、')||'還沒有')+'</div></details>').join('');
   }
-  $('adminCardsBody').innerHTML=h;
+  $('adminCardsBody').innerHTML=h;if($('seasonNow'))$('seasonNow').textContent=cur;
 }
 document.addEventListener('click',e=>{
-  if(!admin||e.target.id!=='newSeason')return;
-  if(!confirm('要換新卡包嗎？他的卡冊會歸零重新開始，卡片組合也會換一批。'))return;
-  commit({season:(S.season||1)+1});CD=null;renderAdminCards();
+  if(!admin)return;
+  if(e.target.id==='newSeason'){
+    if(!confirm('要換新卡包嗎？他現在的卡冊會暫時收起來，新卡包從 0 開始。'))return;
+    commit({season:(S.season||1)+1});CD=null;renderAdminCards();return}
+  if(e.target.id==='seasonSet'){
+    const n=Math.round(+$('seasonIn').value);if(!(n>=1&&n<=99))return;
+    if(!confirm('要改成第 '+n+' 個卡包嗎？'))return;
+    commit({season:n});CD=null;renderAdminCards();return}
+  if(e.target.id==='drawReset'){
+    if(!confirm('要讓他今天重新抽嗎？他的今日抽數會歸零。'))return;
+    commit({drawReset:Date.now()});$('simMsg')&&0;return}
 });
 let undoArm=-1,undoT=0;
 document.addEventListener('click',e=>{
@@ -929,7 +943,7 @@ onAuthStateChanged(auth,u=>{
 const _t0=0;const t=setTimeout(()=>{$('msg').textContent='暫時連不上，資料可能不是最新'},10000);
 onSnapshot(ref,s=>{
   clearTimeout(t);$('msg').textContent='';
-  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{},gifts:v.gifts||[],qa:v.qa||[],quiz:v.quiz||[],anniv:v.anniv||'2026-9-25',streak:v.streak||null,season:v.season||1}}
+  if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{},gifts:v.gifts||[],qa:v.qa||[],quiz:v.quiz||[],anniv:v.anniv||'2026-9-25',streak:v.streak||null,season:v.season||1,drawReset:v.drawReset||0}}
   window.seasonReady=true;
   render();
 },()=>{clearTimeout(t);$('msg').textContent='讀取失敗，請檢查網路或 Firebase 設定'});
@@ -951,7 +965,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   var seed=20260925;function rnd(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}
   function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),x=a[i];a[i]=a[j];a[j]=x}return a}
   var CARDS=[],used={},BYR={},SEASON=1;
-  try{SEASON=+localStorage.getItem('simseason')||1}catch(e){}
+  var DRR=0;try{SEASON=+localStorage.getItem('simseason')||1;DRR=+localStorage.getItem('simdrr')||0}catch(e){}
   function build(){
     seed=20260925+(SEASON-1)*7919;CARDS=[];used={};
   function add(k,c,a,r,n,up){var id=k+c+a;if(used[id])return false;used[id]=1;CARDS.push({id:id,k:k,c:c,a:a,r:r,n:n||(COL[c]+(a==='none'?((c==='o'||c==='t')?'':'貓'):ACN[a])+POSE[k]),up:up});return true}
@@ -975,7 +989,14 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   function checkSeason(){
     if(!window.seasonReady)return;
     var cur=window.getSeason();
-    if(cur!==SEASON){SEASON=cur;try{localStorage.setItem('simseason',cur)}catch(e){}own={};total=0;pity=0;guar=false;build();$('simOut').innerHTML='';$('simMsg').textContent='新卡包來囉！卡冊重新開始 🎉';save()}
+    var dr=window.getDrawReset?window.getDrawReset():0;
+    if(dr&&dr!==DRR){DRR=dr;try{localStorage.setItem('simdrr',String(dr))}catch(e){}used0={d:'',n:0};save()}
+    if(cur!==SEASON){
+      try{localStorage.setItem('simpack'+SEASON,JSON.stringify({own:own,total:total,pity:pity,guar:guar}))}catch(e){}
+      SEASON=cur;try{localStorage.setItem('simseason',cur)}catch(e){}
+      var pk=null;try{pk=JSON.parse(localStorage.getItem('simpack'+cur)||'null')}catch(e){}
+      own=pk?pk.own||{}:{};total=pk?pk.total||0:0;pity=pk?pk.pity||0:0;guar=pk?!!pk.guar:false;
+      build();$('simOut').innerHTML='';$('simMsg').textContent=pk?'':'新卡包來囉！卡冊重新開始 🎉';save()}
   }
   function pick(l){return l[Math.floor(Math.random()*l.length)]}
   function stars(n){return new Array(n+1).join('★')}
