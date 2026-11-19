@@ -166,7 +166,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="task" data-d="20" data-n="喝水三壺（請拍照傳給苑均）"><span>喝水三壺（請拍照傳給苑均）</span><em>+20 點</em></button>
 <button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
 </div>
-<div class="card"><h2>紀錄</h2><div id="log"><span class="sub">還沒有紀錄</span></div></div>
+<div class="card"><h2>紀錄</h2><div id="log"><span class="sub">還沒有紀錄</span></div><details id="logMore" style="margin-top:8px" hidden><summary>看更早的紀錄（<span id="logN">0</span>）</summary><div id="logOld"></div></details></div>
 <div class="card" id="loginBox">
 <h2>管理員登入</h2>
 <input id="em" type="email" placeholder="Email" autocomplete="username">
@@ -597,12 +597,12 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <script type="module">
 import {firebaseConfig} from './config.js';
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import {getFirestore,doc,onSnapshot,setDoc,addDoc,collection,query,orderBy,limit,deleteDoc} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import {getFirestore,doc,onSnapshot,setDoc,addDoc,collection,query,orderBy,limit,deleteDoc,getDocs} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 const $=id=>document.getElementById(id);
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),ref=doc(db,'stamp','main');
 const PER=500; // 幾點換 1 份禮物
-let S={points:0,log:[],done:{},gifts:[],anniv:'2026-9-25',season:1,drawReset:0},admin=false,q=Promise.resolve();
+let S={points:0,log:[],done:{},gifts:[],anniv:'2026-9-25',season:1,drawReset:0},admin=false,q=Promise.resolve(),ARC={log:[],quizLog:[],qa:[]},trimming=false;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const showLogin=new URLSearchParams(location.search).has('admin');
 const GROUPS=[
@@ -675,10 +675,13 @@ function render(){
   document.querySelectorAll('button.task').forEach(b=>{const n=b.dataset.n,dn=(S.done||{})[n]===today(),pd=!admin&&!dn&&isPend(n);b.disabled=dn||pd;b.style.cursor='pointer';b.style.opacity=(dn||pd)?'.5':'1';b.querySelector('em').textContent=dn?'今天完成了 ✓':(pd?'已送出，等確認 ⏳':(admin?'+':'我完成了 +')+b.dataset.d+' 點')});
    renderExtra();
   $('admin').hidden=!admin;$('navAdmin').hidden=!admin;if(!admin&&!$('pg-admin').hidden){$('pg-admin').hidden=true;$('pg-home').hidden=false;document.querySelectorAll('.nt').forEach(x=>x.classList.toggle('on',x.dataset.pg==='home'))}$('loginBox').hidden=admin||!showLogin;$('outBtn').hidden=!admin;
-  $('log').innerHTML=S.log.length?S.log.map((l,i)=>{
+  const mkLog=(l,i,un)=>{
     const d=new Date(l.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-    return '<div class="log"><div>'+esc(l.n||(l.d>0?'加點':'扣點'))+'<br><span>'+ds+'</span></div><div class="lr"><span class="'+(l.d>0?'pos':'neg')+'">'+(l.d>0?'+':'')+l.d+'</span>'+(admin?'<button class="undo'+(undoArm===i?' p':'')+'" data-undo="'+i+'">'+(undoArm===i?'再按一次刪除':'刪除')+'</button>':'')+'</div></div>';
-  }).join(''):'<span class="sub">還沒有紀錄</span>';
+    return '<div class="log"><div>'+esc(l.n||(l.d>0?'加點':'扣點'))+'<br><span>'+ds+'</span></div><div class="lr"><span class="'+(l.d>0?'pos':'neg')+'">'+(l.d>0?'+':'')+l.d+'</span>'+(admin&&un?'<button class="undo'+(undoArm===i?' p':'')+'" data-undo="'+i+'">'+(undoArm===i?'再按一次刪除':'刪除')+'</button>':'')+'</div></div>';
+  };
+  const logH=[...S.log.map((l,i)=>mkLog(l,i,true)),...ARC.log.map((l,i)=>mkLog(l,i,false))];
+  $('log').innerHTML=logH.length?logH.slice(0,10).join(''):'<span class="sub">還沒有紀錄</span>';
+  $('logMore').hidden=logH.length<=10;$('logN').textContent=Math.max(0,logH.length-10);$('logOld').innerHTML=logH.slice(10).join('');
 }
 function streakTxt(){
   const st=S.streak;if(!st||!st.last)return '';
@@ -704,7 +707,7 @@ function renderExtra(){
   }else $('annivCard').hidden=true;
   if(admin&&document.activeElement!==$('annivIn'))$('annivIn').value=/^\d{4}-\d{1,2}-\d{1,2}$/.test(S.anniv||'')?S.anniv.replace(/-(\d)(?=-|$)/g,'-0$1'):'';
   // replies
-  const qa=(S.qa||[]);
+  const qa=[...(S.qa||[]),...ARC.qa];
   $('qaCard').hidden=!qa.length;
   const qaH=x=>{const d=new Date(x.t);return '<div class="qa">你問：'+esc(x.q)+'<br><b>苑均：'+esc(x.a)+'</b><small>'+(d.getMonth()+1)+'/'+d.getDate()+'</small></div>'};
   $('qaList').innerHTML=qa.slice(0,1).map(qaH).join('');
@@ -793,7 +796,7 @@ document.addEventListener('click',e=>{
 function renderQzAdmin(){
   if(!admin||!$('qzList'))return;
   if($('qzCount'))$('qzCount').textContent=(S.quiz||[]).length;
-  if($('qlList')){const lg=S.quizLog||[];$('qlCount').textContent=lg.length;$('qlList').innerHTML=lg.map(l=>{const d=new Date(l.t);return '<div class="iq"><div class="qt">'+(l.open?'✏️ ':l.ok?'✅ ':'❌ ')+esc(l.q)+'<br><small>他答：'+esc(l.a)+'｜'+(d.getMonth()+1)+'/'+d.getDate()+(l.open?'｜已從題庫移除':l.ok?'｜已從題庫移除':'｜還留在題庫')+'</small></div></div>'}).join('')||'<div class="sub">還沒有紀錄</div>'}
+  if($('qlList')){const lg=[...(S.quizLog||[]),...ARC.quizLog];$('qlCount').textContent=lg.length;$('qlList').innerHTML=lg.map(l=>{const d=new Date(l.t);return '<div class="iq"><div class="qt">'+(l.open?'✏️ ':l.ok?'✅ ':'❌ ')+esc(l.q)+'<br><small>他答：'+esc(l.a)+'｜'+(d.getMonth()+1)+'/'+d.getDate()+(l.open?'｜已從題庫移除':l.ok?'｜已從題庫移除':'｜還留在題庫')+'</small></div></div>'}).join('')||'<div class="sub">還沒有紀錄</div>'}
   $('qzList').innerHTML=(S.quiz||[]).map((x,i)=>'<div class="iq"><div class="row2"><div class="qt">'+esc(x.q)+'<br><small>'+(x.open?'✏️ 問答題（他自己打字回答）':x.o.map((o,k)=>(k===x.a?'✅':'')+esc(o)).join('｜'))+'</small></div><button class="undo" data-qdel="'+i+'">刪</button></div></div>').join('')||'<div class="sub">還沒有題目，至少出 3 題他才能玩</div>';
 }
 document.addEventListener('click',e=>{
@@ -802,12 +805,12 @@ document.addEventListener('click',e=>{
   if(dl){commit({quiz:(S.quiz||[]).filter((_,i)=>i!==+dl.dataset.qdel)});return}
   if(e.target.id==='qzAddOpen'){
     const q=$('qzQ').value.trim();if(!q){$('qzMsg').textContent='題目要填喔';return}
-    commit({quiz:[{q:q.slice(0,60),o:[],a:0,open:true},...(S.quiz||[])].slice(0,50)});
+    commit({quiz:[{q:q.slice(0,60),o:[],a:0,open:true},...(S.quiz||[])].slice(0,1000)});
     $('qzQ').value='';$('qzMsg').textContent='已新增問答題 ✓';return}
   if(e.target.id==='qzAdd'){
     const q=$('qzQ').value.trim(),o=[0,1,2].map(i=>$('qzA'+i).value.trim());
     if(!q||o.some(x=>!x)){$('qzMsg').textContent='題目和三個選項都要填喔';return}
-    commit({quiz:[{q:q.slice(0,60),o:o.map(x=>x.slice(0,30)),a:+$('qzC').value},...(S.quiz||[])].slice(0,50)});
+    commit({quiz:[{q:q.slice(0,60),o:o.map(x=>x.slice(0,30)),a:+$('qzC').value},...(S.quiz||[])].slice(0,1000)});
     ['qzQ','qzA0','qzA1','qzA2'].forEach(i=>$(i).value='');$('qzMsg').textContent='已新增 ✓';
   }
 });
@@ -871,7 +874,19 @@ document.addEventListener('click',e=>{
 });
 function commit(next){
   const prev=S;next={...S,...next};S=next;render();
+  setTimeout(trimArc,400);
   q=q.then(()=>setDoc(ref,next)).catch(()=>{S=prev;render();$('msg').textContent='儲存失敗：請確認已登入管理員帳號'});
+}
+async function loadArc(){try{const sn=await getDocs(collection(db,'archive'));const a={log:[],quizLog:[],qa:[]};sn.docs.forEach(d=>{const v=d.data();if(a[v.kind]&&Array.isArray(v.items))a[v.kind].push(...v.items)});Object.keys(a).forEach(k=>a[k].sort((x,y)=>y.t-x.t));ARC=a;render()}catch(e){}}
+async function trimArc(){
+  if(!admin||!window.seasonReady||trimming)return;
+  for(const f of ['log','quizLog','qa']){
+    const cur=S[f]||[];if(cur.length<=400)continue;
+    trimming=true;const old=cur.slice(-200);
+    try{await setDoc(doc(db,'archive',f+'-'+Date.now()),{kind:f,items:old,t:Date.now()});
+      const c2=S[f]||[];commit({[f]:c2.slice(0,c2.length-200)});
+      ARC[f]=[...ARC[f],...old].sort((x,y)=>y.t-x.t)}catch(e){}
+    trimming=false}
 }
 const ymd=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 function adjust(d,n,key){
@@ -887,12 +902,12 @@ function adjust(d,n,key){
     patch.streak={last:today(),n:cnt};
     if(st.last!==today()&&cnt%7===0){np+=20;log=[{t:Date.now()+1,d:20,n:'連續登入 '+cnt+' 天獎勵 🎉'},...log]}
   }
-  commit({...patch,points:np,log:log.slice(0,200),done,gifts:S.gifts||[]});
+  commit({...patch,points:np,log,done,gifts:S.gifts||[]});
 }
 function redeem(g,cost){
   if(!admin||S.points<cost)return;
   const now=Date.now();
-  commit({points:S.points-cost,log:[{t:now,d:-cost,n:'兌換：'+g.n},...S.log].slice(0,200),done:{...(S.done||{})},gifts:[{t:now,n:g.n,u:0},...(S.gifts||[])].slice(0,100)});
+  commit({points:S.points-cost,log:[{t:now,d:-cost,n:'兌換：'+g.n},...S.log],done:{...(S.done||{})},gifts:[{t:now,n:g.n,u:0},...(S.gifts||[])].slice(0,1000)});
 }
 function markUsed(t){
   if(!admin)return;
@@ -936,7 +951,7 @@ function processAns(){
     if(ok&&i>=0)quiz.splice(i,1);ch=true;
   });
   items.forEach(x=>{deleteDoc(doc(db,'inbox',x.id)).catch(()=>{})});
-  if(ch)commit({quiz,quizLog:log.slice(0,150)});
+  if(ch)commit({quiz,quizLog:log});
 }
 function renderInbox(){
   $('inboxCard').hidden=!(admin&&inbox.length);{const b=$('admBdg');if(b){b.hidden=!(admin&&inbox.length);b.textContent=inbox.length}}
@@ -971,7 +986,7 @@ document.addEventListener('click',e=>{
   const rp=e.target.closest('button[data-reply]');
   if(rp){const x=inbox.find(v=>v.id===rp.dataset.reply),inp=$('rp_'+rp.dataset.reply);
     const a=inp&&inp.value.trim();if(!x||!a)return;
-    commit({qa:[{q:x.q,a:a.slice(0,200),t:Date.now()},...(S.qa||[])].slice(0,20)});
+    commit({qa:[{q:x.q,a:a.slice(0,200),t:Date.now()},...(S.qa||[])]});
     deleteDoc(doc(db,'inbox',x.id)).catch(()=>{})}
 });
 document.addEventListener('click',e=>{
@@ -993,7 +1008,7 @@ onSnapshot(ref,s=>{
   clearTimeout(t);$('msg').textContent='';
   if(s.exists()){const v=s.data();S={points:v.points||0,log:v.log||[],done:v.done||{},gifts:v.gifts||[],qa:v.qa||[],quiz:v.quiz||[],quizLog:v.quizLog||[],anniv:v.anniv||'2026-9-25',streak:v.streak||null,season:v.season||1,drawReset:v.drawReset||0}}
   window.seasonReady=true;
-  render();processAns();
+  render();processAns();if(!window.arcLoaded){window.arcLoaded=1;loadArc()}else trimArc();
 },()=>{clearTimeout(t);$('msg').textContent='讀取失敗，請檢查網路或 Firebase 設定'});
 document.querySelectorAll('.nt').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.nt').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});
