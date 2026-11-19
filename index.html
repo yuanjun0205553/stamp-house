@@ -168,7 +168,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="task" data-d="2" data-n="拍照給漂亮女友（包括自己、寵物、做什麼）"><span>拍照給漂亮女友（包括自己、寵物、做什麼）</span><em>+2 點</em></button>
 </div>
 <div id="admin" hidden>
-<div class="card"><h2>知識問答出題 🧠</h2><p class="sub" style="margin:0 0 8px">出他會答的問題（至少 3 題他才能玩），答對一題 +3 點，每次最多 5 題。</p>
+<div class="card"><h2>知識問答出題 🧠</h2><p class="sub" style="margin:0 0 8px">出他會答的問題（至少 5 題他才能玩），每次隨機抽 5 題，答對一題 +1 點，五題全對再多 +5 點。</p>
 <input id="qzQ" maxlength="60" placeholder="題目，例如：我最喜歡的飲料是？">
 <input id="qzA0" maxlength="30" placeholder="選項 1" style="margin-top:6px"><input id="qzA1" maxlength="30" placeholder="選項 2" style="margin-top:6px"><input id="qzA2" maxlength="30" placeholder="選項 3" style="margin-top:6px">
 <select id="qzC" style="width:100%;margin-top:6px;padding:10px;border-radius:12px"><option value="0">正確答案：選項 1</option><option value="1">正確答案：選項 2</option><option value="2">正確答案：選項 3</option></select>
@@ -725,7 +725,7 @@ function rewardFor(n){
   const tb=document.querySelector('button.task[data-n="'+n.replace(/"/g,'\\"')+'"]');
   if(tb)return Number(tb.dataset.d);
   let m;
-  if(n.startsWith('🎮 知識問答｜')&&(m=/答對(\d+)題/.exec(n)))return Math.min(5,+m[1])*3;
+  if(n.startsWith('🎮 知識問答｜')&&(m=/答對(\d+)題/.exec(n))){const k=Math.min(5,+m[1]);return k+(k===5?5:0)}
   if(n.startsWith('🎮 打地鼠｜')&&(m=/(\d+)分/.exec(n))){const sc=+m[1];return sc>=35?10:(sc>=22?5:0)}
   if(n.startsWith('🎁 卡冊｜')&&(m=/集滿\s*(\d+)\s*張/.exec(n)))return CARD_MS[+m[1]]||0;
   return 0;
@@ -748,6 +748,7 @@ function claimBtn(name,label){
   if(st==='pend')return '<div class="sub" style="margin:8px 0 0">已送出，等苑均確認 ⏳</div>';
   return '<button class="p" style="width:100%;margin-top:10px" data-claim="'+esc(name)+'">'+label+'</button>';
 }
+const qpts=ok=>{ok=Math.min(5,ok);return ok+(ok===5?5:0)};
 function renderQuiz(){
   const box=$('quizBox');if(!box)return;
   const qs=S.quiz||[];
@@ -760,23 +761,23 @@ function renderQuiz(){
   }
   if(QZ&&QZ.fin){
     box.innerHTML='<div class="big" style="text-align:center">答對 '+QZ.ok+' / '+QZ.n+' 題 '+(QZ.ok===QZ.n?'🎉':'💕')+'</div>'+
-      (QZ.ok>0?claimBtn('🎮 知識問答｜答對'+QZ.ok+'題','領獎 +'+QZ.ok*3+' 點'):'<div class="sub">再接再厲，多了解她一點～</div>');
+      (QZ.ok>0?claimBtn('🎮 知識問答｜答對'+QZ.ok+'題','領獎 +'+qpts(QZ.ok)+' 點'):'<div class="sub">再接再厲，多了解她一點～</div>');
     return;
   }
   const pl=(()=>{try{return localStorage.getItem('qzplay')===today()}catch(e){return false}})();
   if(pl){
     let sc=null;try{sc=JSON.parse(localStorage.getItem('qzscore')||'null')}catch(e){}
     if(sc&&sc.d===today()){
-      box.innerHTML='<div class="big" style="text-align:center">今天答對 '+sc.ok+' / '+sc.n+' 題 '+(sc.ok===sc.n?'🎉':'💕')+'</div>'+(sc.ok>0?claimBtn('🎮 知識問答｜答對'+sc.ok+'題','領獎 +'+sc.ok*3+' 點'):'<div class="sub" style="text-align:center">明天再來挑戰 🌙</div>');
+      box.innerHTML='<div class="big" style="text-align:center">今天答對 '+sc.ok+' / '+sc.n+' 題 '+(sc.ok===sc.n?'🎉':'💕')+'</div>'+(sc.ok>0?claimBtn('🎮 知識問答｜答對'+sc.ok+'題','領獎 +'+qpts(sc.ok)+' 點'):'<div class="sub" style="text-align:center">明天再來挑戰 🌙</div>');
     }else box.innerHTML='<p class="sub" style="text-align:center">今天玩過了，明天再來 🌙</p>';
     return;
   }
-  if(qs.length<3){box.innerHTML='<p class="sub">苑均還在出題中，等一下再來玩 🐾</p>';return}
-  box.innerHTML='<p class="sub">每次最多 5 題，答對一題 +3 點。每天只能玩一次，領獎要等苑均確認。</p><button class="p" style="width:100%" data-qstart="1">開始挑戰</button>';
+  if(qs.length<5){box.innerHTML='<p class="sub">苑均還在出題中，等一下再來玩 🐾</p>';return}
+  box.innerHTML='<p class="sub">每次 5 題，答對一題 +1 點，五題全對再多 +5 點。每天只能玩一次，領獎要等苑均確認。</p><button class="p" style="width:100%" data-qstart="1">開始挑戰</button>';
 }
 document.addEventListener('click',e=>{
   const st=e.target.closest('[data-qstart]');
-  if(st){const a=[...(S.quiz||[])].sort(()=>Math.random()-.5).slice(0,5);if(a.length<3)return;QZ={run:true,qs:a,i:0,ok:0,pick:null};try{localStorage.setItem('qzplay',today())}catch(e){}renderQuiz();return}
+  if(st){const a=[...(S.quiz||[])].sort(()=>Math.random()-.5).slice(0,5);if(a.length<5)return;QZ={run:true,qs:a,i:0,ok:0,pick:null};try{localStorage.setItem('qzplay',today())}catch(e){}renderQuiz();return}
   const an=e.target.closest('[data-qa]');
   if(an&&QZ&&QZ.run&&QZ.pick===null){const k=+an.dataset.qa;QZ.pick=k;if(k===QZ.qs[QZ.i].a)QZ.ok++;renderQuiz();return}
   if(e.target.closest('[data-qnext]')&&QZ){QZ.i++;QZ.pick=null;if(QZ.i>=QZ.qs.length){QZ={fin:true,ok:QZ.ok,n:QZ.qs.length};try{localStorage.setItem('qzscore',JSON.stringify({d:today(),ok:QZ.ok,n:QZ.n}))}catch(e){}}renderQuiz();return}
