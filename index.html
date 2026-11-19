@@ -198,7 +198,6 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="tab" data-t="wheel" role="tab" aria-selected="false">吃什麼</button>
 <button class="tab" data-t="rps" role="tab" aria-selected="false">猜拳</button>
 <button class="tab" data-t="memory" role="tab" aria-selected="false">配對</button>
-<button class="tab" data-t="sim" role="tab" aria-selected="false">模擬抽卡</button>
 <button class="tab" data-t="ask" role="tab" aria-selected="false">每日一問</button>
 </div>
 <section class="panel" id="p-gacha">
@@ -248,16 +247,6 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="memgrid" id="memGrid"></div>
 <button class="p" id="memAgain" style="width:100%" hidden>再玩一次</button>
 </section>
-<section class="panel" id="p-sim" hidden>
-<h3>模擬抽卡 🎰</h3><p class="sub">不花點數，純粹過癮！每天可以抽 30 次，明天再來～</p>
-<div class="rates">機率：<b>5★ 0.4%</b>　<b>4★ 3.5%</b>　<b>3★ 16%</b>　<b>2★ 30%</b>　<b>1★ 50.1%</b><br><small>抽到第 90 次一定會出 5★（第 74 次起機率逐漸提高）</small></div>
-<div class="sub" id="simInfo" style="margin:0 0 8px"></div>
-<div class="grid" style="grid-template-columns:1fr 1fr"><button id="sim1">抽 1 次</button><button class="p" id="sim10">抽 10 次</button></div>
-<div class="sim-out one" id="simOut"></div>
-<div class="sub" id="simMsg" style="min-height:18px"></div>
-<button id="simReset" style="width:100%;margin-top:8px">重新開始</button>
-<h3 style="margin-top:16px">我的卡冊 <span class="sub" id="dexCnt"></span></h3><div class="dtabs" id="dtabs"></div><div class="dex" id="dex"></div>
-</section>
 <section class="panel" id="p-ask" hidden>
 <h3>每日一問 💌</h3><p class="sub">每天可以問苑均一個問題（不一定要問），按送出她就會看到，回覆會出現在首頁。</p>
 <textarea id="askText" rows="3" maxlength="100" placeholder="想問什麼都可以…"></textarea>
@@ -275,8 +264,19 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="p" id="whStart" style="width:100%;margin-top:10px">開始（30 秒）</button>
 <div id="whClaim"></div>
 </div>
+<div class="card" id="simCard">
+<h2>模擬抽卡 🎰</h2>
+<p class="sub">不花點數，純粹過癮！每天可以抽 30 次，明天再來～</p>
+<div class="rates">機率：<b>5★ 0.4%</b>　<b>4★ 3.5%</b>　<b>3★ 16%</b>　<b>2★ 30%</b>　<b>1★ 50.1%</b><br><small>抽到第 90 次一定會出 5★（第 74 次起機率逐漸提高）</small></div>
+<div class="sub" id="simInfo" style="margin:0 0 8px"></div>
+<div class="grid" style="grid-template-columns:1fr 1fr"><button id="sim1">抽 1 次</button><button class="p" id="sim10">抽 10 次</button></div>
+<div class="sim-out one" id="simOut"></div>
+<div class="sub" id="simMsg" style="min-height:18px"></div>
+<button id="simReset" hidden>重新開始</button>
+<h3 style="margin-top:16px">我的卡冊 <span class="sub" id="dexCnt"></span></h3><div class="dtabs" id="dtabs"></div><div class="dex" id="dex"></div>
+</div>
 <div class="card" id="fullCard">
-<h2>集滿卡冊大獎 🏆</h2><p class="sub" style="margin:0 0 8px">到「遊戲」的模擬抽卡，把卡冊全部集滿，就能領 <b>1000 點</b>（每個卡包集滿都能領一次）！</p>
+<h2>集滿卡冊大獎 🏆</h2><p class="sub" style="margin:0 0 8px">用上面的模擬抽卡，把卡冊全部集滿，就能領 <b>1000 點</b>（每個卡包集滿都能領一次）！</p>
 <div class="fbar"><i id="fullFill"></i></div><div class="sub" id="fullTxt" style="margin:6px 0 0;text-align:center"></div>
 <div id="fullClaim"></div>
 </div>
@@ -787,13 +787,12 @@ function gachaPending(){
 window.gachaPending=gachaPending;
 let CD=null,cdOff=null,syncT=0,lastSync='';
 window.syncCards=function(st){
-  if(admin)return;try{if(localStorage.getItem('isAdminDev'))return}catch(e){}
+  if(admin||!st||!(st.total>0))return;try{if(localStorage.getItem('isAdminDev'))return}catch(e){}
   clearTimeout(syncT);syncT=setTimeout(()=>{
     const j=JSON.stringify(st);if(j===lastSync)return;lastSync=j;
     setDoc(doc(db,'cards','main'),{own:st.own,total:st.total,season:st.season,t:Date.now()}).catch(()=>{lastSync=''});
   },700);
 };
-setTimeout(()=>{if(window.simState)window.syncCards(window.simState())},2000);
 function renderAdminCards(){
   const box=$('adminCards');if(!box)return;box.hidden=!admin;if(!admin)return;
   const cs=window.simCards?window.simCards():[],cur=S.season||1;
