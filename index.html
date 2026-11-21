@@ -233,6 +233,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="tab on" data-t="gacha" role="tab" aria-selected="true">扭蛋</button>
 <button class="tab" data-t="fortune" role="tab" aria-selected="false">占卜</button>
 <button class="tab" data-t="fish" role="tab" aria-selected="false">釣魚</button>
+<button class="tab" data-t="runner" role="tab" aria-selected="false">跳跳貓</button>
 <button class="tab" data-t="wheel" role="tab" aria-selected="false">吃什麼</button>
 <button class="tab" data-t="rps" role="tab" aria-selected="false">猜拳</button>
 </div>
@@ -289,6 +290,12 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <h3 style="margin:14px 0 6px">魚圖鑑 <span class="sub" id="fsCnt"></span></h3>
 <div class="fsdex" id="fsDex"></div>
 </section>
+<section class="panel" id="p-runner" hidden>
+<h3>跳跳貓 🏃</h3><p class="sub">貓咪一直往前跑，點畫面（或按空白鍵）跳過障礙！越跑越快，看你能跳過幾個。</p>
+<div class="sub" id="rjInfo" style="text-align:center;margin-bottom:6px"></div>
+<canvas id="rjCv" class="rjcv"></canvas>
+<button class="p" id="rjStart" style="width:100%;margin-top:10px">開始跑</button>
+</section>
 <section class="panel" id="p-wheel" hidden>
 <h3>今天吃什麼 🍜</h3><p class="sub">不知道吃什麼就轉一下，也可以自己加選項</p>
 <div class="wheelwrap"><div class="ptr">▼</div><svg id="wheel" viewBox="0 0 300 300" aria-label="美食輪盤"></svg></div>
@@ -308,7 +315,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 </div>
 <div id="pg-earn" hidden>
 <div class="card"><h2>賺點遊樂場 💰</h2><p class="sub" style="margin:0 0 8px">玩遊戲也能賺點數！</p>
-<div class="tabs" id="etabs" style="margin-bottom:0;padding-bottom:2px"><button class="etab on" data-e="whack">打地鼠</button><button class="etab" data-e="quiz">知識問答</button><button class="etab" data-e="merge">合成貓咪</button><button class="etab" data-e="runner">跳跳貓</button><button class="etab" data-e="sim">抽卡</button></div></div>
+<div class="tabs" id="etabs" style="margin-bottom:0;padding-bottom:2px"><button class="etab on" data-e="whack">打地鼠</button><button class="etab" data-e="quiz">知識問答</button><button class="etab" data-e="merge">合成貓咪</button><button class="etab" data-e="sim">抽卡</button></div></div>
 <div class="card" id="earnCard" data-ep="whack">
 <h3 style="margin:4px 0">貓咪打地鼠 🔨</h3><p class="sub">30 秒內點冒出來的貓咪，越後面越快！點到貓咪 +1 分，小心炸彈 💣 會 -1 分。22 分以上 +5 點，35 分以上 +10 點。每天只能玩一次，要加油喔！</p>
 <div class="sub" id="whInfo" style="margin:0 0 8px;text-align:center">按開始～</div>
@@ -328,12 +335,6 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button id="mgEnd" style="width:100%;margin-top:8px" hidden>不玩了，結算</button>
 <div id="mgClaim"></div>
 </div>
-<div class="card" id="runCard" data-ep="runner" hidden>
-<h2>跳跳貓 🏃</h2><p class="sub" style="margin:0 0 6px">貓咪一直往前跑，點畫面（或按空白鍵）跳過障礙！越跑越快。跳過 10 個 +1 點、20 個 +2 點、35 個 +5 點、50 個 +8 點、70 個 +10 點。每天最多跑 3 次，取最好的成績領獎（領了今天就不能再玩）。</p>
-<div class="sub" id="rjInfo" style="text-align:center;margin-bottom:6px"></div>
-<canvas id="rjCv" class="rjcv"></canvas>
-<button class="p" id="rjStart" style="width:100%;margin-top:10px">開始跑</button>
-<div id="rjClaim"></div>
 </div>
 <div class="card" id="simCard" data-ep="sim" hidden>
 <h2>模擬抽卡 🎰</h2>
@@ -754,7 +755,6 @@ function rewardFor(n){
   if(n.startsWith('🎮 知識問答｜')&&(m=/答對(\d+)題/.exec(n))){const k=Math.min(5,+m[1]);return k+(k===5?5:0)}
   if(n.startsWith('🎮 打地鼠｜')&&(m=/(\d+)分/.exec(n))){const sc=+m[1];return sc>=35?10:(sc>=22?5:0)}
   if(n.startsWith('🎮 合成貓咪｜')&&(m=/最大(\d+)/.exec(n))){const v=+m[1];return v>=512?10:v>=256?8:v>=128?5:v>=64?2:v>=32?1:0}
-  if(n.startsWith('🎮 跳跳貓｜')&&(m=/跳過(\d+)個/.exec(n))){const v=+m[1];return v>=70?10:v>=50?8:v>=35?5:v>=20?2:v>=10?1:0}
   if(n.startsWith('🎁 卡冊｜')&&(m=/集滿\s*(\d+)\s*張/.exec(n)))return CARD_MS[+m[1]]||0;
   return 0;
 }
@@ -1335,10 +1335,8 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
 (function(){
   var $=function(i){return document.getElementById(i)};
   function td(){var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
-  var cv=$('rjCv'),cx=cv.getContext('2d'),W=340,H=180,G=146,MAXT=3,CX=40,CW=44,CH=46;
-  function reward(v){return v>=70?10:v>=50?8:v>=35?5:v>=20?2:v>=10?1:0}
-  function load(){try{var v=JSON.parse(localStorage.getItem('rjst')||'null');return v&&v.d===td()?v:{d:td(),n:0,b:0}}catch(e){return {d:td(),n:0,b:0}}}
-  function save(v){try{localStorage.setItem('rjst',JSON.stringify(v))}catch(e){}}
+  var cv=$('rjCv'),cx=cv.getContext('2d'),W=340,H=180,G=146,CX=40,CW=44,CH=46;
+  function best(){try{return +localStorage.getItem('rjbest')||0}catch(e){return 0}}
   var img=new Image(),ready=false;
   function mkImg(){if(!window.catArt)return;var svg=window.catArt('happy','o','bow').replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" ');img.onload=function(){ready=true;draw()};img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)}
   var run=false,cy=0,vy=0,obs=[],score=0,speed=190,gap=0,last=0,raf=0,tick=0,clouds=[{x:40,y:26,s:1},{x:200,y:44,s:.7},{x:300,y:20,s:.9}];
@@ -1368,34 +1366,24 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
     for(var i=obs.length-1;i>=0;i--){var o=obs[i];o.x-=speed*dt;if(!o.p&&o.x+o.w<CX){o.p=1;score++}if(o.x<-50)obs.splice(i,1);else if(hit(o)){endRun();return}}
   }
   function loop(ts){if(!run)return;var dt=Math.min(.05,(ts-last)/1000);last=ts;update(dt);if(run){draw();raf=requestAnimationFrame(loop)}}
-  function locked(){var b=load().b;if(!b)return false;var s=window.rewardState?window.rewardState('🎮 跳跳貓｜跳過'+b+'個'):'ok';return s!=='ok'}
-  function info(){var s=load();$('rjInfo').textContent='今天還能跑 '+Math.max(0,MAXT-s.n)+' 次　今天最佳：'+s.b}
   function ui(){
-    var s=load(),box=$('rjClaim'),b=s.b,need=reward(b),name='🎮 跳跳貓｜跳過'+b+'個',st=b&&window.rewardState?window.rewardState(name):'ok';
-    info();
-    var over=s.n>=MAXT||st!=='ok';
-    $('rjStart').disabled=run||over;$('rjStart').textContent=run?'加油！':(over?'今天跑完了，明天再來 🌙':'開始跑');
-    if(run){box.innerHTML='';return}
-    if(st==='done'){box.innerHTML='<div class="sub" style="margin-top:8px">今天已經領過了 ✓</div>';return}
-    if(st==='pend'){box.innerHTML='<div class="sub" style="margin-top:8px">已送出，等苑均確認 ⏳</div>';return}
-    if(!b){box.innerHTML='';return}
-    box.innerHTML=need?'<button class="p" style="width:100%;margin-top:10px" data-claim="'+name+'">用最佳成績領獎 +'+need+' 點（領了今天就不能再玩）</button>':'<div class="sub" style="margin-top:8px">差一點～跳過 10 個以上才有獎勵</div>';
+    var b=best();$('rjInfo').textContent=run?'點畫面跳！':'最高紀錄：'+b+' 個';
+    $('rjStart').disabled=run;$('rjStart').textContent=run?'加油！':'開始跑';
   }
   function endRun(){
-    run=false;cancelAnimationFrame(raf);var s=load();s.n++;if(score>s.b)s.b=score;save(s);draw();
-    ui();$('rjInfo').textContent='撞到了！這次跳過 '+score+' 個';
+    run=false;cancelAnimationFrame(raf);var nb=score>best();if(nb)try{localStorage.setItem('rjbest',String(score))}catch(e){}draw();
+    ui();$('rjInfo').textContent='撞到了！這次跳過 '+score+' 個'+(nb&&score>0?'（新紀錄！）':'　最高紀錄：'+best()+' 個');
   }
   $('rjStart').onclick=function(){
-    var s=load();if(run||s.n>=MAXT||locked())return;
-    obs=[];score=0;cy=0;vy=0;speed=190;gap=speed*1.1;tick=0;run=true;last=performance.now();ui();$('rjInfo').textContent='點畫面跳！';raf=requestAnimationFrame(loop);
+    if(run)return;
+    obs=[];score=0;cy=0;vy=0;speed=190;gap=speed*1.1;tick=0;run=true;last=performance.now();ui();raf=requestAnimationFrame(loop);
   };
   cv.addEventListener('pointerdown',function(e){e.preventDefault();jump()});
   document.addEventListener('keydown',function(e){if(e.code!=='Space'||!run||!cv.offsetParent)return;e.preventDefault();jump()});
   window.rjJump=jump;window.rjState=function(){var nx=obs.filter(function(o){return o.x+o.w>CX}).map(function(o){return o.x})[0];return {run:run,score:score,cy:cy,obs:obs.length,nx:nx,sp:speed}};
   mkImg();ui();draw();
-  new MutationObserver(function(){if(cv.offsetParent)draw()}).observe($('runCard'),{attributes:true,attributeFilter:['hidden']});
+  new MutationObserver(function(){if(cv.offsetParent)draw()}).observe($('p-runner'),{attributes:true,attributeFilter:['hidden']});
   window.addEventListener('resize',draw);
-  var _wr=window.whackRefresh;window.whackRefresh=function(){if(_wr)_wr();ui()};
 })();
 </script>
 </body>
