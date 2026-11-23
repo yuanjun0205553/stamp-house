@@ -661,11 +661,12 @@ function renderGifts(){
     return '<div class="card gsec"><div class="ghead">'+thumb+'<div><h2>'+esc(g.t)+'</h2><div class="sub" style="margin:0">'+esc(g.sub)+'</div></div></div>'+rows+'</div>';
   }).join('');
 }
+let MD=false;document.addEventListener('toggle',e=>{if(e.target&&e.target.id==='mineDone')MD=e.target.open},true);
 function renderMine(){
   const list=S.gifts||[],un=list.filter(x=>!x.u).length;
   const bd=$('mineBdg');bd.hidden=!un;bd.textContent=un;
   if(!list.length){$('mineList').innerHTML='<div class="vempty">還沒有兌換過禮物 🎁<br>到「禮物」換一個吧</div>';return}
-  $('mineList').innerHTML=list.map(x=>{
+  const card=x=>{
     const gi=GIFTS.findIndex(g=>g.n===x.n),g=gi>=0?GIFTS[gi]:null;
     const gz=String(x.n).startsWith('🎰'),d=new Date(x.t),ds=(d.getMonth()+1)+'/'+d.getDate()+(gz?' 扭到':' 兌換');
     const th=gz?'<div class="gthumb" style="background:linear-gradient(135deg,#ffb3d1,#ffe29a)"><span>🎰</span></div>':g&&g.cat&&window.catArt?'<span class="gcat">'+window.catArt(g.cat[0],g.cat[1])+'</span>':'<div class="gthumb" style="background:'+(g?g.bg:'linear-gradient(135deg,#ffc2d4,#ffe0a3)')+'"><span>'+(g?g.e:'🎁')+'</span>'+(g&&g.img?'<img src="'+g.img+'" alt="" onerror="this.remove()">':'')+'</div>';
@@ -673,7 +674,9 @@ function renderMine(){
     if(x.u){const u=new Date(x.u);st='<div class="vs2 done">已兌現 ✓<br><small>'+(u.getMonth()+1)+'/'+u.getDate()+'</small></div>'}
     else st=admin?'<button class="gbtn p" data-use="'+x.t+'">標記已兌現</button>':'<div class="vs2">未使用<br><small>等苑均兌現</small></div>';
     return '<div class="vc'+(x.u?' used':'')+'">'+th+'<div class="vn">'+esc(String(x.n).replace('｜','：'))+'<small>'+ds+'</small></div>'+st+'</div>';
-  }).join('');
+  };
+  const U=list.filter(x=>!x.u),D=list.filter(x=>x.u);
+  $('mineList').innerHTML='<div class="sub" style="margin:4px 4px 6px"><b>還沒兌現（'+U.length+'）</b></div>'+(U.length?U.map(card).join(''):'<div class="vempty" style="padding:14px">都兌現完囉 ✓</div>')+(D.length?'<details id="mineDone" style="margin-top:12px"'+(MD?' open':'')+'><summary><b>已兌現（'+D.length+'）</b></summary><div style="margin-top:8px">'+D.map(card).join('')+'</div></details>':'');
 }
 document.addEventListener('click',e=>{
   const b=e.target.closest('button[data-gift]');
