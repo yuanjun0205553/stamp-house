@@ -1028,7 +1028,7 @@ function mkSeries(pi){
   return {items,intra,step};
 }
 function chartHTML(st,pi,h,c){
-  const tabs=[['1','1分'],['5','5分'],['15','15分'],['d5','5日'],['d30','1個月'],['da','全部']];
+  const tabs=[['1','1分'],['5','5分'],['15','15分'],['d5','1週'],['d30','1個月'],['da','全部']];
   const sr=mkSeries(pi);
   let h1='<div class="chtabs">'+tabs.map(t=>'<button data-cr="'+t[0]+'"'+(CHS.r===t[0]?' class="on"':'')+'>'+t[1]+'</button>').join('')+'<span class="chsp"></span><button data-cm="'+(CHS.m==='l'?'k':'l')+'" class="on2">'+(CHS.m==='l'?'📊 K線':'📈 折線')+'</button></div>';
   if(!sr||(!sr.intra&&sr.items.length<1)){CHD=null;return h1+'<div class="sub" style="text-align:center;margin:14px 0">今天還沒開盤，等 9:00 就有圖囉 ⏳</div>'}
