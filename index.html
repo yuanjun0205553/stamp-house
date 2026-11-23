@@ -83,7 +83,6 @@ h3{font-size:16px;margin:4px 0 2px}
 .chipx{background:none;padding:0 6px;font-size:16px;color:var(--sub);border-radius:50%}
 .addrow{display:flex;gap:8px;margin-bottom:8px}.addrow input{margin:0;flex:1}.addrow button{padding:0 16px}
 textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px solid var(--soft);background:var(--bg);color:var(--ink);margin-bottom:10px;resize:none}
-.rpsb{font-size:24px;line-height:1.3}.rpsb{padding:12px 4px}
 .memgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
 .mc{perspective:600px;background:none;padding:0;aspect-ratio:1/1.05;border-radius:14px}
 .mi{display:block;position:relative;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
@@ -245,7 +244,6 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <button class="tab" data-t="fish" role="tab" aria-selected="false">釣魚</button>
 <button class="tab" data-t="runner" role="tab" aria-selected="false">跳跳貓</button>
 <button class="tab" data-t="wheel" role="tab" aria-selected="false">吃什麼</button>
-<button class="tab" data-t="rps" role="tab" aria-selected="false">猜拳</button>
 </div>
 <section class="panel" id="p-gacha">
 <p class="sub">每天凌晨 12 點更新，一天扭一次</p>
@@ -314,12 +312,6 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div id="wheelChips" class="chips"></div>
 <div class="addrow"><input id="wheelNew" placeholder="加一個想吃的" maxlength="8"><button id="wheelAdd" type="button">加入</button></div>
 <button id="wheelReset" type="button" style="width:100%">還原預設選項</button>
-</section>
-<section class="panel" id="p-rps" hidden>
-<h3>貓咪猜拳 ✊</h3><p class="sub">贏過貓咪看看！</p>
-<div class="prizebox" id="rpsOut" aria-live="polite"><div class="pe">🐾</div><div class="pt">出拳吧</div></div>
-<div class="grid"><button class="rpsb" data-h="0">✊<br>石頭</button><button class="rpsb" data-h="1">✌️<br>剪刀</button><button class="rpsb" data-h="2">✋<br>布</button></div>
-<div class="sub" id="rpsScore" style="text-align:center">你贏 0　平手 0　貓咪贏 0</div>
 </section>
 </div>
 </div>
@@ -597,22 +589,6 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
   $('wheelAdd').addEventListener('click',addOpt);
   $('wheelNew').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addOpt()}});
   $('wheelReset').addEventListener('click',function(){if(spinning)return;opts=DEF.slice();saveOpts()});
-
-  /* ---------- 貓咪猜拳 ---------- */
-  var H=[{n:'石頭',e:'✊'},{n:'剪刀',e:'✌️'},{n:'布',e:'✋'}],tally={w:0,t:0,l:0},busyR=false;
-  document.querySelectorAll('.rpsb').forEach(function(b){b.addEventListener('click',function(){
-    if(busyR)return;busyR=true;var me=+b.dataset.h,cat=Math.floor(Math.random()*3);
-    var out=$('rpsOut');out.innerHTML='<div class="pe">🐾</div><div class="pt">貓咪思考中…</div>';
-    setTimeout(function(){
-      var r=(me-cat+3)%3,res,k,c;
-      if(r===0){res='平手！';k='daze';c='o';tally.t++}
-      else if(r===1){res='你贏了！貓咪不甘心 💢';k='eyeroll';c='t';tally.w++}
-      else{res='貓咪贏了！啊嗚～';k='bite';c='t';tally.l++}
-      out.innerHTML=art(k,c)+'<div class="vs">你 '+H[me].e+'　vs　'+H[cat].e+' 貓咪</div><div class="pt">'+res+'</div>';
-      restart(out,'pop');
-      $('rpsScore').textContent='你贏 '+tally.w+'　平手 '+tally.t+'　貓咪贏 '+tally.l;busyR=false;
-    },650);
-  })});
 
   /* ---------- 每日一問 ---------- */
   function lockAsk(){var b=$('askBtn');b.disabled=true;b.textContent='明天再問 🌙';$('askText').disabled=true}
