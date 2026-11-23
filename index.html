@@ -995,6 +995,15 @@ const NEWSP={
     d:['{n}火箭試射失敗，發射臺燒焦了','{n}月球基地延期，資金缺口擴大','{n}太空貓咪臨時喊累不想上班，進度落後']}};
 const RUMOR={u:['聽說{n}最近有大動作，內行人都在偷偷買','傳{n}要和大公司合作，消息還沒證實','有貓咪說看到{n}老闆笑得很開心，可能有好消息'],
  d:['聽說{n}的主管最近臉很臭，是不是有壞消息？','傳{n}財報可能不好看，消息尚未證實','有貓咪說{n}的倉庫好像在大拍賣，真的嗎？']};
+const IPON={
+ 1:'🎉 喵積電今天正式掛牌！半導體龍頭登場，發行價每股 60 點，貓咪們都在搶著看',
+ 2:'🎉 噹噹貓食今天正式掛牌！穩穩賺的貓食公司，發行價每股 30 點，每隻貓咪家裡都有',
+ 3:'🎉 小朋友銀行今天正式掛牌！超穩的零用錢銀行，發行價每股 40 點，存錢的貓咪放心來',
+ 4:'🎉 貓聯電今天正式掛牌！半導體老二不服輸，發行價每股 45 點，要跟龍頭比一比',
+ 5:'🎉 咚咚玩具今天正式掛牌！貓抓板、逗貓棒通通有，發行價每股 20 點',
+ 6:'🎉 貓發科今天正式掛牌！IC 設計新星登場，發行價每股 35 點，法人喊話值得關注',
+ 7:'🎉 喵達 AI 今天正式掛牌！AI 熱門股，發行價每股 28 點，漲得快跌得也快，要小心喔',
+ 8:'🚀 登月貓咪航太今天正式掛牌！要把貓咪送上月球，發行價每股 15 點，高風險高報酬'};
 function autoNews(s,day){
   const z=gaus(s.seed*7+1,day,1)[0],a=Math.abs(z);
   if(hash01(s.seed,day,1)>.25+.45*Math.min(1,a/1.5))return null;
@@ -1107,7 +1116,7 @@ function chartHTML(st,pi,h,c){
 }
 function newsItems(){
   const now=Date.now(),td=todayIdx(),out=[];
-  STOCKS.forEach(s=>{const i0=ipoIdx(s);for(let d=i0;d<=td;d++){if(!isTD(d))continue;const n=d===i0?{kind:'ipo',text:'🎉 '+s.n+' 今天正式掛牌！每股 '+s.p0+' 點，'+s.tag,m:510}:autoNews(s,d);if(!n)continue;const t=d*864e5+n.m*6e4-8*36e5;if(t>now)continue;
+  STOCKS.forEach(s=>{const i0=ipoIdx(s);for(let d=i0;d<=td;d++){if(!isTD(d))continue;const n=d===i0?{kind:'ipo',text:IPON[s.id]||('🎉 '+s.n+' 今天正式掛牌！每股 '+s.p0+' 點'),m:480+Math.floor(hash01(s.seed,d,8)*50)}:autoNews(s,d);if(!n)continue;const t=d*864e5+n.m*6e4-8*36e5;if(t>now)continue;
     if(n)out.push({t,s:s.id,d,kind:n.kind,text:n.text.replace(/\{n\}/g,s.n)})}});
   NW.forEach(x=>{const st=STOCKS.find(y=>y.id===+x.s);if(!st)return;out.push({t:x.t,s:st.id,d:nwPos(x.t).day,kind:'adm',text:String(x.h||'')})});
   out.sort((a,b)=>b.t-a.t);return out;
