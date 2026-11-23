@@ -997,7 +997,8 @@ function autoNews(s,day){
   if(hash01(s.seed,day,1)>.25+.45*Math.min(1,a/1.5))return null;
   const fact=a>.4&&hash01(s.seed,day,2)<.7,sg=fact?(z>0?1:-1):(hash01(s.seed,day,3)<.5?1:-1);
   const pool=fact?NEWSP[SECT[s.id]||'s'][sg>0?'u':'d']:RUMOR[sg>0?'u':'d'],tx=pool[Math.floor(hash01(s.seed,day,4)*pool.length)];
-  return {kind:fact?'fact':'rumor',text:(fact?'':'【小道消息】')+tx};
+  const r=hash01(s.seed,day,5),m=r<.3?480+Math.floor(hash01(s.seed,day,6)*60):545+Math.floor(hash01(s.seed,day,7)*255);
+  return {kind:fact?'fact':'rumor',text:(fact?'':'【小道消息】')+tx,sg,m};
 }
 function nwPos(t){
   const tw=t+8*36e5;let day=Math.floor(tw/864e5);const m=Math.floor((tw%864e5)/6e4);let k0=0;
@@ -1017,7 +1018,7 @@ function gaus(seed,day,n){let t=(Math.imul(seed,2654435761)+Math.imul(day,40503)
 function dayPath(s,day,prev){
   const R=Math.max(-.1,Math.min(.1,Math.exp(s.dr+s.vol*gaus(s.seed*7+1,day,1)[0])-1));
   const zs=gaus(s.seed*13+5,day,NT);let WN=0,i;for(i=0;i<NT;i++)WN+=zs[i];
-  const hi=Math.floor(prev*11)/10,lo=Math.ceil(prev*9)/10,out=[prev],ex=EX[s.id]&&EX[s.id][day];let W=0;
+  const hi=Math.floor(prev*11)/10,lo=Math.ceil(prev*9)/10,out=[prev];let ex=(EX[s.id]&&EX[s.id][day])||[];if(day!==ipoIdx(s)){const an=autoNews(s,day);if(an&&an.kind==='fact')ex=ex.concat([{k0:Math.max(0,an.m-OPENM),dl:an.sg*.02}])}let W=0;
   for(let k=1;k<=NT;k++){W+=zs[k-1];const B=W-(k/NT)*WN;let p=prev*(1+R*k/NT+s.vol*1.2*B/Math.sqrt(NT));if(ex)for(const e of ex)if(e.k0<NT&&k>e.k0)p*=1+e.dl*(k-e.k0)/(NT-e.k0);p=Math.round(p*10)/10;p=Math.min(hi,Math.max(lo,p));out.push(Math.max(1,p))}
   return out;
 }
@@ -1102,8 +1103,7 @@ function chartHTML(st,pi,h,c){
 }
 function newsItems(){
   const now=Date.now(),td=todayIdx(),out=[];
-  STOCKS.forEach(s=>{const i0=ipoIdx(s);for(let d=i0;d<=td;d++){if(!isTD(d))continue;const t=d*864e5+510*6e4-8*36e5;if(t>now)continue;
-    const n=d===i0?{kind:'ipo',text:'🎉 '+s.n+' 今天正式掛牌！每股 '+s.p0+' 點，'+s.tag}:autoNews(s,d);
+  STOCKS.forEach(s=>{const i0=ipoIdx(s);for(let d=i0;d<=td;d++){if(!isTD(d))continue;const n=d===i0?{kind:'ipo',text:'🎉 '+s.n+' 今天正式掛牌！每股 '+s.p0+' 點，'+s.tag,m:510}:autoNews(s,d);if(!n)continue;const t=d*864e5+n.m*6e4-8*36e5;if(t>now)continue;
     if(n)out.push({t,s:s.id,d,kind:n.kind,text:n.text.replace(/\{n\}/g,s.n)})}});
   NW.forEach(x=>{const st=STOCKS.find(y=>y.id===+x.s);if(!st)return;out.push({t:x.t,s:st.id,d:nwPos(x.t).day,kind:'adm',text:String(x.h||'')})});
   out.sort((a,b)=>b.t-a.t);return out;
