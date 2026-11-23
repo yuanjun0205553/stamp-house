@@ -160,6 +160,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .stk{border-radius:14px;background:var(--soft);padding:10px;margin-top:8px}.stk .srow{display:flex;align-items:center;gap:8px;cursor:pointer}.stk .snm{flex:1;min-width:0}.stk .snm b{font-size:15px}.stk .snm small{display:block;font-size:11px;color:var(--sub)}.stk .spx{text-align:right}.stk .px{font-weight:800;font-size:17px}.stk .chg{font-size:12px;font-weight:700}
 .stk .sp{border-top:1px dashed rgba(128,128,128,.3);margin-top:8px;padding-top:8px}.stk .sp .qty{display:flex;align-items:center;gap:6px;justify-content:center;margin:8px 0}.stk .sp .qty button{padding:6px 12px;min-width:42px}.stk .sp .qty b{min-width:48px;text-align:center;font-size:18px}.stk .sp .bs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stk .sp .bs button{padding:10px 4px;font-size:13px;line-height:1.3}
 .chtabs{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin:2px 0 6px}.chtabs button{padding:3px 9px;font-size:12px;border-radius:999px;min-width:0;background:var(--card);color:var(--ink);border:1px solid rgba(128,128,128,.25)}.chtabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}.chtabs .chsp{flex:1}.chtip{font-size:12px;text-align:center;color:var(--sub);min-height:18px;margin-bottom:2px}.chsvg{display:block;color:var(--ink);background:var(--card);border-radius:10px}.chst{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px;text-align:center;font-size:11px;color:var(--sub)}.chst b{display:block;font-size:14px;color:var(--ink)}
+.trl{display:flex;justify-content:space-between;gap:8px;padding:7px 2px;border-bottom:1px dashed rgba(128,128,128,.25);font-size:13px}.trl small{display:block;color:var(--sub);font-size:11px}.trl .ta{text-align:right;white-space:nowrap}.trall{margin-top:8px;width:100%}
 .stk.lock{opacity:.55;text-align:center}.ipoban{border-radius:14px;padding:10px 12px;background:linear-gradient(90deg,#ffe3a3,#ffc2d6);color:#5b3a4a;font-weight:700;margin-top:8px}
 .invtop{display:block;width:100%;margin-top:10px;padding:9px 12px;border-radius:14px;background:var(--soft);color:inherit;font-size:13px;font-weight:700;text-align:center}.nt{padding-left:2px;padding-right:2px}
 </style>
@@ -372,6 +373,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="inv-row"><input id="invAmt" type="number" inputmode="numeric" min="1" placeholder="幾點？"><button class="p" id="invIn">轉入</button><button id="invOut">提領</button></div>
 <div class="sub" id="invReq" style="min-height:16px;margin:6px 0 0"></div></div>
 <div id="invList"></div>
+<details id="trDet" style="margin-top:10px"><summary>📜 交易紀錄（<span id="trN">0</span> 筆）</summary><div id="trList"></div><button id="trAll" class="trall" hidden>載入更早的全部紀錄</button></details>
 <div class="sub" id="invMsg" style="min-height:18px;margin-top:8px"></div>
 <p class="sub" style="font-size:12px;margin:6px 0 0">買賣要手續費 0.5%，賣出還有交易稅 0.3%。投資有風險，也可能會賠喔！</p>
 </div>
@@ -1128,6 +1130,15 @@ function renderStock(){
   const ab=$('invAdmBody');
   if(ab){ab.innerHTML=!INV?'還沒建立（登入後會自動建立）':'投資現金 <b>'+cash+'</b> 點　持股市值 <b>'+hv+'</b> 點　總資產 <b>'+(cash+hv)+'</b> 點'+STOCKS.map(st=>{const h=invHold(st.id);return h?'<br>'+st.e+' '+esc(st.n)+'：'+h+' 股':''}).join('')}
 }
+let TR=[],TRALL=false;
+function renderTr(){
+  const n=$('trN');if(!n)return;n.textContent=TR.length+(TRALL||TR.length<200?'':'+');
+  $('trAll').hidden=TRALL||TR.length<200;
+  const f=t=>{const d=new Date(t+8*36e5);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+d.getUTCHours()+':'+String(d.getUTCMinutes()).padStart(2,'0')};
+  $('trList').innerHTML=TR.length?TR.map(x=>{const st=STOCKS.find(y=>y.id===x.s)||{e:'📈',n:'股票'},b=x.k==='b';
+    return '<div class="trl"><div><b style="color:'+(b?UPC:DNC)+'">'+(b?'買進':'賣出')+'</b> '+st.e+' '+esc(st.n)+' '+x.q+' 股<small>'+f(x.t)+'　每股 '+Number(x.p).toFixed(1)+'　手續費等 '+x.f+' 點</small></div><div class="ta">'+(b?'−':'+')+x.a+' 點</div></div>'}).join(''):'<div class="sub" style="margin:8px 0">還沒有買賣紀錄</div>';
+}
+onSnapshot(query(collection(db,'trades'),orderBy('t','desc'),limit(200)),sn=>{if(TRALL)return;TR=sn.docs.map(d=>d.data());renderTr()},()=>{});
 setInterval(renderStock,15000);
 onSnapshot(invRef,sn=>{INV=sn.exists()?sn.data():null;INVL=true;renderStock()},()=>{INVL=true;renderStock()});
 
@@ -1146,6 +1157,7 @@ document.addEventListener('pointermove',chHover);document.addEventListener('poin
 document.addEventListener('click',e=>{
   const gt=e.target.closest('[data-goto]');if(gt){const b=document.querySelector('.nt[data-pg="'+gt.dataset.goto+'"]');if(b)b.click();return}
   const m=t=>{const el=$('invMsg');if(el)el.textContent=t};
+  if(e.target.id==='trAll'){getDocs(query(collection(db,'trades'),orderBy('t','desc'))).then(sn=>{TR=sn.docs.map(d=>d.data());TRALL=true;renderTr()}).catch(()=>{});return}
   const cr=e.target.closest('[data-cr]');if(cr){CHS.r=cr.dataset.cr;renderStock();return}
   const cm=e.target.closest('[data-cm]');if(cm){CHS.m=cm.dataset.cm;renderStock();return}
   const sr=e.target.closest('[data-sid]');
@@ -1158,14 +1170,14 @@ document.addEventListener('click',e=>{
     if(!marketState().open){m('休市中，平日 9:00–13:30 才能買賣');return}
     const id=+(by?by.dataset.buy:sl.dataset.sell),st=STOCKS.find(x=>x.id===id),pi=st&&pinfo(st);if(!pi)return;
     const q=QTY[id]||1,amt=Math.round(pi.p*q),f=invFee(amt),cash=Math.max(0,INV.cash||0),h=invHold(id),c=Math.max(0,INV['c'+id]||0);
-    let d;
+    let d,rec;
     if(by){const tot=amt+f;if(tot>cash){m('投資現金不夠，先轉入一些點數吧');return}
-      d={cash:increment(-tot),['h'+id]:increment(q),['c'+id]:increment(tot),t:Date.now()}}
+      d={cash:increment(-tot),['h'+id]:increment(q),['c'+id]:increment(tot),t:Date.now()};rec={k:'b',s:id,q,p:pi.p,f,a:tot,t:Date.now()}}
     else{if(q>h){m('你沒有那麼多股');return}
       const get=amt-f-Math.round(amt*.003),red=q===h?c:Math.round(c*q/h);
-      d={cash:increment(get),['h'+id]:increment(-q),['c'+id]:increment(-red),t:Date.now()}}
+      d={cash:increment(get),['h'+id]:increment(-q),['c'+id]:increment(-red),t:Date.now()};rec={k:'s',s:id,q,p:pi.p,f:f+Math.round(amt*.003),a:get,t:Date.now()}}
     invBusy=true;
-    setDoc(invRef,d,{merge:true}).then(()=>m(by?'買進成功！'+st.e+' '+st.n+' '+q+' 股':'賣出成功！'+st.n+' '+q+' 股')).catch(()=>m('送出失敗，請檢查網路再試一次')).finally(()=>{invBusy=false});
+    setDoc(invRef,d,{merge:true}).then(()=>{m(by?'買進成功！'+st.e+' '+st.n+' '+q+' 股':'賣出成功！'+st.n+' '+q+' 股');addDoc(collection(db,'trades'),rec).catch(()=>{})}).catch(()=>m('送出失敗，請檢查網路再試一次')).finally(()=>{invBusy=false});
     return;
   }
   if(e.target.id==='invIn'||e.target.id==='invOut'){
