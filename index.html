@@ -160,7 +160,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .stk .sp{border-top:1px dashed rgba(128,128,128,.3);margin-top:8px;padding-top:8px}.stk .sp .qty{display:flex;align-items:center;gap:6px;justify-content:center;margin:8px 0}.stk .sp .qty button{padding:6px 12px;min-width:42px}.stk .sp .qty b{min-width:48px;text-align:center;font-size:18px}.stk .sp .bs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stk .sp .bs button{padding:10px 4px;font-size:13px;line-height:1.3}
 .chtabs{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin:2px 0 6px}.chtabs button{padding:3px 9px;font-size:12px;border-radius:999px;min-width:0;background:var(--card);color:var(--ink);border:1px solid rgba(128,128,128,.25)}.chtabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}.chtabs .chsp{flex:1}.chtip{font-size:12px;text-align:center;color:var(--sub);min-height:18px;margin-bottom:2px}.chsvg{display:block;color:var(--ink);background:var(--card);border-radius:10px}.chst{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px;text-align:center;font-size:11px;color:var(--sub)}.chst b{display:block;font-size:14px;color:var(--ink)}
 .trl{display:flex;justify-content:space-between;gap:8px;padding:7px 2px;border-bottom:1px dashed rgba(128,128,128,.25);font-size:13px}.trl small{display:block;color:var(--sub);font-size:11px}.trl .ta{text-align:right;white-space:nowrap}.trall{margin-top:8px;width:100%}
-.nwi{padding:8px 2px;border-bottom:1px dashed rgba(128,128,128,.25);font-size:13px}.nwi small{display:block;color:var(--sub);font-size:11px}.nwi div{margin:2px 0}
+.nwi{padding:8px 2px;border-bottom:1px dashed rgba(128,128,128,.25);font-size:13px;cursor:pointer}.nwr{display:flex;gap:10px;align-items:center}.nwt{flex:1;min-width:0}.nwa{color:var(--sub);font-size:18px}.nwtt{font-weight:700;font-size:14px;line-height:1.5}.nwd{margin:8px 0 4px;padding:12px;border-radius:12px;background:var(--card)}.nwh{font-size:16px;font-weight:800;line-height:1.5;margin-bottom:2px}.nwd p{margin:8px 0;line-height:1.7;font-size:14px}.nwm{font-size:11px;color:var(--sub);margin-top:6px}.nwgo{margin-top:8px;width:100%}.nwi small{display:block;color:var(--sub);font-size:11px}.nwi div{margin:2px 0}
 .stk.lock{opacity:.55;text-align:center}.ipoban{border-radius:14px;padding:10px 12px;background:linear-gradient(90deg,#ffe3a3,#ffc2d6);color:#5b3a4a;font-weight:700;margin-top:8px}
 .invtop{display:block;width:100%;margin-top:10px;padding:9px 12px;border-radius:14px;background:var(--soft);color:inherit;font-size:13px;font-weight:700;text-align:center}.nt{padding-left:2px;padding-right:2px}
 </style>
@@ -219,7 +219,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <select id="qzC" style="width:100%;margin-top:6px;padding:10px;border-radius:12px"><option value="0">正確答案：選項 1</option><option value="1">正確答案：選項 2</option><option value="2">正確答案：選項 3</option></select>
 <button class="p" id="qzAdd" style="width:100%;margin-top:8px">新增選擇題</button><button class="p" id="qzAddOpen" style="width:100%;margin-top:8px">只填上面題目 → 新增問答題（他自己打字）</button><div class="sub" id="qzMsg" style="min-height:16px"></div>
 <details style="margin-top:10px"><summary>看 / 刪全部題目（<span id="qzCount">0</span> 題）</summary><div id="qzList"></div></details><details style="margin-top:10px"><summary>他的答題紀錄（<span id="qlCount">0</span>）</summary><div id="qlList"></div></details></div>
-<div class="card" id="nwAdm"><h2>發股市新聞 📰</h2><div class="sub" style="margin:0 0 8px">利多／利空會讓那檔股票接下來偏漲或偏跌（約 5%）。發出去不能刪，會永久保留。</div><select id="nwSt" style="width:100%;margin-bottom:8px"></select><input id="nwTx" maxlength="40" placeholder="新聞標題（最多 40 字）" style="width:100%;margin-bottom:8px"><div class="inv-row"><button class="p" data-nw="1">利多 📈</button><button data-nw="-1">利空 📉</button><button data-nw="0">只是八卦</button></div><div class="sub" id="nwMsg" style="min-height:16px;margin:6px 0 0"></div></div>
+<div class="card" id="nwAdm"><h2>發股市新聞 📰</h2><div class="sub" style="margin:0 0 8px">利多／利空會讓那檔股票接下來偏漲或偏跌（約 5%）。發出去不能刪，會永久保留。</div><select id="nwSt" style="width:100%;margin-bottom:8px"></select><input id="nwTx" maxlength="40" placeholder="新聞標題（最多 40 字）" style="width:100%;margin-bottom:8px"><textarea id="nwBd" maxlength="300" rows="3" placeholder="完整內文（選填，點進新聞才看得到，最多 300 字）" style="width:100%;margin-bottom:8px"></textarea><div class="inv-row"><button class="p" data-nw="1">利多 📈</button><button data-nw="-1">利空 📉</button><button data-nw="0">只是八卦</button></div><div class="sub" id="nwMsg" style="min-height:16px;margin:6px 0 0"></div></div>
 <div class="card" id="invAdm"><h2>他的投資帳戶 💹</h2><div class="sub" id="invAdmBody" style="margin:0">讀取中…</div></div>
 <div class="card" id="adminCards" hidden><h2>他的卡冊 🃏</h2><div id="adminCardsBody"></div><details style="margin-top:10px"><summary>進階設定（小心使用）</summary><div style="margin-top:8px">
 <div class="sub" style="margin:0 0 6px">目前是第 <b id="seasonNow">1</b> 個卡包</div>
@@ -1004,13 +1004,31 @@ const IPON={
  6:'🎉 貓發科今天正式掛牌！IC 設計新星登場，發行價每股 35 點，法人喊話值得關注',
  7:'🎉 喵達 AI 今天正式掛牌！AI 熱門股，發行價每股 28 點，漲得快跌得也快，要小心喔',
  8:'🚀 登月貓咪航太今天正式掛牌！要把貓咪送上月球，發行價每股 15 點，高風險高報酬'};
+const DET={
+ s:{u:['不少法人認為這項利多會帶動接下來幾天的買氣，貓咪們紛紛把它加進自選股。','分析師表示，公司的技術實力又往前一步，競爭對手要追上沒那麼容易。'],d:['市場擔心這個狀況會拖累接下來的營收，部分貓咪已經開始賣出手上的持股。','分析師提醒，短期內公司需要時間處理，股價可能會有一陣子的壓力。']},
+ c:{u:['貓咪們的反應非常熱烈，通路回報商品陸續缺貨，公司正在加緊補貨。','業界人士認為，這波買氣有機會延續一陣子，營收表現值得期待。'],d:['公司表示會盡快調整，不過短期內獲利可能受到影響。','貓咪們最近的消費變得比較保守，市場擔心這個情形還會持續。']},
+ b:{u:['公司說明這是穩健經營的成果，也讓長期存股的貓咪們相當滿意。','市場人士認為，這項消息讓公司的穩健形象更加分。'],d:['公司強調整體體質仍然穩健，不過短期內市場情緒難免受到影響。','分析師提醒，這個問題需要時間處理，投資人要多留意後續發展。']},
+ x:{u:['貓咪們紛紛抬頭看月亮，期待公司接下來的下一步計畫。','公司表示這是重要的一步，距離把貓咪送上月球又近了一點。'],d:['公司表示會檢討原因再接再厲，不過這對近期的計畫確實是個打擊。','太空計畫本來就充滿風險，貓咪們對這次的結果有點失望。']}};
+const RUMD=['這則消息是貓咪們私下傳出來的，沒有任何公司或單位證實。','消息來源不明，也有可能只是貓咪們聊天聊出來的，不一定是真的。'];
+const IPOB={
+ 1:'喵積電是這次最受矚目的半導體龍頭，專門替貓咪世界生產各種晶片。首日掛牌市場關注度很高，不過新股上市常常先漲後回，貓咪們要小心別追高。',
+ 2:'噹噹貓食專門生產各種貓罐頭和貓飼料，業績一向穩定。首日掛牌買氣不錯，但新股上市常常先漲後回，別一次買太多喔。',
+ 3:'小朋友銀行主要做零用錢存放和理財，走勢向來慢慢的、很穩，適合想要安心持有的貓咪。',
+ 4:'貓聯電是半導體界的老二，規模比龍頭小一點，但一直想追上。走勢的起伏比龍頭大一些。',
+ 5:'咚咚玩具專門生產貓抓板、逗貓棒等貓咪玩具，營收會隨流行起伏，偶爾還會突然暴漲。',
+ 6:'貓發科是 IC 設計公司，主打貓咪專用的小晶片。起伏比一般股票大，適合願意承擔風險的貓咪。',
+ 7:'喵達 AI 專做 AI 運算晶片，是市場上的熱門股。漲得快、跌得也快，貓咪們要有心理準備。',
+ 8:'登月貓咪航太的目標是把貓咪送上月球。這是風險最高的一檔，可能漲停也可能跌停，小心別把所有點數都押在這裡。'};
+const QT={u:['「這個消息對公司來說是實質利多，短線上有機會吸引更多買盤。」一位資深貓咪分析師表示。','「基本面有改善的跡象，不過仍要留意追高的風險。」一位不具名的法人表示。'],d:['「短線上賣壓可能會比較重，但長期還要觀察公司後續的處理。」一位貓咪分析師表示。','「消息面偏空，建議投資人先觀望，不要急著進場。」一位不具名的法人表示。']};
+let NWK='';
 function autoNews(s,day){
   const z=gaus(s.seed*7+1,day,1)[0],a=Math.abs(z);
   if(hash01(s.seed,day,1)>.25+.45*Math.min(1,a/1.5))return null;
   const fact=a>.4&&hash01(s.seed,day,2)<.7,sg=fact?(z>0?1:-1):(hash01(s.seed,day,3)<.5?1:-1);
   const pool=fact?NEWSP[SECT[s.id]||'s'][sg>0?'u':'d']:RUMOR[sg>0?'u':'d'],tx=pool[Math.floor(hash01(s.seed,day,4)*pool.length)];
   const r=hash01(s.seed,day,5),m=r<.3?480+Math.floor(hash01(s.seed,day,6)*60):545+Math.floor(hash01(s.seed,day,7)*255);
-  return {kind:fact?'fact':'rumor',text:(fact?'':'【小道消息】')+tx,sg,m};
+  const dp=fact?DET[SECT[s.id]||'s'][sg>0?'u':'d']:RUMD,dt=dp[Math.floor(hash01(s.seed,day,9)*dp.length)],qp=QT[sg>0?'u':'d'],qt=qp[Math.floor(hash01(s.seed,day,10)*qp.length)],body=fact?[dlab(day)+' 消息指出，'+tx+'。',dt,qt].join('\n'):[dlab(day)+' 市場上流傳一則消息：'+tx+'。',dt,'這則消息目前還沒有被證實，可能是真的，也可能只是傳言。'].join('\n');
+  return {kind:fact?'fact':'rumor',text:(fact?'':'【小道消息】')+tx,sg,m,body};
 }
 function nwPos(t){
   const tw=t+8*36e5;let day=Math.floor(tw/864e5);const m=Math.floor((tw%864e5)/6e4);let k0=0;
@@ -1117,8 +1135,8 @@ function chartHTML(st,pi,h,c){
 function newsItems(){
   const now=Date.now(),td=todayIdx(),out=[];
   STOCKS.forEach(s=>{const i0=ipoIdx(s);for(let d=i0;d<=td;d++){if(!isTD(d))continue;const n=d===i0?{kind:'ipo',text:IPON[s.id]||('🎉 '+s.n+' 今天正式掛牌！每股 '+s.p0+' 點'),m:480+Math.floor(hash01(s.seed,d,8)*50)}:autoNews(s,d);if(!n)continue;const t=d*864e5+n.m*6e4-8*36e5;if(t>now)continue;
-    if(n)out.push({t,s:s.id,d,kind:n.kind,text:n.text.replace(/\{n\}/g,s.n)})}});
-  NW.forEach(x=>{const st=STOCKS.find(y=>y.id===+x.s);if(!st)return;out.push({t:x.t,s:st.id,d:nwPos(x.t).day,kind:'adm',text:String(x.h||'')})});
+    out.push({t,s:s.id,d,kind:n.kind,sg:n.sg||0,body:(n.kind==='ipo'?[IPOB[s.id]||'','發行價每股 '+s.p0+' 點。新股上市的前幾天，價格常常受到市場熱度影響，起伏可能比較大。'].join('\n'):(n.body||'')).replace(/\{n\}/g,s.n),text:n.text.replace(/\{n\}/g,s.n)})}});
+  NW.forEach(x=>{const st=STOCKS.find(y=>y.id===+x.s);if(!st)return;out.push({t:x.t,s:st.id,d:nwPos(x.t).day,kind:'adm',sg:+x.d||0,body:String(x.b||''),text:String(x.h||'')})});
   out.sort((a,b)=>b.t-a.t);return out;
 }
 function dayRes(id,d){const c=PC[id];if(!c)return null;const x=c.days.find(y=>y.d===d);return x&&x.path[0]?(x.path[NT]-x.path[0])/x.path[0]:null}
@@ -1127,8 +1145,11 @@ function renderNews(NI){
   const td=todayIdx(),tdn=NI.filter(x=>x.d===td&&x.kind!=='ipo').length;
   $('nwN').textContent=NI.length?(tdn?'今天 '+tdn+' 則，':'')+'共 '+NI.length+' 則':'還沒有';
   const f=t=>{const d=new Date(t+8*36e5);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+d.getUTCHours()+':'+String(d.getUTCMinutes()).padStart(2,'0')};
-  $('nwList').innerHTML=NI.length?NI.slice(0,NWN).map(x=>{const st=STOCKS.find(y=>y.id===x.s),r=x.d<td||(x.d===td&&!marketState().open&&twNow().min>=CLOSEM)?dayRes(x.s,x.d):null;
-    return '<div class="nwi"><small>'+f(x.t)+'　'+st.e+' '+esc(st.n)+(x.kind==='adm'?'　📢 苑均快訊':'')+'</small><div>'+esc(x.text)+'</div>'+(r==null?'':'<small>當天結果：<b style="color:'+(r>=0?UPC:DNC)+'">'+pct(r)+'</b></small>')+'</div>'}).join(''):'<div class="sub" style="margin:8px 0">還沒有新聞，有消息的時候會出現在這裡 📰</div>';
+  $('nwList').innerHTML=NI.length?NI.slice(0,NWN).map(x=>{const st=STOCKS.find(y=>y.id===x.s),r=x.d<td||(x.d===td&&!marketState().open&&twNow().min>=CLOSEM)?dayRes(x.s,x.d):null,k=x.s+'-'+x.t,op=NWK===k;
+    const tag=x.kind==='adm'?'苑均快訊':x.kind==='rumor'?'小道消息':x.kind==='ipo'?'新股掛牌':'財經新聞';
+    let det='';
+    if(op){const pi=pinfo(st);det='<div class="nwd"><div class="nwh">'+esc(x.text)+'</div><div class="nwm">'+tag+'　'+f(x.t)+'　'+st.e+' '+esc(st.n)+'</div>'+String(x.body||'').split('\n').filter(Boolean).map(l=>'<p>'+esc(l)+'</p>').join('')+'<div class="nwm" style="margin-top:8px">'+(pi?'目前股價 '+pi.p.toFixed(1)+'（今天 '+pct(pi.chg)+'）':'')+(r==null?'':'　那天收盤 '+pct(r))+'</div><button class="nwgo" data-nwgo="'+st.id+'">看 '+st.e+' '+esc(st.n)+' 的走勢 ›</button></div>'}
+    return '<div class="nwi" data-nk="'+k+'"><div class="nwr"><div class="nwt"><small>'+f(x.t)+'　'+st.e+' '+esc(st.n)+'　'+tag+'</small>'+(op?'':'<div class="nwtt">'+esc(x.text)+'</div>'+(r==null?'':'<small>當天結果：<b style="color:'+(r>=0?UPC:DNC)+'">'+pct(r)+'</b></small>'))+'</div><span class="nwa">'+(op?'▾':'›')+'</span></div>'+det+'</div>'}).join(''):'<div class="sub" style="margin:8px 0">還沒有新聞，有消息的時候會出現在這裡 📰</div>';
   $('nwMore').hidden=NI.length<=NWN;
 }
 function renderStock(){
@@ -1199,12 +1220,14 @@ document.addEventListener('click',e=>{
   const gt=e.target.closest('[data-goto]');if(gt){const b=document.querySelector('.nt[data-pg="'+gt.dataset.goto+'"]');if(b)b.click();return}
   const m=t=>{const el=$('invMsg');if(el)el.textContent=t};
   if(e.target.id==='nwMore'){NWN+=30;renderStock();return}
+  const gg=e.target.closest('[data-nwgo]');if(gg){OPEN=+gg.dataset.nwgo;renderStock();const el=document.querySelector('[data-sid="'+OPEN+'"]');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});return}
+  const ni=e.target.closest('.nwi');if(ni){NWK=NWK===ni.dataset.nk?'':ni.dataset.nk;renderStock();return}
   const nb=e.target.closest('[data-nw]');
   if(nb){if(!admin)return;const nm=t=>{const el=$('nwMsg');if(el)el.textContent=t};
     const sid=+$('nwSt').value,h=$('nwTx').value.trim().slice(0,40),d=+nb.dataset.nw;
     if(!sid){nm('還沒有上市的股票');return}if(!h){nm('先寫新聞標題喔');return}
     if(!confirm('要發布這則新聞嗎？\n發布後不能刪除，'+(d?'而且那檔股票接下來會'+(d>0?'偏漲':'偏跌')+'（約 5%）':'只是八卦，不影響股價')+'。'))return;
-    addDoc(collection(db,'news'),{s:sid,d:d,h:h,t:Date.now()}).then(()=>{$('nwTx').value='';nm('已發布 ✓')}).catch(()=>nm('發布失敗，請確認 Firebase 規則已發布'));return}
+    addDoc(collection(db,'news'),{s:sid,d:d,h:h,b:$('nwBd').value.trim().slice(0,300),t:Date.now()}).then(()=>{$('nwTx').value='';$('nwBd').value='';nm('已發布 ✓')}).catch(()=>nm('發布失敗，請確認 Firebase 規則已發布'));return}
   if(e.target.id==='trAll'){getDocs(query(collection(db,'trades'),orderBy('t','desc'))).then(sn=>{TR=sn.docs.map(d=>d.data());TRALL=true;renderTr()}).catch(()=>{});return}
   const cr=e.target.closest('[data-cr]');if(cr){CHS.r=cr.dataset.cr;renderStock();return}
   const cm=e.target.closest('[data-cm]');if(cm){CHS.m=cm.dataset.cm;renderStock();return}
