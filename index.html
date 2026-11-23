@@ -1021,7 +1021,8 @@ function gaus(seed,day,n){let t=(Math.imul(seed,2654435761)+Math.imul(day,40503)
 function dayPath(s,day,prev){
   const R=Math.max(-.1,Math.min(.1,Math.exp(s.dr+s.vol*gaus(s.seed*7+1,day,1)[0])-1));
   const zs=gaus(s.seed*13+5,day,NT);let WN=0,i;for(i=0;i<NT;i++)WN+=zs[i];
-  const hi=Math.floor(prev*11)/10,lo=Math.ceil(prev*9)/10,out=[prev];let ex=(EX[s.id]&&EX[s.id][day])||[];if(day!==ipoIdx(s)){const an=autoNews(s,day);if(an&&an.kind==='fact')ex=ex.concat([{k0:Math.max(0,an.m-OPENM),dl:an.sg*.02}])}let W=0;
+  const hi=Math.floor(prev*11)/10,lo=Math.ceil(prev*9)/10,out=[prev];let ex=(EX[s.id]&&EX[s.id][day])||[];const i0=ipoIdx(s);if(day!==i0){const an=autoNews(s,day);if(an&&an.kind==='fact')ex=ex.concat([{k0:Math.max(0,an.m-OPENM),dl:an.sg*.02}])}
+  if(day-i0<=6&&isTD(day)){let n=0;for(let d=i0;d<=day;d++)if(isTD(d))n++;if(n>=1&&n<=3)ex=ex.concat([{k0:0,dl:n===1?.03:-.015}])}let W=0;
   for(let k=1;k<=NT;k++){W+=zs[k-1];const B=W-(k/NT)*WN;let p=prev*(1+R*k/NT+s.vol*1.2*B/Math.sqrt(NT));if(ex)for(const e of ex)if(e.k0<NT&&k>e.k0)p*=1+e.dl*(k-e.k0)/(NT-e.k0);p=Math.round(p*10)/10;p=Math.min(hi,Math.max(lo,p));out.push(Math.max(1,p))}
   return out;
 }
