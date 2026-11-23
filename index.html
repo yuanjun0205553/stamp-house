@@ -158,6 +158,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .inv-row{display:flex;gap:8px}.inv-row input{flex:1;min-width:0}.inv-row button{padding:0 16px}
 .stk{border-radius:14px;background:var(--soft);padding:10px;margin-top:8px}.stk .srow{display:flex;align-items:center;gap:8px;cursor:pointer}.stk .snm{flex:1;min-width:0}.stk .snm b{font-size:15px}.stk .snm small{display:block;font-size:11px;color:var(--sub)}.stk .spx{text-align:right}.stk .px{font-weight:800;font-size:17px}.stk .chg{font-size:12px;font-weight:700}
 .stk .sp{border-top:1px dashed rgba(128,128,128,.3);margin-top:8px;padding-top:8px}.stk .sp .qty{display:flex;align-items:center;gap:6px;justify-content:center;margin:8px 0}.stk .sp .qty button{padding:6px 12px;min-width:42px}.stk .sp .qty b{min-width:48px;text-align:center;font-size:18px}.stk .sp .bs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stk .sp .bs button{padding:10px 4px;font-size:13px;line-height:1.3}
+.blgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:300px;margin:10px auto}.blb{aspect-ratio:1;border:0;border-radius:26px;display:flex;align-items:center;justify-content:center;opacity:.5;transition:opacity .1s,transform .1s,box-shadow .1s;touch-action:manipulation;cursor:pointer}.blb svg{width:52%;height:auto}.blb.on{opacity:1;transform:scale(1.06);box-shadow:0 0 0 4px rgba(255,255,255,.75),0 0 28px currentColor}.blb:disabled{cursor:default}
 .chtabs{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin:2px 0 6px}.chtabs button{padding:3px 9px;font-size:12px;border-radius:999px;min-width:0;background:var(--card);color:var(--ink);border:1px solid rgba(128,128,128,.25)}.chtabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}.chtabs .chsp{flex:1}.chtip{font-size:12px;text-align:center;color:var(--sub);min-height:18px;margin-bottom:2px}.chsvg{display:block;color:var(--ink);background:var(--card);border-radius:10px}.chst{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px;text-align:center;font-size:11px;color:var(--sub)}.chst b{display:block;font-size:14px;color:var(--ink)}
 .trl{display:flex;justify-content:space-between;gap:8px;padding:7px 2px;border-bottom:1px dashed rgba(128,128,128,.25);font-size:13px}.trl small{display:block;color:var(--sub);font-size:11px}.trl .ta{text-align:right;white-space:nowrap}.trall{margin-top:8px;width:100%}
 .nwi{padding:8px 2px;border-bottom:1px dashed rgba(128,128,128,.25);font-size:13px;cursor:pointer}.nwr{display:flex;gap:10px;align-items:center}.nwt{flex:1;min-width:0}.nwa{color:var(--sub);font-size:18px}.nwtt{font-weight:700;font-size:14px;line-height:1.5}.nwd{margin:8px 0 4px;padding:12px;border-radius:12px;background:var(--card)}.nwh{font-size:16px;font-weight:800;line-height:1.5;margin-bottom:2px}.nwd p{margin:8px 0;line-height:1.7;font-size:14px}.nwm{font-size:11px;color:var(--sub);margin-top:6px}.nwgo{margin-top:8px;width:100%}.nwi small{display:block;color:var(--sub);font-size:11px}.nwi div{margin:2px 0}
@@ -243,6 +244,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <div class="tabs" role="tablist">
 <button class="tab on" data-t="gacha" role="tab" aria-selected="true">扭蛋</button>
 <button class="tab" data-t="fortune" role="tab" aria-selected="false">占卜</button>
+<button class="tab" data-t="bell" role="tab" aria-selected="false">記憶鈴</button>
 <button class="tab" data-t="fish" role="tab" aria-selected="false">釣魚</button>
 <button class="tab" data-t="runner" role="tab" aria-selected="false">跳跳貓</button>
 <button class="tab" data-t="wheel" role="tab" aria-selected="false">吃什麼</button>
@@ -272,6 +274,13 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <h3>貓咪占卜 🔮</h3><p class="sub">每天一次，看看今天的運勢</p>
 <div class="prizebox" id="fortuneOut" aria-live="polite"><div class="pe">🔮</div><div class="pt">按下去看今天的運勢</div></div>
 <button class="p" id="fortuneBtn" style="width:100%">請貓咪占卜</button>
+</section>
+<section class="panel" id="p-bell" hidden>
+<h3>貓咪記憶鈴 🔔</h3><p class="sub">看鈴鐺亮起來的順序，等一下照順序按一次。一輪比一輪長，看你能記住幾輪！</p>
+<div class="sub" id="blInfo" style="text-align:center;margin-bottom:4px"></div>
+<div class="blgrid" id="blGrid"><button class="blb" data-b="0" style="background:#ff8fab;color:#ff8fab" aria-label="粉紅鈴"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 7c-3 0-5 2-5 5-8 3-12 10-12 18v10l-5 6h44l-5-6V30c0-8-4-15-12-18 0-3-2-5-5-5z" fill="#fff" fill-opacity=".95"/><circle cx="32" cy="54" r="5" fill="#fff" fill-opacity=".95"/></svg></button><button class="blb" data-b="1" style="background:#ffc94d;color:#ffc94d" aria-label="黃鈴"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 7c-3 0-5 2-5 5-8 3-12 10-12 18v10l-5 6h44l-5-6V30c0-8-4-15-12-18 0-3-2-5-5-5z" fill="#fff" fill-opacity=".95"/><circle cx="32" cy="54" r="5" fill="#fff" fill-opacity=".95"/></svg></button><button class="blb" data-b="2" style="background:#7cc4e8;color:#7cc4e8" aria-label="藍鈴"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 7c-3 0-5 2-5 5-8 3-12 10-12 18v10l-5 6h44l-5-6V30c0-8-4-15-12-18 0-3-2-5-5-5z" fill="#fff" fill-opacity=".95"/><circle cx="32" cy="54" r="5" fill="#fff" fill-opacity=".95"/></svg></button><button class="blb" data-b="3" style="background:#8fd08a;color:#8fd08a" aria-label="綠鈴"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 7c-3 0-5 2-5 5-8 3-12 10-12 18v10l-5 6h44l-5-6V30c0-8-4-15-12-18 0-3-2-5-5-5z" fill="#fff" fill-opacity=".95"/><circle cx="32" cy="54" r="5" fill="#fff" fill-opacity=".95"/></svg></button></div>
+<div class="prizebox" id="blMsg" aria-live="polite" style="min-height:44px">按「開始」，先看鈴鐺怎麼亮</div>
+<div class="inv-row"><button class="p" id="blStart" style="flex:1">開始</button><button id="blSnd" aria-label="聲音" style="padding:0 16px">🔊</button></div>
 </section>
 <section class="panel" id="p-fish" hidden>
 <h3>貓咪釣魚 🎣</h3><p class="sub">按「甩竿」，白線跑進綠色區的時候按「拉！」。每天可以釣 5 次。</p>
@@ -1701,6 +1710,52 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
   mkImg();ui();draw();
   new MutationObserver(function(){if(cv.offsetParent)draw()}).observe($('p-runner'),{attributes:true,attributeFilter:['hidden']});
   window.addEventListener('resize',draw);
+})();
+</script>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var NOTE=[523.25,659.25,783.99,1046.5],seq=[],idx=0,can=false,run=false,tm=[],snd=true,ac=null;
+  try{snd=localStorage.getItem('blsnd')!=='0'}catch(e){}
+  function best(){try{return +localStorage.getItem('blbest')||0}catch(e){return 0}}
+  function tone(i){
+    if(!snd)return;
+    try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();
+      var o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;o.type='triangle';o.frequency.value=NOTE[i];
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.35,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+.55);
+      o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.6)}catch(e){}
+  }
+  var bs=document.querySelectorAll('.blb');
+  function flash(i,ms){var b=bs[i];b.classList.add('on');tone(i);setTimeout(function(){b.classList.remove('on')},ms)}
+  function setCan(v){can=v;bs.forEach(function(b){b.disabled=!v})}
+  function info(){$('blInfo').textContent=(run?'第 '+seq.length+' 輪　':'')+'最高紀錄：'+best()+' 輪'}
+  function later(f,ms){tm.push(setTimeout(f,ms))}
+  function show(){
+    setCan(false);idx=0;$('blMsg').textContent='看好鈴鐺的順序…';info();
+    var step=Math.max(300,650-seq.length*22),t=700;
+    seq.forEach(function(v){later(function(){flash(v,step*.7)},t);t+=step});
+    later(function(){setCan(true);$('blMsg').textContent='換你囉！照順序按（共 '+seq.length+' 個）'},t);
+  }
+  function start(){
+    tm.forEach(clearTimeout);tm=[];seq=[Math.floor(Math.random()*4)];run=true;$('blStart').textContent='重來';show();
+  }
+  function over(){
+    var n=seq.length-1,nb=n>best();if(nb)try{localStorage.setItem('blbest',String(n))}catch(e){}
+    run=false;setCan(false);info();$('blStart').textContent='再玩一次';
+    $('blMsg').textContent=(n===0?'第一輪就按錯了，再試一次！':'你記住了 '+n+' 輪'+(nb?'　🎉 新紀錄！':n>=10?'　好厲害！':'　再挑戰看看！'));
+  }
+  function press(i){
+    if(!can)return;flash(i,160);
+    if(i!==seq[idx]){over();return}
+    idx++;
+    if(idx===seq.length){setCan(false);$('blMsg').textContent='答對了！';later(function(){seq.push(Math.floor(Math.random()*4));info();show()},800)}
+  }
+  bs.forEach(function(b){b.addEventListener('pointerdown',function(e){e.preventDefault();press(+b.dataset.b)})});
+  $('blStart').addEventListener('click',start);
+  function snb(){$('blSnd').textContent=snd?'🔊':'🔇'}
+  $('blSnd').addEventListener('click',function(){snd=!snd;try{localStorage.setItem('blsnd',snd?'1':'0')}catch(e){}snb()});
+  snb();setCan(false);info();
+  window.blState=function(){return {seq:seq.slice(),can:can,run:run,idx:idx}};
 })();
 </script>
 </body>
