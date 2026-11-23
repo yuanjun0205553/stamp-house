@@ -155,6 +155,12 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 .fsres{margin-top:10px;border-radius:18px;padding:14px 8px;text-align:center;background:var(--soft)}.fsres .pe{font-size:56px;line-height:1.1}.fsres .pt{font-weight:800;margin-top:4px}.fsres .st{color:#e0a000;letter-spacing:2px;font-size:14px}.fsres.pop{animation:fspop .5s cubic-bezier(.2,1.5,.4,1)}.fsres.rare{box-shadow:0 0 0 3px #ffd54a,0 0 18px rgba(255,200,60,.7)}@keyframes fspop{0%{transform:scale(.8)}100%{transform:scale(1)}}
 .fsdex{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.fsdex div{border-radius:12px;background:var(--soft);padding:6px 2px;text-align:center;font-size:11px;line-height:1.3}.fsdex b{display:block;font-size:26px;line-height:1.2}.fsdex .no b{filter:grayscale(1) brightness(.4);opacity:.45}.fsdex small{display:block;font-size:10px;color:var(--sub)}
 .rjcv{width:100%;aspect-ratio:340/180;border-radius:16px;display:block;touch-action:none;background:#cfe9f7;-webkit-tap-highlight-color:transparent}
+.inv-sum{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}.inv-sum div{background:var(--soft);border-radius:14px;padding:8px 4px;text-align:center;font-size:11px;color:var(--sub)}.inv-sum b{display:block;font-size:18px;color:var(--ink,inherit);margin-top:2px}
+.inv-row{display:flex;gap:8px}.inv-row input{flex:1;min-width:0}.inv-row button{padding:0 16px}
+.stk{border-radius:14px;background:var(--soft);padding:10px;margin-top:8px}.stk .srow{display:flex;align-items:center;gap:8px;cursor:pointer}.stk .snm{flex:1;min-width:0}.stk .snm b{font-size:15px}.stk .snm small{display:block;font-size:11px;color:var(--sub)}.stk .spx{text-align:right}.stk .px{font-weight:800;font-size:17px}.stk .chg{font-size:12px;font-weight:700}
+.stk .sp{border-top:1px dashed rgba(128,128,128,.3);margin-top:8px;padding-top:8px}.stk .sp .qty{display:flex;align-items:center;gap:6px;justify-content:center;margin:8px 0}.stk .sp .qty button{padding:6px 12px;min-width:42px}.stk .sp .qty b{min-width:48px;text-align:center;font-size:18px}.stk .sp .bs{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stk .sp .bs button{padding:10px 4px;font-size:13px;line-height:1.3}
+.stk.lock{opacity:.55;text-align:center}.ipoban{border-radius:14px;padding:10px 12px;background:linear-gradient(90deg,#ffe3a3,#ffc2d6);color:#5b3a4a;font-weight:700;margin-top:8px}
+.invtop{display:block;width:100%;margin-top:10px;padding:9px 12px;border-radius:14px;background:var(--soft);color:inherit;font-size:13px;font-weight:700;text-align:center}.nt{padding-left:2px;padding-right:2px}
 </style>
 </head>
 <body>
@@ -168,8 +174,9 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 </div>
 <div class="bar"><i id="fill" style="width:0%"></i></div>
 <div class="sub" id="hint" style="margin:0"></div>
+<button class="invtop" id="invTop" data-goto="stock" hidden></button>
 </div>
-<nav class="navtabs" role="tablist"><button class="nt on" data-pg="home" role="tab" aria-selected="true"><span>🐾</span>集點卡</button><button class="nt" data-pg="games" role="tab" aria-selected="false"><span>🎮</span>遊戲</button><button class="nt" data-pg="earn" role="tab" aria-selected="false"><span>💰</span>賺點</button><button class="nt" data-pg="gifts" role="tab" aria-selected="false"><span>🎁</span>禮物</button><button class="nt" data-pg="mine" role="tab" aria-selected="false"><span>🎫</span>禮物券<i class="bdg" id="mineBdg" hidden></i></button><button class="nt" id="navAdmin" data-pg="admin" role="tab" aria-selected="false" hidden><span>🔧</span>管理<i class="bdg" id="admBdg" hidden></i></button></nav>
+<nav class="navtabs" role="tablist"><button class="nt on" data-pg="home" role="tab" aria-selected="true"><span>🐾</span>集點卡</button><button class="nt" data-pg="games" role="tab" aria-selected="false"><span>🎮</span>遊戲</button><button class="nt" data-pg="earn" role="tab" aria-selected="false"><span>💰</span>賺點</button><button class="nt" data-pg="stock" role="tab" aria-selected="false"><span>📈</span>股市</button><button class="nt" data-pg="gifts" role="tab" aria-selected="false"><span>🎁</span>禮物</button><button class="nt" data-pg="mine" role="tab" aria-selected="false"><span>🎫</span>禮物券<i class="bdg" id="mineBdg" hidden></i></button><button class="nt" id="navAdmin" data-pg="admin" role="tab" aria-selected="false" hidden><span>🔧</span>管理<i class="bdg" id="admBdg" hidden></i></button></nav>
 <div id="pg-home">
 <div class="card" id="annivCard" hidden><div class="big" id="annivBig"></div><div class="sub" id="annivSub" style="margin:0"></div></div>
 <div class="card" id="askCard"><h2>每日一問 💌</h2><p class="sub">每天可以問苑均一個問題（不一定要問），按送出她就會看到，回覆會出現在上面。</p>
@@ -210,6 +217,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <select id="qzC" style="width:100%;margin-top:6px;padding:10px;border-radius:12px"><option value="0">正確答案：選項 1</option><option value="1">正確答案：選項 2</option><option value="2">正確答案：選項 3</option></select>
 <button class="p" id="qzAdd" style="width:100%;margin-top:8px">新增選擇題</button><button class="p" id="qzAddOpen" style="width:100%;margin-top:8px">只填上面題目 → 新增問答題（他自己打字）</button><div class="sub" id="qzMsg" style="min-height:16px"></div>
 <details style="margin-top:10px"><summary>看 / 刪全部題目（<span id="qzCount">0</span> 題）</summary><div id="qzList"></div></details><details style="margin-top:10px"><summary>他的答題紀錄（<span id="qlCount">0</span>）</summary><div id="qlList"></div></details></div>
+<div class="card" id="invAdm"><h2>他的投資帳戶 💹</h2><div class="sub" id="invAdmBody" style="margin:0">讀取中…</div></div>
 <div class="card" id="adminCards" hidden><h2>他的卡冊 🃏</h2><div id="adminCardsBody"></div><details style="margin-top:10px"><summary>進階設定（小心使用）</summary><div style="margin-top:8px">
 <div class="sub" style="margin:0 0 6px">目前是第 <b id="seasonNow">1</b> 個卡包</div>
 <input type="number" id="seasonIn" min="1" max="99" placeholder="卡包編號，例如 1">
@@ -351,6 +359,20 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <h2>集滿卡冊大獎 🏆</h2><p class="sub" style="margin:0 0 8px">用上面的模擬抽卡，把卡冊全部集滿，就能領 <b>1000 點</b>（每個卡包集滿都能領一次）！</p>
 <div class="fbar"><i id="fullFill"></i></div><div class="sub" id="fullTxt" style="margin:6px 0 0;text-align:center"></div>
 <div id="fullClaim"></div>
+</div>
+</div>
+<div id="pg-stock" hidden>
+<div class="card" id="stockCard">
+<h2>貓咪股市 📈</h2>
+<div id="invMkt" style="font-weight:700;margin-top:6px"></div>
+<div id="invBanner"></div>
+<div class="inv-sum" id="invSum"></div>
+<div id="invXfer" style="margin-top:10px"><div class="sub" style="margin:0 0 6px">要先把點數轉進投資帳戶才能買股票，轉入和提領都要等苑均確認。</div>
+<div class="inv-row"><input id="invAmt" type="number" inputmode="numeric" min="1" placeholder="幾點？"><button class="p" id="invIn">轉入</button><button id="invOut">提領</button></div>
+<div class="sub" id="invReq" style="min-height:16px;margin:6px 0 0"></div></div>
+<div id="invList"></div>
+<div class="sub" id="invMsg" style="min-height:18px;margin-top:8px"></div>
+<p class="sub" style="font-size:12px;margin:6px 0 0">跟台股一樣：平日 9:00–13:30 開盤，週末休市（國定假日不休）。開盤中價格每分鐘變動一次（也可能維持不變），一天最多漲跌 10%（紅色是漲、綠色是跌）。買賣要手續費 0.5%，賣出還有交易稅 0.3%。投資有風險，也可能會賠喔！</p>
 </div>
 </div>
 <div id="pg-gifts" hidden>
@@ -617,7 +639,7 @@ textarea{width:100%;font:inherit;padding:11px 12px;border-radius:14px;border:1px
 <script type="module">
 import {firebaseConfig} from './config.js';
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import {getFirestore,doc,onSnapshot,setDoc,addDoc,collection,query,orderBy,limit,deleteDoc,getDocs} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import {getFirestore,doc,onSnapshot,setDoc,addDoc,collection,query,orderBy,limit,deleteDoc,getDocs,increment} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 const $=id=>document.getElementById(id);
 const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),ref=doc(db,'stamp','main');
@@ -712,7 +734,7 @@ function streakTxt(){
 function renderExtra(){
   renderAdminCards();
   if(window.whackRefresh)window.whackRefresh();
-  renderQuiz();renderQzAdmin();if(window.simInfo)window.simInfo();
+  renderQuiz();renderQzAdmin();renderStock();if(window.simInfo)window.simInfo();
   // anniversary
   const m=/^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(S.anniv||'');
   if(m){
@@ -957,6 +979,139 @@ $('outBtn').onclick=()=>signOut(auth);
 setTimeout(gachaPending,800);
 window.sendQuestion=q=>addDoc(collection(db,'inbox'),{q:String(q).slice(0,100),t:Date.now()});
 let inbox=[],inboxOff=null;
+/* ===== 貓咪股市 ===== */
+const invRef=doc(db,'invest','main');let INV=null,INVL=false,invBusy=false,invMk=false,OPEN=0;const QTY={};
+const STOCKS=[
+ {id:1,n:'喵積電',e:'💻',ipo:'2026-11-24',p0:60,vol:.012,dr:.0008,seed:11,tag:'半導體龍頭，穩穩慢慢漲'},
+ {id:2,n:'噹噹貓食',e:'🧡',ipo:'2026-11-24',p0:30,vol:.02,dr:.0004,seed:22,tag:'穩穩賺的貓食公司'},
+ {id:3,n:'小朋友銀行',e:'🏦',ipo:'2026-12-01',p0:40,vol:.01,dr:.0003,seed:33,tag:'超穩，漲跌都慢慢的'},
+ {id:4,n:'貓聯電',e:'🔌',ipo:'2026-12-08',p0:45,vol:.022,dr:.0004,seed:44,tag:'半導體老二，起伏比龍頭大一點'},
+ {id:5,n:'咚咚玩具',e:'🩶',ipo:'2026-12-15',p0:20,vol:.045,dr:0,seed:55,tag:'起伏中等，偶爾暴漲'},
+ {id:6,n:'貓發科',e:'🧠',ipo:'2026-12-22',p0:35,vol:.05,dr:.0002,seed:66,tag:'IC 設計，起伏比較大'},
+ {id:7,n:'喵達 AI',e:'🖥️',ipo:'2026-12-29',p0:28,vol:.07,dr:.0003,seed:77,tag:'AI 熱門股，漲得快跌得也快'},
+ {id:8,n:'登月貓咪航太',e:'🚀',ipo:'2027-01-05',p0:15,vol:.09,dr:0,seed:88,tag:'高風險！可能漲停也可能跌停'}];
+const dayOf=(y,m,d)=>Math.floor(Date.UTC(y,m-1,d)/864e5);
+function twNow(){const t=new Date(Date.now()+8*36e5);return {day:Math.floor(t.getTime()/864e5),min:t.getUTCHours()*60+t.getUTCMinutes()}}
+const todayIdx=()=>twNow().day;
+const ipoIdx=s=>{const a=s.ipo.split('-').map(Number);return dayOf(a[0],a[1],a[2])};
+const isTD=d=>{const w=(d+4)%7;return w>=1&&w<=5};
+const OPENM=540,CLOSEM=810,NT=270;
+function marketState(){
+  const n=twNow();
+  if(isTD(n.day)&&n.min>=OPENM&&n.min<CLOSEM)return {open:true,txt:'🟢 開盤中　平日 9:00–13:30，每分鐘更新一次價格'};
+  let d=n.day;if(!(isTD(d)&&n.min<OPENM))d++;while(!isTD(d))d++;
+  const nm=['日','一','二','三','四','五','六'][(d+4)%7];
+  return {open:false,txt:'🔴 休市中　下次開盤：'+(d===n.day?'今天':'週'+nm)+' 9:00'};
+}
+function gaus(seed,day,n){let t=(Math.imul(seed,2654435761)+Math.imul(day,40503)+777)>>>0;const f=()=>{t=(t+0x6D2B79F5)>>>0;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296};const o=[];for(let i=0;i<n;i++)o.push((f()+f()+f()-1.5)*2);return o}
+function pathPrice(s,day,prev,k){
+  const R=Math.max(-.1,Math.min(.1,Math.exp(s.dr+s.vol*gaus(s.seed*7+1,day,1)[0])-1));
+  const zs=gaus(s.seed*13+5,day,NT);let W=0,WN=0,i;for(i=0;i<NT;i++){WN+=zs[i];if(i<k)W+=zs[i]}
+  const B=W-(k/NT)*WN;
+  let p=prev*(1+R*k/NT+s.vol*1.2*B/Math.sqrt(NT));
+  p=Math.round(p*10)/10;p=Math.min(Math.floor(prev*11)/10,Math.max(Math.ceil(prev*9)/10,p));
+  return Math.max(1,p);
+}
+const PC={};
+function pinfo(s){
+  const t=twNow(),i0=ipoIdx(s);if(t.day<i0)return null;
+  let c=PC[s.id];if(!c)c=PC[s.id]={cl:[],last:i0-1,prev:s.p0};
+  const lastDone=(isTD(t.day)&&t.min>=CLOSEM)?t.day:t.day-1;
+  for(let d=c.last+1;d<=lastDone;d++){if(!isTD(d))continue;c.prev=pathPrice(s,d,c.prev,NT);c.cl.push(c.prev)}
+  c.last=Math.max(c.last,lastDone);
+  const live=isTD(t.day)&&t.day>=i0&&t.min<CLOSEM;
+  let p,pv;
+  if(live){pv=c.prev;const k=t.min<OPENM?0:Math.min(NT,t.min-OPENM);p=pathPrice(s,t.day,pv,k)}
+  else{p=c.prev;pv=c.cl.length>=2?c.cl[c.cl.length-2]:s.p0}
+  let h=c.cl.slice(-29);if(live)h=h.concat([p]);if(h.length<2)h=[pv,p];
+  return {p,pv,chg:pv?(p-pv)/pv:0,h};
+}
+const UPC='#e5484d',DNC='#2f9e6a';
+const pct=x=>(x>0?'+':'')+(x*100).toFixed(2)+'%';
+const invFee=a=>Math.max(1,Math.round(a*.005));
+function spark(h,up){const w=84,hh=28,mn=Math.min(...h),mx=Math.max(...h),rg=mx-mn||1;const pts=h.map((v,i)=>(i/Math.max(1,h.length-1)*w).toFixed(1)+','+(hh-3-(v-mn)/rg*(hh-6)).toFixed(1)).join(' ');return '<svg viewBox="0 0 '+w+' '+hh+'" width="84" height="28" aria-hidden="true"><polyline fill="none" stroke="'+(up?UPC:DNC)+'" stroke-width="2" stroke-linejoin="round" points="'+pts+'"/></svg>'}
+function invHold(id){return Math.max(0,Math.floor((INV&&INV['h'+id])||0))}
+function renderStock(){
+  if(!$('invList'))return;
+  if(admin&&INVL&&!INV&&!invMk){invMk=true;setDoc(invRef,{cash:0,at:0,t:Date.now()}).catch(()=>{invMk=false})}
+  const ti=todayIdx(),mk=marketState(),cash=INV?Math.max(0,INV.cash||0):0;
+  let hv=0;const rows=[];let ban='';
+  STOCKS.forEach(st=>{
+    const pi=pinfo(st);
+    if(!pi){const dl=st.ipo.slice(5).replace('-','/');rows.push('<div class="stk lock">🔒 神祕新股　'+dl+' 上市 ⏳</div>');return}
+    const h=invHold(st.id),c=Math.max(0,(INV&&INV['c'+st.id])||0);hv+=Math.round(h*pi.p);
+    if(ti-ipoIdx(st)<=2)ban+='<div class="ipoban">🎉 新股上市！'+st.e+' '+st.n+(ti===ipoIdx(st)?' 今天開賣':' 熱賣中')+'</div>';
+    const up=pi.chg>=0,col=pi.chg===0?'inherit':(up?UPC:DNC),lim=Math.abs(pi.chg)>=.0995?(up?' 🔥漲停':' 💧跌停'):'';
+    let panel='';
+    if(OPEN===st.id){
+      const q=QTY[st.id]||1,amt=Math.round(pi.p*q),bt=amt+invFee(amt),sf=invFee(amt),sg=amt-sf-Math.round(amt*.003),val=Math.round(h*pi.p),pl=val-c;
+      panel='<div class="sp"><div class="sub" style="margin:0;text-align:center">'+(h?'持有 <b>'+h+'</b> 股　市值 '+val+' 點　<span style="color:'+(pl>=0?UPC:DNC)+'">損益 '+(pl>0?'+':'')+pl+'</span>':'還沒有持股')+'</div>'+
+        (admin?'':'<div class="qty"><button data-sq="'+st.id+':-10">−10</button><button data-sq="'+st.id+':-1">−1</button><b>'+q+' 股</b><button data-sq="'+st.id+':1">+1</button><button data-sq="'+st.id+':10">+10</button></div>'+
+        '<div class="bs"><button class="p" data-buy="'+st.id+'"'+(bt>cash||!mk.open?' disabled':'')+'>買進 '+q+' 股<br>共 '+bt+' 點</button><button data-sell="'+st.id+'"'+(q>h||!mk.open?' disabled':'')+'>賣出 '+q+' 股<br>拿回 '+sg+' 點</button></div>')+'</div>';
+    }
+    rows.push('<div class="stk"><div class="srow" data-sid="'+st.id+'"><div style="font-size:26px">'+st.e+'</div><div class="snm"><b>'+esc(st.n)+'</b><small>'+esc(st.tag)+(h?'　持有 '+h+' 股':'')+'</small></div>'+spark(pi.h,up)+'<div class="spx"><div class="px" style="color:'+col+'">'+pi.p.toFixed(1)+'</div><div class="chg" style="color:'+col+'">'+pct(pi.chg)+lim+'</div></div></div>'+panel+'</div>');
+  });
+  $('invMkt').textContent=mk.txt;$('invMkt').style.color=mk.open?'#2f9e6a':'#c0392b';
+  $('invBanner').innerHTML=ban;
+  $('invList').innerHTML=rows.join('');
+  if(!INVL)$('invSum').innerHTML='<div style="grid-column:1/4">讀取中…</div>';
+  else if(!INV)$('invSum').innerHTML='<div style="grid-column:1/4">股市還在準備中～請苑均先登入一次 🐾</div>';
+  else $('invSum').innerHTML='<div>投資現金<b>'+cash+'</b></div><div>持股市值<b>'+hv+'</b></div><div>總資產<b>'+(cash+hv)+'</b></div>';
+  $('invXfer').hidden=admin||!INV;
+  if(!admin){
+    let rq=0;try{rq=+localStorage.getItem('invreq')||0}catch(e){}
+    const pend=rq&&Date.now()-rq<3*864e5&&(INV&&(INV.at||0)<rq);
+    $('invReq').textContent=pend?'已送出申請，等苑均確認 ⏳（你現在有 '+S.points+' 點）':'你現在有 '+S.points+' 點可以轉入';
+    $('invIn').disabled=!!pend;$('invOut').disabled=!!pend;
+  }
+  {const t=$('invTop');if(t){t.hidden=!(INV&&(cash+hv)>0);t.innerHTML='📈 股市資產 <b>'+(cash+hv)+'</b> 點　<span style="opacity:.7">現金 '+cash+'＋持股 '+hv+' ›</span>'}}
+  const ab=$('invAdmBody');
+  if(ab){ab.innerHTML=!INV?'還沒建立（登入後會自動建立）':'投資現金 <b>'+cash+'</b> 點　持股市值 <b>'+hv+'</b> 點　總資產 <b>'+(cash+hv)+'</b> 點'+STOCKS.map(st=>{const h=invHold(st.id);return h?'<br>'+st.e+' '+esc(st.n)+'：'+h+' 股':''}).join('')}
+}
+setInterval(renderStock,15000);
+onSnapshot(invRef,sn=>{INV=sn.exists()?sn.data():null;INVL=true;renderStock()},()=>{INVL=true;renderStock()});
+document.addEventListener('click',e=>{
+  const gt=e.target.closest('[data-goto]');if(gt){const b=document.querySelector('.nt[data-pg="'+gt.dataset.goto+'"]');if(b)b.click();return}
+  const m=t=>{const el=$('invMsg');if(el)el.textContent=t};
+  const sr=e.target.closest('[data-sid]');
+  if(sr){const id=+sr.dataset.sid;OPEN=OPEN===id?0:id;renderStock();return}
+  const sq=e.target.closest('[data-sq]');
+  if(sq){const a=sq.dataset.sq.split(':');QTY[a[0]]=Math.max(1,Math.min(999,(QTY[a[0]]||1)+(+a[1])));renderStock();return}
+  const by=e.target.closest('[data-buy]'),sl=e.target.closest('[data-sell]');
+  if(by||sl){
+    if(admin||!INV||invBusy)return;
+    if(!marketState().open){m('休市中，平日 9:00–13:30 才能買賣');return}
+    const id=+(by?by.dataset.buy:sl.dataset.sell),st=STOCKS.find(x=>x.id===id),pi=st&&pinfo(st);if(!pi)return;
+    const q=QTY[id]||1,amt=Math.round(pi.p*q),f=invFee(amt),cash=Math.max(0,INV.cash||0),h=invHold(id),c=Math.max(0,INV['c'+id]||0);
+    let d;
+    if(by){const tot=amt+f;if(tot>cash){m('投資現金不夠，先轉入一些點數吧');return}
+      d={cash:increment(-tot),['h'+id]:increment(q),['c'+id]:increment(tot),t:Date.now()}}
+    else{if(q>h){m('你沒有那麼多股');return}
+      const get=amt-f-Math.round(amt*.003),red=q===h?c:Math.round(c*q/h);
+      d={cash:increment(get),['h'+id]:increment(-q),['c'+id]:increment(-red),t:Date.now()}}
+    invBusy=true;
+    setDoc(invRef,d,{merge:true}).then(()=>m(by?'買進成功！'+st.e+' '+st.n+' '+q+' 股':'賣出成功！'+st.n+' '+q+' 股')).catch(()=>m('送出失敗，請檢查網路再試一次')).finally(()=>{invBusy=false});
+    return;
+  }
+  if(e.target.id==='invIn'||e.target.id==='invOut'){
+    if(admin||!INV)return;
+    const X=Math.floor(+$('invAmt').value),isIn=e.target.id==='invIn';
+    if(!(X>0)){m('先填要幾點喔');return}
+    if(isIn&&X>S.points){m('你的點數沒有那麼多');return}
+    if(!isIn&&X>Math.max(0,INV.cash||0)){m('投資現金沒有那麼多');return}
+    addDoc(collection(db,'inbox'),{k:'task',n:(isIn?'💹 轉入｜':'💹 提領｜')+X+' 點',d:X,t:Date.now()}).then(()=>{try{localStorage.setItem('invreq',String(Date.now()))}catch(e){}$('invAmt').value='';m('已送出給苑均確認 ✓');renderStock()}).catch(()=>m('送出失敗，請檢查網路再試一次'));
+    return;
+  }
+  const iv=e.target.closest('button[data-invok]');
+  if(iv&&admin){
+    const x=inbox.find(v=>v.id===iv.dataset.invok);if(!x||!INV)return;
+    const isIn=String(x.n).startsWith('💹 轉入'),X=Math.floor(+x.d);if(!(X>0))return;
+    if(isIn){if(S.points<X){alert('他的點數不夠（目前 '+S.points+' 點）');return}
+      setDoc(invRef,{cash:increment(X),at:Date.now()},{merge:true}).then(()=>{adjust(-X,'💹 轉入投資帳戶');deleteDoc(doc(db,'inbox',x.id)).catch(()=>{})}).catch(()=>alert('轉入失敗，請確認規則已發布'))}
+    else{if(Math.max(0,INV.cash||0)<X){alert('投資帳戶現金不夠（目前 '+Math.max(0,INV.cash||0)+' 點）');return}
+      setDoc(invRef,{cash:increment(-X),at:Date.now()},{merge:true}).then(()=>{adjust(X,'💹 投資帳戶提領');deleteDoc(doc(db,'inbox',x.id)).catch(()=>{})}).catch(()=>alert('提領失敗'))}
+  }
+});
 const ansBusy=new Set();
 function processAns(){
   if(!admin||!window.seasonReady)return;
@@ -978,6 +1133,10 @@ function renderInbox(){
   $('inboxCard').hidden=!(admin&&inbox.length);{const b=$('admBdg');if(b){b.hidden=!(admin&&inbox.length);b.textContent=inbox.length}}
   $('inboxList').innerHTML=inbox.map(x=>{
     const d=new Date(x.t),ds=(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    if(x.k==='task'&&/^💹 (轉入|提領)｜/.test(String(x.n))){
+      const isIn=String(x.n).startsWith('💹 轉入');
+      return '<div class="iq"><div class="qt">'+(isIn?'💹 他想把點數轉入投資帳戶：':'💹 他想從投資帳戶提領：')+esc(x.d)+' 點</div><small>'+ds+'</small><div class="bt"><button class="p" data-invok="'+esc(x.id)+'">確認</button><button class="undo" data-inbox="'+esc(x.id)+'">不要</button></div></div>';
+    }
     if(x.k==='task'&&String(x.n).startsWith('🎰 扭蛋｜')){
       const pz=String(x.n).split('｜')[1]||'',dn=(S.done||{})['🎰 扭蛋']===today();
       return '<div class="iq"><div class="qt">🎰 他今天扭到：'+esc(pz)+'</div><small>'+ds+(dn?'（今天已經發過券了）':'')+'</small><div class="bt">'+(dn?'':'<button class="p" data-issue="'+esc(x.id)+'">發禮物券</button>')+'<button class="undo" data-inbox="'+esc(x.id)+'">'+(dn?'清掉':'不發')+'</button></div></div>';
@@ -1033,7 +1192,7 @@ onSnapshot(ref,s=>{
 },()=>{clearTimeout(t);$('msg').textContent='讀取失敗，請檢查網路或 Firebase 設定'});
 document.querySelectorAll('.nt').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.nt').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});
-  ['home','games','earn','gifts','mine','admin'].forEach(k=>{$('pg-'+k).hidden=b.dataset.pg!==k});
+  ['home','games','earn','stock','gifts','mine','admin'].forEach(k=>{$('pg-'+k).hidden=b.dataset.pg!==k});
   window.scrollTo(0,0);
 }));
 render();
