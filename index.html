@@ -991,12 +991,12 @@ const invRef=doc(db,'invest','main');let INV=null,INVL=false,invBusy=false,invMk
 const STOCKS=[
  {id:1,n:'喵積電',e:'💻',ipo:'2026-11-24',p0:60,vol:.012,dr:.0008,seed:11,tag:'半導體龍頭，穩穩慢慢漲'},
  {id:2,n:'噹噹貓食',e:'🧡',ipo:'2026-11-24',p0:30,vol:.02,dr:.0004,seed:22,tag:'穩穩賺的貓食公司'},
- {id:3,n:'小朋友銀行',e:'🏦',ipo:'2026-12-01',p0:40,vol:.01,dr:.0003,seed:33,tag:'超穩，漲跌都慢慢的'},
- {id:4,n:'貓聯電',e:'🔌',ipo:'2026-12-08',p0:45,vol:.022,dr:.0004,seed:44,tag:'半導體老二，起伏比龍頭大一點'},
- {id:5,n:'咚咚玩具',e:'🩶',ipo:'2026-12-15',p0:20,vol:.045,dr:0,seed:55,tag:'起伏中等，偶爾暴漲'},
- {id:6,n:'貓發科',e:'🧠',ipo:'2026-12-22',p0:35,vol:.05,dr:.0002,seed:66,tag:'IC 設計，起伏比較大'},
- {id:7,n:'喵達 AI',e:'🖥️',ipo:'2026-12-29',p0:28,vol:.07,dr:.0003,seed:77,tag:'AI 熱門股，漲得快跌得也快'},
- {id:8,n:'登月貓咪航太',e:'🚀',ipo:'2027-01-05',p0:15,vol:.09,dr:0,seed:88,tag:'高風險！可能漲停也可能跌停'}];
+ {id:3,n:'小朋友銀行',e:'🏦',ipo:'2026-11-25',p0:40,vol:.01,dr:.0003,seed:33,tag:'超穩，漲跌都慢慢的'},
+ {id:4,n:'貓聯電',e:'🔌',ipo:'2026-11-26',p0:45,vol:.022,dr:.0004,seed:44,tag:'半導體老二，起伏比龍頭大一點'},
+ {id:5,n:'咚咚玩具',e:'🩶',ipo:'2026-11-27',p0:20,vol:.045,dr:0,seed:55,tag:'起伏中等，偶爾暴漲'},
+ {id:6,n:'貓發科',e:'🧠',ipo:'2026-12-01',p0:35,vol:.05,dr:.0002,seed:66,tag:'IC 設計，起伏比較大'},
+ {id:7,n:'喵達 AI',e:'🖥️',ipo:'2026-12-04',p0:28,vol:.07,dr:.0003,seed:77,tag:'AI 熱門股，漲得快跌得也快'},
+ {id:8,n:'登月貓咪航太',e:'🚀',ipo:'2026-12-09',p0:15,vol:.09,dr:0,seed:88,tag:'高風險！可能漲停也可能跌停'}];
 const dayOf=(y,m,d)=>Math.floor(Date.UTC(y,m-1,d)/864e5);
 function twNow(){const t=new Date(Date.now()+8*36e5);return {day:Math.floor(t.getTime()/864e5),min:t.getUTCHours()*60+t.getUTCMinutes()}}
 const todayIdx=()=>twNow().day;
@@ -1045,7 +1045,7 @@ const QT={u:['「這個消息對公司來說是實質利多，短線上有機會
 let NWK='';
 function autoNews(s,day){
   const z=gaus(s.seed*7+1,day,1)[0],a=Math.abs(z);
-  if(hash01(s.seed,day,1)>.25+.45*Math.min(1,a/1.5))return null;
+  if(hash01(s.seed,day,1)>.55+.35*Math.min(1,a/1.5))return null;
   const fact=a>.4&&hash01(s.seed,day,2)<.7,sg=fact?(z>0?1:-1):(hash01(s.seed,day,3)<.5?1:-1);
   const pool=fact?NEWSP[SECT[s.id]||'s'][sg>0?'u':'d']:RUMOR[sg>0?'u':'d'],tx=pool[Math.floor(hash01(s.seed,day,4)*pool.length)];
   const r=hash01(s.seed,day,5),m=r<.3?480+Math.floor(hash01(s.seed,day,6)*60):545+Math.floor(hash01(s.seed,day,7)*255);
