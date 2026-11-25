@@ -991,21 +991,25 @@ const invRef=doc(db,'invest','main');let INV=null,INVL=false,invBusy=false,invMk
 const STOCKS=[
  {id:1,n:'喵積電',e:'💻',ipo:'2026-11-24',p0:60,vol:.012,dr:.0008,seed:11,tag:'半導體龍頭，穩穩慢慢漲'},
  {id:2,n:'噹噹貓食',e:'🧡',ipo:'2026-11-24',p0:30,vol:.02,dr:.0004,seed:22,tag:'穩穩賺的貓食公司'},
- {id:3,n:'小朋友銀行',e:'🏦',ipo:'2026-11-25',p0:40,vol:.01,dr:.0003,seed:33,tag:'超穩，漲跌都慢慢的'},
+ {id:3,n:'小朋友銀行',e:'🏦',ipo:'2026-11-25',p0:40,vol:.01,dr:.0003,seed:33,tag:'超穩存股，每季配息'},
  {id:4,n:'貓聯電',e:'🔌',ipo:'2026-11-26',p0:45,vol:.022,dr:.0004,seed:44,tag:'半導體老二，起伏比龍頭大一點'},
  {id:5,n:'咚咚玩具',e:'🩶',ipo:'2026-11-27',p0:20,vol:.045,dr:0,seed:55,tag:'起伏中等，偶爾暴漲'},
+ {id:9,n:'貓咪 50 ETF',e:'📊',ipo:'2026-11-30',p0:25,vol:.006,dr:.0003,seed:99,tag:'一籃子股票，每月配息'},
  {id:6,n:'貓發科',e:'🧠',ipo:'2026-12-01',p0:35,vol:.05,dr:.0002,seed:66,tag:'IC 設計，起伏比較大'},
  {id:7,n:'喵達 AI',e:'🖥️',ipo:'2026-12-04',p0:28,vol:.07,dr:.0003,seed:77,tag:'AI 熱門股，漲得快跌得也快'},
  {id:8,n:'登月貓咪航太',e:'🚀',ipo:'2026-12-09',p0:15,vol:.09,dr:0,seed:88,tag:'高風險！可能漲停也可能跌停'}];
 const dayOf=(y,m,d)=>Math.floor(Date.UTC(y,m-1,d)/864e5);
+const DIVS={3:{every:3,m0:12,d:18,ps:1},9:{every:1,m0:12,d:15,ps:.2}},DVC={};
 function twNow(){const t=new Date(Date.now()+8*36e5);return {day:Math.floor(t.getTime()/864e5),min:t.getUTCHours()*60+t.getUTCMinutes(),h2:t.getUTCHours()*120+t.getUTCMinutes()*2+(t.getUTCSeconds()>=30?1:0)}}
 const todayIdx=()=>twNow().day;
 const ipoIdx=s=>{const a=s.ipo.split('-').map(Number);return dayOf(a[0],a[1],a[2])};
 const isTD=d=>{const w=(d+4)%7;return w>=1&&w<=5};
 const OPENM=540,CLOSEM=810,NT=540;
+function divDays(s){const c=DIVS[s.id];if(!c)return[];if(DVC[s.id])return DVC[s.id];const i0=ipoIdx(s),out=[];let y=2026,mo=c.m0;for(let n=0;n<80;n++){let d=dayOf(y,mo,c.d);while(!isTD(d))d++;if(d>i0)out.push(d);mo+=c.every;while(mo>12){mo-=12;y++}}return DVC[s.id]=out}
+function divPassed(s){const t=twNow();return divDays(s).filter(d=>d<t.day||(d===t.day&&t.min>=OPENM)).length}
 let NW=[],EX={},NWN=30;
 const hash01=(a,b,c)=>{let t=(Math.imul(a,2654435761)+Math.imul(b,40503)+Math.imul(c,2246822519)+1013)>>>0;t=Math.imul(t^t>>>15,1|t);t^=t+Math.imul(t^t>>>7,61|t);return((t^t>>>14)>>>0)/4294967296};
-const SECT={1:'s',4:'s',6:'s',7:'s',2:'c',5:'c',3:'b',8:'x'};
+const SECT={1:'s',4:'s',6:'s',7:'s',2:'c',5:'c',3:'b',8:'x',9:'e'};
 const NEWSP={
  s:{u:['{n}接獲貓咪大廠的大訂單，下半年業績看俏','{n}新一代晶片良率提升，法人看好','貓咪 AI 需求爆發，{n}產能全開','{n}宣布擴廠，外資喊進'],
     d:['{n}晶片庫存偏高，法人下修獲利預期','{n}新製程遇到瓶頸，量產時程延後','貓咪手機銷量不如預期，{n}訂單被砍','{n}工廠昨晚停電，產線暫停半天']},
@@ -1013,6 +1017,8 @@ const NEWSP={
     d:['{n}被爆原料漲價，毛利恐受壓縮','{n}新品買氣冷淡，庫存堆積','貓咪們最近荷包縮水，{n}銷量下滑']},
  b:{u:['{n}宣布配發股利，高於市場預期','貓咪存款大增，{n}獲利創近期新高','{n}推出零用錢理財方案，開戶人數暴增'],
     d:['{n}壞帳比率上升，市場擔憂','利率下調，{n}利差縮小','{n}系統當機半小時，客戶抱怨連連']},
+ e:{u:['{n}成分股普遍上漲，淨值跟著走高','貓咪資金持續流入，{n}規模再創新高','貓咪大型股財報亮眼，{n}受惠'],
+    d:['{n}成分股出現回檔，淨值小幅下滑','大型股走弱拖累，{n}短線承壓','貓咪資金轉向保守，{n}出現贖回']},
  x:{u:['{n}火箭試射成功，順利登陸月球！','{n}拿下月球觀光訂單，貓咪排隊預約','太空貓咪計畫獲政府補助，{n}受惠'],
     d:['{n}火箭試射失敗，發射臺燒焦了','{n}月球基地延期，資金缺口擴大','{n}太空貓咪臨時喊累不想上班，進度落後']}};
 const RUMOR={u:['聽說{n}最近有大動作，內行人都在偷偷買','傳{n}要和大公司合作，消息還沒證實','有貓咪說看到{n}老闆笑得很開心，可能有好消息'],
@@ -1025,22 +1031,25 @@ const IPON={
  5:'🎉 咚咚玩具今天正式掛牌！貓抓板、逗貓棒通通有，發行價每股 20 點',
  6:'🎉 貓發科今天正式掛牌！IC 設計新星登場，發行價每股 35 點，法人喊話值得關注',
  7:'🎉 喵達 AI 今天正式掛牌！AI 熱門股，發行價每股 28 點，漲得快跌得也快，要小心喔',
- 8:'🚀 登月貓咪航太今天正式掛牌！要把貓咪送上月球，發行價每股 15 點，高風險高報酬'};
+ 8:'🚀 登月貓咪航太今天正式掛牌！要把貓咪送上月球，發行價每股 15 點，高風險高報酬',
+ 9:'📊 貓咪 50 ETF 今天正式掛牌！一次買進一籃子貓咪大型股，發行價每股 25 點，每個月還會配息'};
 const DET={
  s:{u:['不少法人認為這項利多會帶動接下來幾天的買氣，貓咪們紛紛把它加進自選股。','分析師表示，公司的技術實力又往前一步，競爭對手要追上沒那麼容易。'],d:['市場擔心這個狀況會拖累接下來的營收，部分貓咪已經開始賣出手上的持股。','分析師提醒，短期內公司需要時間處理，股價可能會有一陣子的壓力。']},
  c:{u:['貓咪們的反應非常熱烈，通路回報商品陸續缺貨，公司正在加緊補貨。','業界人士認為，這波買氣有機會延續一陣子，營收表現值得期待。'],d:['公司表示會盡快調整，不過短期內獲利可能受到影響。','貓咪們最近的消費變得比較保守，市場擔心這個情形還會持續。']},
  b:{u:['公司說明這是穩健經營的成果，也讓長期存股的貓咪們相當滿意。','市場人士認為，這項消息讓公司的穩健形象更加分。'],d:['公司強調整體體質仍然穩健，不過短期內市場情緒難免受到影響。','分析師提醒，這個問題需要時間處理，投資人要多留意後續發展。']},
+ e:{u:['貓咪投資人對這類分散風險的商品買氣升溫，認為長期持有比較安心。','分析師表示，這檔商品跟著整體市場走，適合想穩穩存股的貓咪。'],d:['整體市場走弱時，這類商品也難免跟著下跌，不過分散持有的風險比單一股票小。','分析師提醒，長期持有的貓咪不用太在意短期的波動。']},
  x:{u:['貓咪們紛紛抬頭看月亮，期待公司接下來的下一步計畫。','公司表示這是重要的一步，距離把貓咪送上月球又近了一點。'],d:['公司表示會檢討原因再接再厲，不過這對近期的計畫確實是個打擊。','太空計畫本來就充滿風險，貓咪們對這次的結果有點失望。']}};
 const RUMD=['這則消息是貓咪們私下傳出來的，沒有任何公司或單位證實。','消息來源不明，也有可能只是貓咪們聊天聊出來的，不一定是真的。'];
 const IPOB={
  1:'喵積電是這次最受矚目的半導體龍頭，專門替貓咪世界生產各種晶片。首日掛牌市場關注度很高，不過新股上市常常先漲後回，貓咪們要小心別追高。',
  2:'噹噹貓食專門生產各種貓罐頭和貓飼料，業績一向穩定。首日掛牌買氣不錯，但新股上市常常先漲後回，別一次買太多喔。',
- 3:'小朋友銀行主要做零用錢存放和理財，走勢向來慢慢的、很穩，適合想要安心持有的貓咪。',
+ 3:'小朋友銀行主要做零用錢存放和理財，走勢向來慢慢的、很穩，適合想要安心持有的貓咪。每季（3、6、9、12 月）18 日除息配股息，除息當天股價會跟著小幅調整。',
  4:'貓聯電是半導體界的老二，規模比龍頭小一點，但一直想追上。走勢的起伏比龍頭大一些。',
  5:'咚咚玩具專門生產貓抓板、逗貓棒等貓咪玩具，營收會隨流行起伏，偶爾還會突然暴漲。',
  6:'貓發科是 IC 設計公司，主打貓咪專用的小晶片。起伏比一般股票大，適合願意承擔風險的貓咪。',
  7:'喵達 AI 專做 AI 運算晶片，是市場上的熱門股。漲得快、跌得也快，貓咪們要有心理準備。',
- 8:'登月貓咪航太的目標是把貓咪送上月球。這是風險最高的一檔，可能漲停也可能跌停，小心別把所有點數都押在這裡。'};
+ 8:'登月貓咪航太的目標是把貓咪送上月球。這是風險最高的一檔，可能漲停也可能跌停，小心別把所有點數都押在這裡。',
+ 9:'貓咪 50 ETF 一次包含 50 家貓咪大公司，其中喵積電占最大一塊，所以喵積電漲跌時它也會跟著動，不過整體比單一股票穩定。每個月 15 日除息，持有的貓咪會收到股息，除息當天股價會跟著小幅調整。'};
 const QT={u:['「這個消息對公司來說是實質利多，短線上有機會吸引更多買盤。」一位資深貓咪分析師表示。','「基本面有改善的跡象，不過仍要留意追高的風險。」一位不具名的法人表示。'],d:['「短線上賣壓可能會比較重，但長期還要觀察公司後續的處理。」一位貓咪分析師表示。','「消息面偏空，建議投資人先觀望，不要急著進場。」一位不具名的法人表示。']};
 let NWK='';
 function autoNews(s,day){
@@ -1067,12 +1076,20 @@ function marketState(){
   return {open:false,txt:'🔴 休市中　下次開盤：'+(d===n.day?'今天':'週'+nm)+' 9:00'};
 }
 function gaus(seed,day,n){let t=(Math.imul(seed,2654435761)+Math.imul(day,40503)+777)>>>0;const f=()=>{t=(t+0x6D2B79F5)>>>0;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296};const o=[];for(let i=0;i<n;i++)o.push((f()+f()+f()-1.5)*2);return o}
+const ETFW={1:40,2:10,3:10,4:10,5:5,6:10,7:10,8:5};
+function compDay(c,day){let pc=PC[c.id];if(!pc)pc=PC[c.id]={cl:[],days:[],last:ipoIdx(c)-1,prev:c.p0};
+  const f=pc.days.find(x=>x.d===day);if(f)return f.path;
+  for(let d=pc.last+1;d<=day-1;d++){if(!isTD(d))continue;const pa=dayPath(c,d,pc.prev);pc.days.push({d:d,path:pa});pc.prev=pa[NT];pc.cl.push(pc.prev)}
+  pc.last=Math.max(pc.last,day-1);return dayPath(c,day,pc.prev)}
+function etfRet(day){const out=new Array(NT+1).fill(0);let tw=0;
+  STOCKS.forEach(c=>{const w=ETFW[c.id];if(!w||ipoIdx(c)>day)return;const P=compDay(c,day),b=P[0]||1;tw+=w;for(let k=1;k<=NT;k++)out[k]+=w*(P[k]/b-1)});
+  if(tw)for(let k=1;k<=NT;k++)out[k]/=tw;return out}
 function dayPath(s,day,prev){
   const R=Math.max(-.1,Math.min(.1,Math.exp(s.dr+s.vol*gaus(s.seed*7+1,day,1)[0])-1));
   const zs=gaus(s.seed*13+5,day,NT);let WN=0,i;for(i=0;i<NT;i++)WN+=zs[i];
   const hi=Math.floor(prev*11)/10,lo=Math.ceil(prev*9)/10,out=[prev];let ex=(EX[s.id]&&EX[s.id][day])||[];const i0=ipoIdx(s);if(day!==i0){let pd=day-1;while(!isTD(pd))pd--;for(let d=pd;d<=day;d++){if(d<=i0)continue;const an=autoNews(s,d);if(!an||an.kind!=='fact')continue;if(d===day){if(an.m<CLOSEM)ex=ex.concat([{k0:Math.max(0,(an.m-OPENM)*2),dl:an.sg*.02}])}else if(d>pd||an.m>=CLOSEM)ex=ex.concat([{k0:0,dl:an.sg*.02}])}}
-  if(day-i0<=6&&isTD(day)){let n=0;for(let d=i0;d<=day;d++)if(isTD(d))n++;if(n>=1&&n<=3)ex=ex.concat([{k0:0,dl:n===1?.03:-.015}])}let W=0;
-  for(let k=1;k<=NT;k++){W+=zs[k-1];const B=W-(k/NT)*WN;let p=prev*(1+R*k/NT+s.vol*1.2*B/Math.sqrt(NT));if(ex)for(const e of ex)if(e.k0<NT&&k>e.k0)p*=1+e.dl*(k-e.k0)/(NT-e.k0);p=Math.round(p*10)/10;p=Math.min(hi,Math.max(lo,p));out.push(Math.max(1,p))}
+  if(DIVS[s.id]&&divDays(s).includes(day))ex=ex.concat([{k0:0,dl:-DIVS[s.id].ps/prev}]);if(s.id!==9&&day-i0<=6&&isTD(day)){let n=0;for(let d=i0;d<=day;d++)if(isTD(d))n++;if(n>=1&&n<=3)ex=ex.concat([{k0:0,dl:n===1?.03:-.015}])}let W=0;const ET=s.id===9?etfRet(day):null;
+  for(let k=1;k<=NT;k++){W+=zs[k-1];const B=W-(k/NT)*WN;let p=prev*(1+(ET?ET[k]:R*k/NT+s.vol*1.2*B/Math.sqrt(NT)));if(ex)for(const e of ex)if(e.k0<NT&&k>e.k0)p*=1+e.dl*(k-e.k0)/(NT-e.k0);p=Math.round(p*10)/10;p=Math.min(hi,Math.max(lo,p));out.push(Math.max(1,p))}
   return out;
 }
 const PC={};
@@ -1160,6 +1177,9 @@ function newsItems(){
   STOCKS.forEach(s=>{const i0=ipoIdx(s);for(let d=i0;d<=td;d++){if(!isTD(d)&&d===i0)continue;const n=d===i0?{kind:'ipo',text:IPON[s.id]||('🎉 '+s.n+' 今天正式掛牌！每股 '+s.p0+' 點'),m:480+Math.floor(hash01(s.seed,d,8)*50)}:autoNews(s,d);if(!n)continue;const t=d*864e5+n.m*6e4-8*36e5;if(t>now)continue;
     out.push({t,s:s.id,d,kind:n.kind,sg:n.sg||0,body:(n.kind==='ipo'?[IPOB[s.id]||'','發行價每股 '+s.p0+' 點。新股上市的前幾天，價格常常受到市場熱度影響，起伏可能比較大。'].join('\n'):(n.body||'')).replace(/\{n\}/g,s.n),text:n.text.replace(/\{n\}/g,s.n)})}});
   NW.forEach(x=>{const st=STOCKS.find(y=>y.id===+x.s);if(!st)return;out.push({t:x.t,s:st.id,d:nwPos(x.t).day,kind:'adm',sg:+x.d||0,body:String(x.b||''),text:String(x.h||'')})});
+  STOCKS.forEach(s=>{const c=DIVS[s.id];if(!c)return;divDays(s).forEach(dx=>{let pd=dx-1;while(!isTD(pd))pd--;
+    [[pd,1080,'📢 '+s.n+'公布配息：明天除息，每股配 '+c.ps+' 點','公司董事會決議配發股息，每股 '+c.ps+' 點。明天是除息日，今天收盤前持有股票的貓咪，明天開盤就會收到股息，直接進到投資現金。','\n'],[dx,545,'💰 '+s.n+'今天除息，每股配 '+c.ps+' 點','今天是除息日，每股配發 '+c.ps+' 點的股息，持有的貓咪已經收到，會直接進到投資現金。\n除息之後，股價通常會跟著小幅調整。配息不等於多賺，因為股價也會少掉差不多的金額。']].forEach(a=>{
+      const t=a[0]*864e5+a[1]*6e4-8*36e5;if(t>now)return;out.push({t,s:s.id,d:a[0],kind:'div',sg:0,body:a[3],text:a[2]})})})});
   out.sort((a,b)=>b.t-a.t);return out;
 }
 function dayRes(id,d){const c=PC[id];if(!c)return null;const x=c.days.find(y=>y.d===d);return x&&x.path[0]?(x.path[NT]-x.path[0])/x.path[0]:null}
@@ -1169,14 +1189,26 @@ function renderNews(NI){
   $('nwN').textContent=NI.length?(tdn?'今天 '+tdn+' 則，':'')+'共 '+NI.length+' 則':'還沒有';
   const f=t=>{const d=new Date(t+8*36e5);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+d.getUTCHours()+':'+String(d.getUTCMinutes()).padStart(2,'0')};
   $('nwList').innerHTML=NI.length?NI.slice(0,NWN).map(x=>{const st=STOCKS.find(y=>y.id===x.s),r=x.d<td||(x.d===td&&!marketState().open&&twNow().min>=CLOSEM)?dayRes(x.s,x.d):null,k=x.s+'-'+x.t,op=NWK===k;
-    const tag=x.kind==='adm'?'苑均快訊':x.kind==='rumor'?'小道消息':x.kind==='ipo'?'新股掛牌':'財經新聞';
+    const tag=x.kind==='adm'?'苑均快訊':x.kind==='rumor'?'小道消息':x.kind==='ipo'?'新股掛牌':x.kind==='div'?'配息公告':'財經新聞';
     let det='';
     if(op){const pi=pinfo(st);det='<div class="nwd"><div class="nwh">'+esc(x.text)+'</div><div class="nwm">'+tag+'　'+f(x.t)+'　'+st.e+' '+esc(st.n)+'</div>'+String(x.body||'').split('\n').filter(Boolean).map(l=>'<p>'+esc(l)+'</p>').join('')+'<div class="nwm" style="margin-top:8px">'+(pi?'目前股價 '+pi.p.toFixed(1)+'（今天 '+pct(pi.chg)+'）':'')+(r==null?'':'　那天收盤 '+pct(r))+'</div><button class="nwgo" data-nwgo="'+st.id+'">看 '+st.e+' '+esc(st.n)+' 的走勢 ›</button></div>'}
     return '<div class="nwi" data-nk="'+k+'"><div class="nwr"><div class="nwt"><small>'+f(x.t)+'　'+st.e+' '+esc(st.n)+'　'+tag+'</small>'+(op?'':'<div class="nwtt">'+esc(x.text)+'</div>'+(r==null?'':'<small>當天結果：<b style="color:'+(r>=0?UPC:DNC)+'">'+pct(r)+'</b></small>'))+'</div><span class="nwa">'+(op?'▾':'›')+'</span></div>'+det+'</div>'}).join(''):'<div class="sub" style="margin:8px 0">還沒有新聞，有消息的時候會出現在這裡 📰</div>';
   $('nwMore').hidden=NI.length<=NWN;
 }
+function settleDiv(){
+  if(admin||!INV||invBusy)return;
+  for(const st of STOCKS){const c=DIVS[st.id];if(!c||!pinfo(st))continue;
+    const ds=divDays(st),n=divPassed(st),cur=INV['dv'+st.id],h=invHold(st.id),done=cur==null?0:cur;
+    if(h<=0||n<=done)continue;
+    let tot=0;const recs=[];
+    for(let i=done;i<n;i++){const a=Math.max(1,Math.round(h*c.ps));tot+=a;recs.push({k:'d',s:st.id,q:h,p:c.ps,f:0,a:a,t:ds[i]*864e5+OPENM*6e4-8*36e5})}
+    invBusy=true;
+    setDoc(invRef,{cash:increment(tot),['dv'+st.id]:n,t:Date.now()},{merge:true}).then(()=>{recs.forEach(r=>addDoc(collection(db,'trades'),r).catch(()=>{}));const el=$('invMsg');if(el)el.textContent='💰 收到 '+st.n+' 股息 '+tot+' 點'}).catch(()=>{}).finally(()=>{invBusy=false});
+    return;
+  }
+}
 function renderStock(){
-  if(!$('invList'))return;
+  if(!$('invList'))return;settleDiv();
   if(admin&&INVL&&!INV&&!invMk){invMk=true;setDoc(invRef,{cash:0,at:0,t:Date.now()}).catch(()=>{invMk=false})}
   const ti=todayIdx(),mk=marketState(),cash=INV?Math.max(0,INV.cash||0):0;
   let hv=0;const rows=[],HL=[];let ban='';const NI=newsItems(),tn={};NI.forEach(x=>{if(x.d===ti)tn[x.s]=1});
@@ -1227,6 +1259,7 @@ function renderTr(){
   $('trAll').hidden=TRALL||TR.length<200;
   const f=t=>{const d=new Date(t+8*36e5);return (d.getUTCMonth()+1)+'/'+d.getUTCDate()+' '+d.getUTCHours()+':'+String(d.getUTCMinutes()).padStart(2,'0')};
   $('trList').innerHTML=TR.length?TR.map(x=>{const st=STOCKS.find(y=>y.id===x.s)||{e:'📈',n:'股票'},b=x.k==='b';
+    if(x.k==='d')return '<div class="trl"><div><b style="color:#d98a00">配息</b> '+st.e+' '+esc(st.n)+' '+x.q+' 股<small>'+f(x.t)+'　每股配 '+Number(x.p).toFixed(1)+' 點</small></div><div class="ta">+'+x.a+' 點</div></div>';
     return '<div class="trl"><div><b style="color:'+(b?UPC:DNC)+'">'+(b?'買進':'賣出')+'</b> '+st.e+' '+esc(st.n)+' '+x.q+' 股<small>'+f(x.t)+'　每股 '+Number(x.p).toFixed(1)+'　手續費等 '+x.f+' 點</small></div><div class="ta">'+(b?'−':'+')+x.a+' 點</div></div>'}).join(''):'<div class="sub" style="margin:8px 0">還沒有買賣紀錄</div>';
 }
 onSnapshot(query(collection(db,'trades'),orderBy('t','desc'),limit(200)),sn=>{if(TRALL)return;TR=sn.docs.map(d=>d.data());renderTr()},()=>{});
@@ -1274,7 +1307,7 @@ document.addEventListener('click',e=>{
     const q=QTY[id]||1,amt=Math.round(pi.p*q),f=invFee(amt),cash=Math.max(0,INV.cash||0),h=invHold(id),c=Math.max(0,INV['c'+id]||0);
     let d,rec;
     if(by){const tot=amt+f;if(tot>cash){m('投資現金不夠，先轉入一些點數吧');return}
-      d={cash:increment(-tot),['h'+id]:increment(q),['c'+id]:increment(tot),t:Date.now()};rec={k:'b',s:id,q,p:pi.p,f,a:tot,t:Date.now()}}
+      d={cash:increment(-tot),['h'+id]:increment(q),['c'+id]:increment(tot),t:Date.now()};if(DIVS[id]&&h===0)d['dv'+id]=divPassed(st);rec={k:'b',s:id,q,p:pi.p,f,a:tot,t:Date.now()}}
     else{if(q>h){m('你沒有那麼多股');return}
       const get=amt-f-Math.round(amt*.003),red=q===h?c:Math.round(c*q/h);
       d={cash:increment(get),['h'+id]:increment(-q),['c'+id]:increment(-red),t:Date.now()};rec={k:'s',s:id,q,p:pi.p,f:f+Math.round(amt*.003),a:get,t:Date.now()}}
